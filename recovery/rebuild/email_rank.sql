@@ -1,8 +1,9 @@
 #!/usr/bin/sqsh -i
 #
-# $Id: email_rank.sql,v 1.4 2000/10/21 22:54:31 decibel Exp $
+# $Id: email_rank.sql,v 1.5 2001/01/21 18:09:52 decibel Exp $
 #
-# Repopulates Email_Rank for a project.
+# Phase 1 of repopulating Email_Rank for a project. After this script, you should
+# re-rank, then run email_rank_2.sql.
 # Notes:
 #	The script does *not* re-rank.
 #	It assumes that the summary table has been created using make_summary.sql
@@ -18,12 +19,13 @@ delete Email_Rank
 where PROJECT_ID = ${1}
 
 print "Inserting new data"
-declare @max_rank int
-select @max_rank = count(*)+1 from STATS_Participant
 insert into Email_Rank (PROJECT_ID, ID, FIRST_DATE, LAST_DATE, WORK_TODAY, WORK_TOTAL,
 		DAY_RANK, DAY_RANK_PREVIOUS, OVERALL_RANK, OVERALL_RANK_PREVIOUS)
-	select ${1}, ID, min(FIRST_DATE) as FIRST_DATE, max(LAST_DATE) as LAST_DATE, sum(WORK_TODAY), sum(WORK_TOTAL),
-		@max_rank, @max_rank, @max_rank, @max_rank
+	select ${1}, ID, min(FIRST_DATE) as FIRST_DATE, max(LAST_DATE) as LAST_DATE, sum(WORK_YESTERDAY), sum(WORK_TOTAL) - sum(WORK_TODAY),
+		0, 0, 0, 0
 	from WorkSummary_${1}
 	group by id
+go
+
+print "All done. Run the email ranking script, then run email_rank_2.sql"
 go

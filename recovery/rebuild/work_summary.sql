@@ -1,6 +1,6 @@
 #!/usr/bin/sqsh -i
 #
-# $Id: work_summary.sql,v 1.9 2001/01/21 17:23:21 decibel Exp $
+# $Id: work_summary.sql,v 1.10 2001/01/21 18:09:52 decibel Exp $
 #
 # Creates a summary table containing all work for a project
 #
@@ -49,7 +49,7 @@ update #WorkSummary
 		and ec.TEAM_ID = #WorkSummary.TEAM_ID
 		and ec.DATE = @last
 update #WorkSummary
-	set WORK_TODAY = ec.WORK_UNITS
+	set WORK_YESTERDAY = ec.WORK_UNITS
 	from Email_Contrib ec
 	where ec.PROJECT_ID = #WorkSummary.PROJECT_ID
 		and ec.ID = #WorkSummary.ID
