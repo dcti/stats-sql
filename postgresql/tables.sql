@@ -13,7 +13,7 @@ create table CSC_dailies
 	top_yteam		int		not NULL,
 	top_ytblocks		numeric(10,0)	not NULL
 )
-;
+WITHOUT OIDS;
 create table CSC_master
 (
 	id			numeric(7,0)	primary key,
@@ -21,7 +21,7 @@ create table CSC_master
 	date			date	not NULL,
 	blocks			numeric(7,0)	not NULL
 )
-;
+WITHOUT OIDS;
 create table CSC_platform
 (
 	cpu			int		not NULL,
@@ -31,7 +31,7 @@ create table CSC_platform
 	blocks			numeric(7,0)	not NULL,
     primary key(cpu,os,ver,date)
 )
-;
+WITHOUT OIDS;
 create table Daily_Summary
 (
 	DATE			date	not NULL,
@@ -51,7 +51,7 @@ create table Daily_Summary
 	TOP_YTWORK		numeric(20,0)	not NULL,
     primary key(date,project_id)
 )
-;
+WITHOUT OIDS;
 create table Email_Contrib
 (
 	ID			int		not NULL,
@@ -61,13 +61,13 @@ create table Email_Contrib
 	WORK_UNITS		numeric(20,0)	not NULL,
     primary key (project_id,id,date)
 )
-;
+WITHOUT OIDS;
 create table Email_Contrib_Last_Update
 (
 	PROJECT_ID		smallint	primary key,
 	last_date		date	NULL
 )
-;
+WITHOUT OIDS;
 create table Email_Contrib_Today
 (
 	PROJECT_ID		int2		not NULL,
@@ -77,7 +77,7 @@ create table Email_Contrib_Today
 	CREDIT_ID		int		not NULL,
     primary key(project_id,id)
 )
-;
+WITHOUT OIDS;
 create table Email_Rank
 (
 	PROJECT_ID		int2		not NULL,
@@ -92,13 +92,13 @@ create table Email_Rank
 	OVERALL_RANK_PREVIOUS	int		not NULL,
     primary key(project_id,id)
 )
-;
+WITHOUT OIDS;
 create table Email_Rank_Last_Update
 (
 	PROJECT_ID		smallint	primary key,
 	last_date		date	NULL
 )
-;
+WITHOUT OIDS;
 create table Log_Info
 (
 	PROJECT_ID		int2		not NULL,
@@ -108,7 +108,7 @@ create table Log_Info
 	ERROR			bit		not NULL,
     primary key(project_id,log_timestamp)
 )
-;
+WITHOUT OIDS;
 create table Platform_Contrib
 (
 	PROJECT_ID		int2		not NULL,
@@ -119,13 +119,13 @@ create table Platform_Contrib
 	WORK_UNITS		numeric(20,0)	not NULL,
     primary key(project_id,cpu,os,ver,date)
 )
-;
+WITHOUT OIDS;
 create table Platform_Contrib_Last_Update
 (
 	PROJECT_ID		smallint	primary key,
 	last_date		date	NULL
 )
-;
+WITHOUT OIDS;
 create table Platform_Contrib_Today
 (
 	PROJECT_ID		int2		not NULL,
@@ -134,7 +134,7 @@ create table Platform_Contrib_Today
 	VER			smallint	not NULL,
 	WORK_UNITS		numeric(20,0)	not NULL
 )
-;
+WITHOUT OIDS;
 create table Platform_Summary
 (
 	PROJECT_ID		int2		not NULL,
@@ -147,13 +147,13 @@ create table Platform_Summary
 	WORK_TOTAL		numeric(22,0)	NULL,
     primary key(project_id,cpu,os,ver)
 )
-;
+WITHOUT OIDS;
 create table Project_Status
 (
 	STATUS			char(1)		primary key,
 	DESCRIPTION		varchar(115)	not NULL
 )
-;
+WITHOUT OIDS;
 create table Project_statsrun
 (
 	PROJECT_ID		int2		primary key,
@@ -166,7 +166,7 @@ create table Project_statsrun
 	LAST_TEAM_DATE		date	NULL,
 	LAST_SUMMARY_DATE	date	NULL
 )
-;
+WITHOUT OIDS;
 create table Projects
 (
 	PROJECT_ID		int2		primary key,
@@ -195,7 +195,7 @@ create table Projects
 	DIST_UNIT_SCALE		numeric(38,0)	not NULL,
 	WORK_UNIT_SCALE		numeric(38,0)	not NULL
 )
-;
+WITHOUT OIDS;
 create table STATS_Participant
 (
 	id			numeric(10,0)	primary key,
@@ -220,36 +220,36 @@ create table STATS_Participant
 	motto			varchar(255)	not NULL,
 	retire_date		date	NULL
 )
-;
+WITHOUT OIDS;
 create table STATS_Participant_Blocked
 (
 	ID			int		primary key
 )
-;
+WITHOUT OIDS;
 create table STATS_Participant_Friend
 (
 	id			int		not NULL,
 	friend			int		not NULL,
     primary key(id,friend)
 )
-;
+WITHOUT OIDS;
 create table STATS_Participant_Listmode
 (
 	listmode		smallint	primary key,
 	description		varchar(100)	constraint STATS_Participant_Listmode__description unique not NULL
 )
-;
+WITHOUT OIDS;
 create table STATS_Team_Blocked
 (
 	TEAM_ID			int		primary key
 )
-;
+WITHOUT OIDS;
 create table STATS_country
 (
 	country			char(64)	constraint STATS_country__country UNIQUE not NULL,
 	code			char(2)		primary key
 )
-;
+WITHOUT OIDS;
 create table STATS_cpu
 (
 	cpu			int		primary key,
@@ -257,19 +257,19 @@ create table STATS_cpu
 	image			char(64)	NULL,
 	category		char(32)	NULL
 )
-;
+WITHOUT OIDS;
 create table STATS_dem_heard
 (
 	heard			smallint	primary key,
 	description		varchar(100)	constraint STATS_dem_heard__description unique not NULL
 )
-;
+WITHOUT OIDS;
 create table STATS_dem_motivation
 (
 	motivation		smallint	primary key,
 	description		varchar(100)	constraint STATS_dem_motivation__description unique not NULL
 )
-;
+WITHOUT OIDS;
 create table STATS_nonprofit
 (
 	nonprofit		int		primary key,
@@ -277,7 +277,7 @@ create table STATS_nonprofit
 	url			char(64)	not NULL,
 	comments		text		not NULL
 )
-;
+WITHOUT OIDS;
 create table STATS_os
 (
 	os			int		primary key,
@@ -285,7 +285,7 @@ create table STATS_os
 	image			char(64)	NULL,
 	category		char(32)	NULL
 )
-;
+WITHOUT OIDS;
 create table STATS_team
 (
 	team			numeric(10,0)	primary key,
@@ -300,7 +300,7 @@ create table STATS_team
 	showpassword		char(16)	NULL,
 	description		text		NULL
 )
-;
+WITHOUT OIDS;
 create table Team_Joins
 (
 	id			int		not NULL,
@@ -310,7 +310,7 @@ create table Team_Joins
 	leave_team_id		int		not NULL,
     primary key(id,join_date,team_id)
 )
-;
+WITHOUT OIDS;
 create table Team_Members
 (
 	PROJECT_ID		int2		not NULL,
@@ -326,13 +326,13 @@ create table Team_Members
 	OVERALL_RANK_PREVIOUS	int		not NULL,
     primary key(project_id,team_id,id)
 )
-;
+WITHOUT OIDS;
 create table Team_Members_Last_Update
 (
 	PROJECT_ID		smallint	primary key,
 	last_date		date	NULL
 )
-;
+WITHOUT OIDS;
 create table Team_Rank
 (
 	PROJECT_ID		int2		not NULL,
@@ -350,13 +350,13 @@ create table Team_Rank
 	MEMBERS_CURRENT		int		not NULL,
     primary key(project_id,team_id)
 )
-;
+WITHOUT OIDS;
 create table Team_Rank_Last_Update
 (
 	PROJECT_ID		smallint	primary key,
 	last_date		date	NULL
 )
-;
+WITHOUT OIDS;
 create table import_bcp
 (
 	TIME_STAMP		date	not NULL,
@@ -367,7 +367,7 @@ create table import_bcp
 	CPU			int		not NULL,
 	VER			int		not NULL
 )
-;
+WITHOUT OIDS;
 create table Email_Rank_Backup
 (
 	BACKUP_DATE		date	not NULL,
@@ -382,7 +382,7 @@ create table Email_Rank_Backup
 	overall_rank		int		not NULL,
 	overall_rank_previous	int		not NULL
 )
-;
+WITHOUT OIDS;
 create table Team_Members_Backup
 (
 	BACKUP_DATE		date	not NULL,
@@ -398,7 +398,7 @@ create table Team_Members_Backup
 	overall_rank		int		not NULL,
 	overall_rank_previous	int		not NULL
 )
-;
+WITHOUT OIDS;
 create table Team_Rank_Backup
 (
 	BACKUP_DATE		date	not NULL,
@@ -416,7 +416,7 @@ create table Team_Rank_Backup
 	members_overall		int		not NULL,
 	members_current		int		not NULL
 )
-;
+WITHOUT OIDS;
 create table csc_CACHE_em_RANK
 (
 	idx			numeric(10,0)	not null,
@@ -431,7 +431,7 @@ create table csc_CACHE_em_RANK
 	change			int		NULL,
 	listmode		int		NULL
 )
-;
+WITHOUT OIDS;
 create table csc_CACHE_em_YRANK
 (
 	idx			numeric(10,0)	not null,
@@ -446,7 +446,7 @@ create table csc_CACHE_em_YRANK
 	change			int		NULL,
 	listmode		int		NULL
 )
-;
+WITHOUT OIDS;
 create table csc_CACHE_tm_MEMBERS
 (
 	id			numeric(10,0)	not NULL,
@@ -455,7 +455,7 @@ create table csc_CACHE_tm_MEMBERS
 	last			date	not NULL,
 	blocks			numeric(10,0)	not NULL
 )
-;
+WITHOUT OIDS;
 create table csc_CACHE_tm_RANK
 (
 	Idx			numeric(10,0)	not null,
@@ -473,7 +473,7 @@ create table csc_CACHE_tm_RANK
 	ActiveMembers		int		NULL,
 	TotalMembers		int		NULL
 )
-;
+WITHOUT OIDS;
 create table csc_CACHE_tm_YRANK
 (
 	Idx			numeric(10,0)	not null,
@@ -491,14 +491,14 @@ create table csc_CACHE_tm_YRANK
 	ActiveMembers		int		NULL,
 	TotalMembers		int		NULL
 )
-;
+WITHOUT OIDS;
 create table csc_daytable_master
 (
 	timestamp		timestamp	not NULL,
 	email			char(64)	NULL,
 	size			int		NULL
 )
-;
+WITHOUT OIDS;
 create table csc_daytable_platform
 (
 	timestamp		timestamp	not NULL,
@@ -507,4 +507,4 @@ create table csc_daytable_platform
 	ver			smallint	NULL,
 	size			int		NULL
 )
-;
+WITHOUT OIDS;
