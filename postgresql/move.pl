@@ -38,10 +38,6 @@ my $counter = 0;
 while (my @a = $s->fetchrow) {
     $sth->execute(@a) or die;
     $counter++;
-
-    if($counter % 100 == 0) {
-        print STDERR "\r$counter";
-    }
 }
 
 print "\r$counter rows inserted, doing commit...";
