@@ -1,4 +1,4 @@
-# $Id: daytotals.sql,v 1.3 1999/12/18 21:43:17 decibel Exp $
+# $Id: daytotals.sql,v 1.4 1999/12/18 22:10:16 decibel Exp $
 
 use stats
 go
@@ -66,7 +66,8 @@ drop table #platblocks
 go
 
 
-
+# Note: this is a really inefficient way to do this, but it will catch any
+# duplicates in the dailies table, which is good! :)
 print "Creating dailies temp table"
 select date, sum(blocks) as dailies
 into #dailyblocks
