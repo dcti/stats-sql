@@ -1,4 +1,4 @@
--- $Id: tables.sql,v 1.15 2003/08/28 23:07:57 decibel Exp $
+-- $Id: tables.sql,v 1.16 2003/08/28 23:34:51 decibel Exp $
 -- Create all table, but without indexes or primary keys
 
 \set ON_ERROR_STOP 1
@@ -265,16 +265,16 @@ CREATE TABLE stats_team_blocked (
 
 CREATE TABLE stats_country (
     code character(2) NOT NULL,
-    country character(64) NOT NULL
+    country varchar(64) NOT NULL
 ) WITHOUT OIDS;
 
 
 
 CREATE TABLE stats_cpu (
     cpu integer NOT NULL,
-    name character(32) NOT NULL,
-    image character(64),
-    category character(32)
+    name varchar(32) NOT NULL,
+    image varchar(64),
+    category varchar(32)
 ) WITHOUT OIDS;
 
 
@@ -295,8 +295,8 @@ CREATE TABLE stats_dem_motivation (
 
 CREATE TABLE stats_nonprofit (
     nonprofit integer NOT NULL,
-    name character(64) NOT NULL,
-    url character(64) NOT NULL,
+    name varchar(64) NOT NULL,
+    url varchar(64) NOT NULL,
     comments text NOT NULL
 ) WITHOUT OIDS;
 
@@ -304,9 +304,9 @@ CREATE TABLE stats_nonprofit (
 
 CREATE TABLE stats_os (
     os integer NOT NULL,
-    name character(32) NOT NULL,
-    image character(64),
-    category character(32)
+    name varchar(32) NOT NULL,
+    image varchar(64),
+    category varchar(32)
 ) WITHOUT OIDS;
 
 
@@ -315,13 +315,13 @@ CREATE TABLE stats_team (
     team serial NOT NULL,
     listmode smallint NOT NULL,
     "password" character(8),
-    name character(64) NOT NULL,
-    url character(128),
-    contactname character(64),
-    contactemail character(64),
-    logo character(128),
-    showmembers character(3),
-    showpassword character(16),
+    name varchar(64) NOT NULL,
+    url varchar(128),
+    contactname varchar(64),
+    contactemail varchar(64),
+    logo varchar(128),
+    showmembers varchar(3),
+    showpassword varchar(16),
     description text
 ) WITHOUT OIDS;
 
@@ -531,7 +531,7 @@ CREATE TABLE csc_cache_tm_yrank (
 
 CREATE TABLE csc_daytable_master (
     "timestamp" timestamp without time zone NOT NULL,
-    email character(64),
+    email varchar(64),
     size integer
 ) WITHOUT OIDS;
 
