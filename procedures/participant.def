@@ -1,0 +1,32 @@
+use stats
+go
+
+\set procedure=p_participant_all
+
+if (object_id("$procedure") is not null)
+begin
+        print "Dropping procedure $procedure"
+        drop procedure $procedure
+end
+go
+
+\echo "Creating procedure $procedure"
+create procedure $procedure
+(	@id numeric(7,0) = 0		/* Participant ID to look up */
+)
+as
+	/* Error check */
+	if @id = 0
+	begin
+		raiserror 99999 "participant ID not specified"
+		return -5
+	end
+
+	select * from STATS_Participant where id = @id
+	return
+
+go
+
+grant execute on p_participant_all to public
+go
+
