@@ -1,0 +1,2 @@
+	-- $Id: STATS_team.extra,v 1.1 2000/03/06 07:39:59 decibel Exp $
+	exec sp_bindefault def0, "${table}.LISTMODE"

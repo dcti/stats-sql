@@ -1,0 +1,10 @@
+	-- $Id :$
+	exec sp_bindefault def0, "${table}.top_oparticipant"
+	exec sp_bindefault def0, "${table}.top_opblocks"
+	exec sp_bindefault def0, "${table}.top_yparticipant"
+	exec sp_bindefault def0, "${table}.top_ypblocks"
+	exec sp_bindefault def0, "${table}.teams"
+	exec sp_bindefault def0, "${table}.top_oteam"
+	exec sp_bindefault def0, "${table}.top_otblocks"
+	exec sp_bindefault def0, "${table}.top_yteam"
+	exec sp_bindefault def0, "${table}.top_ytblocks"
