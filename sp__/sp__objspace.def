@@ -1,6 +1,6 @@
 #!/usr/local/bin/sqsh -i
 
-\set procedure=sp__objspace
+\set procedure=sp__objspace2
 use sybsystemprocs
 go
 
@@ -15,7 +15,7 @@ create procedure $procedure
 (	@objname varchar(92) = null  /* the object we want size on */
 )
 as
-	-- $Id: sp__objspace.def,v 1.3 2001/12/21 21:17:45 decibel Exp $
+	-- $Id: sp__objspace.def,v 1.4 2002/06/10 05:26:13 decibel Exp $
 	/*
 	** Procname:  sp__objspace.sql
 	** Purpose :  Expanced version of sp_spaceused
@@ -242,10 +242,10 @@ as
   		select distinct
 			  name        = o.name
 			, no_rows     = sum(rowcnt(i.doampg))
-			, reserved    = ((sum(reserved_pgs(i.id,i.doampg)) + (sum(reserved_pgs(i.id,i.ioampg)))) * d.low) / 1024
-			, data        = (sum(data_pgs(i.id,i.doampg)) * d.low) / 1024
-			, index_size  = (sum(data_pgs(i.id,i.ioampg)) * d.low) / 1024
-			, unused      = (((sum(reserved_pgs(i.id,i.doampg)) + sum(reserved_pgs(i.id,i.ioampg))) - (sum(data_pgs(i.id,i.doampg)) + sum(data_pgs(i.id,i.ioampg)))) * d.low) / 1024
+			, reserved    = ((sum(reserved_pgs(i.id,i.doampg) / 1024) + (sum(reserved_pgs(i.id,i.ioampg) / 1024))) * d.low)
+			, data        = (sum(data_pgs(i.id,i.doampg) / 1024) * d.low)
+			, index_size  = (sum(data_pgs(i.id,i.ioampg) / 1024) * d.low)
+			, unused      = (((sum(reserved_pgs(i.id,i.doampg) / 1024) + sum(reserved_pgs(i.id,i.ioampg) / 1024)) - (sum(data_pgs(i.id,i.doampg) / 1024) + sum(data_pgs(i.id,i.ioampg) / 1024))) * d.low)
   		from
 			  sysindexes i
 			, master.dbo.spt_values d
@@ -341,7 +341,6 @@ as
 		                        	+ " Mb unallocated shared data-and-log space."
 			print @datal_message
 		end
-
 	end	/* enf-if no object specified */
 else
 begin
@@ -489,25 +488,25 @@ begin
   select 
      Table_Index = table_name,
      I = type,
-     "Rows"     = right(space(7)  + substring(convert(varchar(7),no_rows),1,7),7),
-     Reserved   = right(space(10) + substring(convert(varchar(10),reserved)
-			+ " " + "Kb",1,10),10),
-     Data       = right(space(10) + substring(convert(varchar(10),data) 
-			+ " " + "Kb",1,10),10),
-     Index_Size = right(space(10) + substring(convert(varchar(10),index_size) 
-			+ " " + "Kb",1,10),10),
+     "Rows"     = right(space(9)  + substring(convert(varchar(9),no_rows),1,9),9),
+     Reserved   = right(space(12) + substring(convert(varchar(12),reserved)
+			+ " " + "Kb",1,12),12),
+     Data       = right(space(12) + substring(convert(varchar(12),data) 
+			+ " " + "Kb",1,12),12),
+     Index_Size = right(space(12) + substring(convert(varchar(12),index_size) 
+			+ " " + "Kb",1,12),12),
      Unused     = right(space(10) + substring(convert(varchar(10),unused) 
 			+ " " + "Kb",1,10),10)
    from #tab_inf
 
   select 
     " Totals                       ",
-    Reserved   = right(space(10) + substring(convert(varchar(10),sum(reserved)) 
-                           + " " + "Kb",1,10),10),
-    Data       = right(space(10) + substring(convert(varchar(10),sum(data)) 
-                           + " " + "Kb",1,10),10),
-    Index_Size = right(space(10) + substring(convert(varchar(10),sum(index_size)) 
-                           + " " + "Kb",1,10),10),
+    Reserved   = right(space(12) + substring(convert(varchar(12),sum(reserved)) 
+                           + " " + "Kb",1,12),12),
+    Data       = right(space(12) + substring(convert(varchar(12),sum(data)) 
+                           + " " + "Kb",1,12),12),
+    Index_Size = right(space(12) + substring(convert(varchar(12),sum(index_size)) 
+                           + " " + "Kb",1,12),12),
     Unused     = right(space(10) + substring(convert(varchar(10),sum(unused)) 
                            + " " + "Kb",1,10),10)
   from #tab_inf
