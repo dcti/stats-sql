@@ -1,4 +1,4 @@
--- $Id: copy.sql,v 1.18 2003/04/14 21:48:45 decibel Exp $
+-- $Id: copy.sql,v 1.19 2003/08/30 15:50:45 decibel Exp $
 \set ON_ERROR_STOP 1
 
 select now() as start into temp start_time;
@@ -34,7 +34,8 @@ COPY Log_Info (PROJECT_ID, LOG_TIMESTAMP, WORK_UNITS, LINES, ERROR) FROM '/home/
 
 COPY STATS_Participant_Blocked FROM '/home/decibel/blower/STATS_Participant_Blocked.bcp' WITH DELIMITER '\t';
 
-COPY STATS_Participant_Friend FROM '/home/decibel/blower/STATS_Participant_Friend.bcp' WITH DELIMITER '\t';
+-- We build stats_participant_friend from scratch
+--COPY STATS_Participant_Friend FROM '/home/decibel/blower/STATS_Participant_Friend.bcp' WITH DELIMITER '\t';
 
 COPY STATS_Team_Blocked FROM '/home/decibel/blower/STATS_Team_Blocked.bcp' WITH DELIMITER '\t';
 
