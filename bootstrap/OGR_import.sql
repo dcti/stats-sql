@@ -1,7 +1,7 @@
 /*
-# $Id: OGR_import.sql,v 1.1 2000/06/17 22:21:27 decibel Exp $
+# $Id: OGR_import.sql,v 1.2 2000/06/25 21:57:41 decibel Exp $
 #
-# import_24
+# import_bcp
 #
 # This is the import table for the OGR-24 contest.  This script
 # will create the table.
@@ -15,11 +15,11 @@
 use stats
 go
 
-print 'Creating table import_24'
+print 'Creating table import_bcp'
 go
-create procedure temp_ddl_drop as if not exists (select * from import_24) drop table import_24
+create procedure temp_ddl_drop as if not exists (select * from import_bcp) drop table import_bcp
 go
-if object_id('import_24') is not NULL
+if object_id('import_bcp') is not NULL
 begin
 	exec temp_ddl_drop
 end
@@ -27,13 +27,11 @@ go
 drop procedure temp_ddl_drop
 go
 
-create table import_24
+create table import_bcp
 (
-	TIME_STAMP	datetime	not NULL,
-	IP		char(15)	,
+	TIME_STAMP	smalldatetime	not NULL,
 	EMAIL		varchar(64)	not NULL,
 	PROJECT_ID	tinyint		not NULL,
-	BLOCK_ID	char(24)	,
 	WORK_UNITS	numeric (20,0)	not NULL,
 	OS		int		not NULL,
 	CPU		int		not NULL,
@@ -41,5 +39,5 @@ create table import_24
 )
 go
 
-grant all on import_24 to public
+grant all on import_bcp to public
 go
