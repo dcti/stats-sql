@@ -1,14 +1,10 @@
 /*
-# $Id: OGR_dailies.sql,v 1.6 2000/06/26 16:44:57 bwilson Exp $
+# $Id: OGR_dailies.sql,v 1.7 2000/06/27 09:34:44 decibel Exp $
 #
 # This table holds summary statistics for each day of each project.
 #
 # In addition to creating the table, this script will attempt to
 # populate it with data from an existing Email_Contrib table.
-#
-# For safety's sake, this script does not include the appropriate
-# "drop table" command.  If the table already exists, you will have
-# to manually drop the table before this script will function.
 #
 */
 use stats
@@ -27,11 +23,13 @@ create table Daily_Summary
 	PROJECT_ID		tinyint		not NULL,
 	WORK_UNITS		numeric(20,0)	not NULL,
 	PARTICIPANTS		int		not NULL,
+	PARTICIPANTS_NEW	int		not NULL,
 	TOP_OPARTICIPANT	int		not NULL,
 	TOP_OPWORK		numeric(20,0)	not NULL,
 	TOP_YPARTICIPANT	int		not NULL,
 	TOP_YPWORK		numeric(20,0)	not NULL,
 	TEAMS			int		not NULL,
+	TEAMS_NEW		int		not NULL,
 	TOP_OTEAM		int		not NULL,
 	TOP_OTWORK		numeric(20,0)	not NULL,
 	TOP_YTEAM		int		not NULL,
@@ -42,15 +40,19 @@ go
 print 'Population routine'
 go
 insert Daily_Summary (DATE, PROJECT_ID, WORK_UNITS,
-		PARTICIPANTS, TOP_OPARTICIPANT, TOP_OPWORK, TOP_YPARTICIPANT, TOP_YPWORK,
-		TEAMS, TOP_OTEAM, TOP_OTWORK, TOP_YTEAM, TOP_YTWORK)
+		PARTICIPANTS, PARTICIPANTS_NEW, TOP_OPARTICIPANT, TOP_OPWORK, TOP_YPARTICIPANT, TOP_YPWORK,
+		TEAMS, TEAMS_NEW, TOP_OTEAM, TOP_OTWORK, TOP_YTEAM, TOP_YTWORK)
 	select DATE, PROJECT_ID, sum(WORK_UNITS),
 		count(distinct ID), 0, 0, 0, 0,
-  		0, 0, 0 ,0, 0
+  		0, 0, 0 ,0, 0, 0, 0
 	from Email_Contrib
 	group by DATE, PROJECT_ID
 	order by DATE, PROJECT_ID
 go
+
+/*
+#	Don't even think about trying to populate PARTICIPANTS_NEW and TEAMS_NEW in here....
+*/
 
 select DATE, PROJECT_ID, count(distinct TEAM_ID) as TEAMCOUNT
 	into #teamcounts
