@@ -1,0 +1,2 @@
+* Add DDL script to create defaults def0 and defspace
+
