@@ -1,0 +1,6 @@
+-- $Id: STATS_Participant.idx,v 1.1 2000/03/31 04:48:45 decibel Exp $
+	create unique clustered index iParticipantEMAIL on ${table}(EMAIL) 
+	alter table ${table} add constraint pk_Participant primary key nonclustered (id) 
+	create index iParticipantTEAM on ${table}(TEAM) 
+	create index iParticipantRETIRE_ID on ${table}(RETIRE_TO, ID) 
+	create index iEMAIL_ID on ${table}(EMAIL, ID)
