@@ -139,7 +139,7 @@ BEGIN
         --debug.f(''update_buckets deleting old buckets for rrd_id %'', v_rrd.rrd_id);
         RAISE LOG ''update_buckets deleting old buckets for rrd_id %'', v_rrd.rrd_id;
         -- Find out the most recent bucket we can delete
-        v_delete_end_time := max_end_time_to_delete(v_rrd.rrd_id);
+        v_delete_end_time := rrd.max_end_time_to_delete(v_rrd.rrd_id);
         -- Do the delete (won''t find any records if v_delete_end_time ended up NULL)
         /*
         debug.f(''update_buckets DELETE FROM rrd.bucket WHERE rrd_id = % AND end_time <= %''
