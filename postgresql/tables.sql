@@ -1,4 +1,4 @@
--- $Id: tables.sql,v 1.12 2003/04/14 15:11:48 decibel Exp $
+-- $Id: tables.sql,v 1.13 2003/05/27 16:40:46 decibel Exp $
 -- Create all table, but without indexes or primary keys
 
 \set ON_ERROR_STOP 1
@@ -311,8 +311,8 @@ CREATE TABLE stats_os (
 
 
 CREATE TABLE stats_team (
+    team serial NOT NULL,
     listmode smallint NOT NULL,
-    team int NOT NULL,
     "password" character(8),
     name character(64) NOT NULL,
     url character(128),
