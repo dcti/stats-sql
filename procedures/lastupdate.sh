@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Definitions
-version='$Id: lastupdate.sh,v 1.9 2002/10/06 22:53:01 decibel Exp $'
+version='$Id: lastupdate.sh,v 1.10 2002/10/07 15:12:12 decibel Exp $'
 sqlpath=lastupdate/
 deletescript=${sqlpath}delete.sql
 insertscript=${sqlpath}template
@@ -69,9 +69,9 @@ setupsql csc_t_y statproc.csc_CACHE_tm_yrank last
 setupsql csc_m csc_master date
 setupsql csc_p csc_platform date
 
-setupsql2 new_e Email_Rank LAST_DATE
-setupsql2 new_t Team_Rank LAST_DATE
+setupsql2 new_e Email_Rank_Last_Update LAST_DATE
+setupsql2 new_t Team_Rank_Last_Update LAST_DATE
 setupsql2 new_m Email_Contrib_Last_Update LAST_DATE
-setupsql2 new_p Platform_Contrib DATE
+setupsql2 new_p Platform_Contrib_Last_Update LAST_DATE
 
 [ -f ${sqlpath}depends ] && echo && cat ${sqlpath}depends
