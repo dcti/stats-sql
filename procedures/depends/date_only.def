@@ -1,7 +1,8 @@
--- $Id: date_only.def,v 1.3 2000/08/22 09:53:27 decibel Exp $
+-- $Id: date_only.def,v 1.4 2001/12/26 01:23:39 decibel Exp $
 
 \set procedure=sp__date_only
 
+-- a blank 'use' aborts the next transaction, so do this in two steps
 if ( "${1}" = "" )
 begin
 	print "Database not specified! Using 'sybsystemprocs' as default!"
