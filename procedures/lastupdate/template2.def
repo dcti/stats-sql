@@ -1,0 +1,27 @@
+-- $Id: template2.def,v 1.1 2000/09/03 08:08:57 decibel Exp $
+
+use ${1}
+go
+
+\set procedure=p_lastupdate_${2}
+
+\echo "Creating procedure $procedure, referencing table ${3}, field ${4}"
+
+create procedure $procedure (
+	@project_id tinyint = 0
+)
+as
+	/* NOTE!!!!
+	** You should not be calling this procedure directly, it should
+	** be called from 'lastupdate'.
+	*/
+
+	select max(${4}) as lastupdate
+	from ${3}
+	where PROJECT_ID = @project_id
+	
+	return
+go
+
+grant execute on $procedure to public
+go
