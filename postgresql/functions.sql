@@ -1,7 +1,39 @@
--- $Id: functions.sql,v 1.5 2003/04/22 21:28:03 decibel Exp $
+-- $Id: functions.sql,v 1.6 2003/04/25 19:36:23 decibel Exp $
 
 \set ON_ERROR_STOP 1
 
+-- Max rank
+CREATE OR REPLACE FUNCTION stats_get_max_rank_participant() RETURNS int
+    AS '
+    DECLARE
+        max_rank int;
+    BEGIN
+        SELECT max(id) INTO max_rank
+            FROM stats_participant
+            WHERE retire_to = 0 OR retire_to IS NULL
+        ;
+
+        RETURN max_rank;
+    END;
+    ' LANGUAGE 'plpgsql'
+    STABLE
+;
+CREATE OR REPLACE FUNCTION stats_get_max_rank_team() RETURNS int
+    AS '
+    DECLARE
+        max_rank int;
+    BEGIN
+        SELECT count(*) INTO max_rank
+            FROM stats_team
+        ;
+
+        RETURN max_rank;
+    END;
+    ' LANGUAGE 'plpgsql'
+    STABLE
+;
+
+-- Last update
 CREATE OR REPLACE FUNCTION stats_get_last_update(projects.project_id%TYPE, char) RETURNS date
     AS '
     DECLARE
