@@ -1,4 +1,4 @@
--- $Id: cluster.sql,v 1.11 2003/04/14 21:59:01 decibel Exp $
+-- $Id: cluster.sql,v 1.12 2003/04/15 18:04:37 decibel Exp $
 
 \set ON_ERROR_STOP 1
 
@@ -10,7 +10,7 @@ select '$RCSfile: cluster.sql,v $ start time: ' || start from start_time;
 CLUSTER CSC_master_pkey ON CSC_master;
 CLUSTER csc_platform_pkey ON CSC_platform;
 CLUSTER Daily_Summary_pkey ON Daily_Summary;
-CLUSTER email_contrib_last_update ON Email_Contrib_Last_Update;
+CLUSTER email_contrib_last_update_pkey ON Email_Contrib_Last_Update;
 CLUSTER Email_Contrib_Today_pkey ON Email_Contrib_Today;
 CLUSTER email_rank_last_update_pkey ON Email_Rank_Last_Update;
 CLUSTER log_info_pkey ON Log_Info;
@@ -32,8 +32,8 @@ CLUSTER team_members_pkey ON Team_Members;
 CLUSTER Team_Rank_pkey ON Team_Rank;
 CLUSTER rank ON csc_CACHE_em_RANK;
 CLUSTER csc_cache_em_yrank__rank ON csc_CACHE_em_YRANK;
-CLUSTER csc_cache_tm_rank__rank ON csc_CACHE_tm_RANK;
-CLUSTER csc_cache_tm_yrank__rank ON csc_CACHE_tm_YRANK;
+CLUSTER csc_cache_tm_rank__team ON csc_CACHE_tm_RANK;
+CLUSTER csc_cache_tm_yrank__team ON csc_CACHE_tm_YRANK;
 
 \t
 select '$RCSfile: cluster.sql,v $ stop time: ' || now() || ', duration: ' || age(now(),start) from start_time;
