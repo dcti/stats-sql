@@ -1,6 +1,6 @@
-#!/usr/bin/sqsh -i
+#!/usr/local/bin/sqsh -i
 #
-# $Id: email_rank_2.sql,v 1.1 2001/05/18 07:34:56 decibel Exp $
+# $Id: email_rank_2.sql,v 1.2 2001/12/29 08:32:08 decibel Exp $
 #
 # Phase 1 of repopulating Email_Rank for a project. After this script, you should
 # re-rank, then run email_rank_2.sql.

@@ -1,6 +1,6 @@
-#!/usr/bin/sqsh -i
+#!/usr/local/bin/sqsh -i
 #
-# $Id: work_summary.sql,v 1.11 2001/05/18 07:34:28 decibel Exp $
+# $Id: work_summary.sql,v 1.12 2001/12/29 08:32:08 decibel Exp $
 #
 # Creates a summary table containing all work for a project
 #

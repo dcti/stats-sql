@@ -1,6 +1,6 @@
-#!/usr/bin/sqsh -i
+#!/usr/local/bin/sqsh -i
 #
-# $Id: team_rank.sql,v 1.7 2001/05/18 07:34:28 decibel Exp $
+# $Id: team_rank.sql,v 1.8 2001/12/29 08:32:08 decibel Exp $
 #
 # Repopulates Team_Members for a project.
 # Notes:
