@@ -1,0 +1,104 @@
+#!/bin/sh
+
+# Definitions
+version='$Id: build,v 1.1 2000/03/31 07:07:52 decibel Exp $'
+template="template/"
+work="work/"
+
+# Misc variables
+debug="false"
+pct="10"
+sqshargs=""
+sourcedb="stats"
+destinationdb=""
+tables=""
+
+# Figure out where the template directory is
+if [ -d $template ]; then prefix="./"
+elif [ -d ../${template} ]; then prefix="../"
+elif [ -d ../../${template} ]; then prefix="../../"
+else
+	echo "Unable to find template directory '$template'!" > /dev/stderr
+	exit 1
+fi
+templatedir=${prefix}${template}
+workdir=${prefix}${work}
+
+# Make sure we have a work directory where we expect it to be
+if [ ! -d $workdir ]; then
+	echo "Creating work directory $workdir"
+	mkdir $workdir
+fi
+
+# Parse the cowmand-line arguments
+while [ x"$1" != x ]; do
+	case $1 in
+	    -p) shift
+		pct="$1"
+		shift
+		continue;;
+	-debug) debug="true"
+	    	shift
+		continue;;
+	    -o) shift
+		sqshoptions="$1"
+		shift
+		continue;;
+	    -v) echo $version
+		exit 0 ;;
+	    -?) cat << EOF
+Usage: build [options] destination_database tables
+Options:
+  -p		Percent (copies only this percent of the table, where applicable)
+  -debug	Debug (build the workfile, but don't attempt to run it)
+  -o "options"	Options for sqsh
+  -v		Print version information, then exit
+EOF
+		exit 0 ;;
+	     *) destinationdb="$1"
+		shift
+		tables="$@"
+		break ;;
+	esac
+done
+
+if [ x"$destinationdb" = x ]; then
+	echo "You must specify a destination database to use."
+	exit 1
+fi
+
+if [ x"$tables" = x ]; then
+	echo "You must specify at least one table to copy."
+	exit 1
+fi
+
+tables=`echo $tables | tr -s " " | tr "[:space:]" "\n" | cut -d"." -f1 | grep -v default | sort | uniq`
+
+# Thanks to linux's stupid idea that bash is a drop-in replacement for sh, we have to do this:
+if [ $debug != "true" ]; then
+	sqshoptions=`tcsh -c "echo ${sqshoptions}"`
+	echo "Using sqsh options: ${sqshoptions}"
+fi
+
+# Do the copy
+for table in $tables; do
+	# Build the sql file
+	workfile="${workdir}${table}.copy.sql"
+	sourcefile=${table}.copy
+
+	sed -e "s/@SOURCEDB_NAME@/${sourcedb}/g" -e "s/@DESTINATIONDB_NAME@/${destinationdb}/g" \
+		-e "s/@TABLE_NAME@/${table}/g" ${templatedir}copy.1 > $workfile
+	if [ -e $sourcefile ]; then
+		cat $sourcefile >> $workfile
+	else
+		cat $default.copy >> $workfile
+	fi
+	sed -e "s/@SOURCEDB_NAME@/${sourcedb}/g" -e "s/@DESTINATIONDB_NAME@/${destinationdb}/g" \
+		-e "s/@TABLE_NAME@/${table}/g" ${templatedir}copy.2 >> $workfile
+
+	if [ $debug != "true" ]; then
+		sqsh $sqshoptions -h -i $workfile $pct
+	else
+		echo "$workfile built"
+	fi
+done
