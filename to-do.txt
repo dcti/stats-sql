@@ -1,2 +1,14 @@
 * Add DDL script to create defaults def0 and defspace
 
+* Design structures for plans a, b, and c for stats v2:
+  a) One set of tables (master, import, CACHE) for each contest.  Minor corrections to current design
+  b) Single master and import for all contests, including a field to indicate contest.
+  c) One master and import table for fixed-unit, fixed-total-effort projects (RC5, CSC, DES), another for variable length
+contests (OGR)
+
+* Benchmark plans a, b, c to decide which plan to implement.
+
+* Develop stored procedure version of retire_to logic which is currently in a PHP script.
+
+* Clean up defaults created with automatic names and replace with shared, common value defaults
+
