@@ -49,7 +49,7 @@ from #RANKa
 group by PROJECT_ID, ID, TEAM_ID
 go
 
-create index iMain on Team_Members(TEAM_ID, ID)
+create index iMain on Team_Members(PROJECT_ID,TEAM_ID, ID)
 go
 
 grant select on Team_Members to public
