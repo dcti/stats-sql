@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Definitions
-version='$Id: lastupdate.sh,v 1.6 2000/09/03 08:08:57 decibel Exp $'
+version='$Id: lastupdate.sh,v 1.7 2001/12/26 01:24:02 decibel Exp $'
 sqlpath=lastupdate/
 deletescript=${sqlpath}delete.sql
 insertscript=${sqlpath}template
@@ -12,7 +12,7 @@ deleteonly=false
 sqshargs=""
 
 # Functions
-function setupsql () {
+setupsql () {
 	sqsh $sqshargs -i ${deletescript} $database $1
 	if [ "$deleteonly" != "true" ]; then
 		sqsh $sqshargs -i ${insertscript}.def $database $1 $2 $3
@@ -20,7 +20,7 @@ function setupsql () {
 	return
 }
 
-function setupsql2 () {
+setupsql2 () {
 	sqsh $sqshargs -i ${deletescript} $database $1
 	if [ "$deleteonly" != "true" ]; then
 		sqsh $sqshargs -i ${insertscript}2.def $database $1 $2 $3

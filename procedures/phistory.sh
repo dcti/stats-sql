@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Definitions
-version='$Id: phistory.sh,v 1.2 2000/10/18 11:12:51 decibel Exp $'
+version='$Id: phistory.sh,v 1.3 2001/12/26 01:24:05 decibel Exp $'
 sqlpath=phistory/
 deletescript=${sqlpath}delete.sql
 insertscript=${sqlpath}template
@@ -12,7 +12,7 @@ deleteonly=false
 sqshargs=""
 
 # Functions
-function setupsql () {
+setupsql () {
 	echo
 	echo "==> Adding $2 (args: $3)"
 	sqsh $sqshargs -i ${deletescript} $1 $2

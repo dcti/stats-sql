@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Definitions
-version='$Id: psearch.sh,v 1.5 2000/06/09 09:43:25 decibel Exp $'
+version='$Id: psearch.sh,v 1.6 2001/12/26 01:24:06 decibel Exp $'
 sqlpath=psearch/
 deletescript=${sqlpath}delete.sql
 insertscript=${sqlpath}template
@@ -12,7 +12,7 @@ deleteonly=false
 sqshargs=""
 
 # Functions
-function setupsql () {
+setupsql () {
 	echo
 	echo Adding $2
 	sqsh $sqshargs -i ${deletescript} $1 $2
@@ -22,7 +22,7 @@ function setupsql () {
 	return
 }
 
-function setupsql2 () {
+setupsql2 () {
 	echo
 	echo Adding $2
 	sqsh $sqshargs -i ${deletescript} $1 $2
