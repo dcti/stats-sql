@@ -1,0 +1,35 @@
+-- $Id: table.1,v 1.1 2000/02/20 19:05:49 decibel Exp $
+
+\set table=@TABLENAME@
+\set database=@DATABASENAME@
+
+create table #abort (abort tinyint)
+go
+
+if db_id('$database') is NULL
+begin
+	print "The database '%1!' does not exist!", $database
+	insert #abort select 1
+end
+go
+
+if NOT exists (select * from #abort)
+begin
+	if object_id('$table') is not NULL
+	begin
+		if exists (select * from $table)
+		begin
+			print 'Not deleting - data exists'
+			insert #abort select 1
+		end
+		else
+		begin
+			drop table $table
+		end
+	end
+end
+go
+
+if NOT exists (select * from #abort)
+begin
+print 'Creating table %1!', $table

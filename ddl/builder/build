@@ -1,0 +1,96 @@
+#!/bin/sh
+
+# Definitions
+version='$Id: build,v 1.1 2000/02/20 19:05:49 decibel Exp $'
+template="template/"
+work="work/"
+
+# Misc variables
+buildtable="true"
+buildindex="true"
+debug="fales"
+sqshargs=""
+database=""
+tables=""
+
+# Figure out where the template directory is
+if [ -d $template ]; then prefix="./"
+elif [ -d ../${template} ]; then prefix="../"
+elif [ -d ../../${template} ]; then prefix="../../"
+else
+	echo "Unable to find template directory '$template'!" > /dev/stderr
+	exit 1
+fi
+templatedir=${prefix}${template}
+workdir=${prefix}${work}
+
+# Make sure we have a work directory where we expect it to be
+if [ ! -d $workdir ]; then mkdir $workdir; fi
+
+# Parse the cowmand-line arguments
+while [ x"$1" != x ]; do
+	case $1 in
+	    -t) buildindex="false"
+		shift
+		continue;;
+	    -i) buildtable="false"
+		shift
+		continue;;
+	    -d) debug="true"
+	    	shift
+		continue;;
+	    -o) shift
+		sqshoptions="$1"
+		shift
+		continue;;
+	    -v) echo $version
+		exit 0 ;;
+	    -?) cat << EOF
+Usage: build [options] database tables
+Options:
+  -t		Only build the table (no indexes)
+  -i		Only build the indexes
+  -d		Debug (build the workfile, but don't attempt to run it)
+  -o "options"	Options for sqsh
+  -v		Print version information, then exit
+EOF
+		exit 0 ;;
+	     *) database="$1"
+		shift
+		tables="$@"
+		break ;;
+	esac
+done
+
+if [ x"$database" = x ]; then
+	echo "You must specify which database to use."
+	exit 1
+fi
+
+if [ x"$tables" = x ]; then
+	echo "You must specify at least one table to build."
+	exit 1
+fi
+
+tables=`echo $tables | sed -e 's/.def//g' -e 's/.idx//g' | tr -s " " | tr "[:space:]" "\n" | sort | uniq`
+
+for table in $tables; do
+	if [ $buildtable = true ]; then 
+		
+		# Make sure the  definition exists
+		if [ -f ${table}.def ]; then file=$table.def
+		else echo "No table definition for $table" > /dev/stderr; continue;
+		fi
+
+		# Build the work-file
+		workfile="${workdir}${table}.def.sql"
+		sed -e "s/@DATABASENAME@/${database}/g" -e "s/@TABLENAME@/${table}/g" \
+			${templatedir}table.1 > $workfile
+		cat ${table}.def >> $workfile
+		sed -e "s/@DATABASENAME@/${database}/g" -e "s/@TABLENAME@/${table}/g" \
+			${templatedir}table.2 >> $workfile
+		
+		if [ $debug != "true" ]; then sqsh $sqshoptions -i $workfile; fi
+
+	fi
+done
