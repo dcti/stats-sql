@@ -1,4 +1,4 @@
-# $Id: STATS_dailies.sql,v 1.3 1999/07/27 21:17:10 nugget Exp $
+# $Id: STATS_dailies.sql,v 1.4 1999/07/27 22:10:48 nugget Exp $
 #
 # STATS_dailies
 #
@@ -38,8 +38,9 @@ go
 # Population routine
 
 insert into
-  STATS_dailies (date,blocks,participants,teams,top_team,top_tblocks,
-	         top_participant, top_pblocks)
+  STATS_dailies (date,blocks,
+                 participants,top_oparticipant,top_opblocks,top_yparticipant,top_ypblocks,
+                 teams,top_oteam,top_otblocks,top_yteam,top_ytblocks)
   select distinct
     date,
     sum(blocks) as blocks,
