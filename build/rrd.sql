@@ -5,36 +5,210 @@
 SET client_encoding = 'SQL_ASCII';
 SET check_function_bodies = false;
 
-
-SET search_path = rrd, pg_catalog;
-
-ALTER TABLE ONLY rrd.bucket DROP CONSTRAINT rrd_bucket__rrd_id;
-ALTER TABLE ONLY rrd.rrd DROP CONSTRAINT rrd_rrd__rrd_parent;
-ALTER TABLE ONLY rrd.bucket DROP CONSTRAINT rrd_bucket__rrd_id__end_time;
-ALTER TABLE ONLY rrd.bucket DROP CONSTRAINT rrd_bucket__bucket_id;
-ALTER TABLE ONLY rrd.rrd DROP CONSTRAINT rrd_rrd__rrd_name;
-ALTER TABLE ONLY rrd.rrd DROP CONSTRAINT rrd_rrd__rrd_id;
-DROP FUNCTION rrd.add_buckets(integer, interval, timestamp with time zone, timestamp with time zone);
-DROP FUNCTION rrd.interval_time(timestamp with time zone, interval);
-DROP TABLE rrd.bucket;
-DROP TABLE rrd.rrd;
-DROP FUNCTION rrd.update_buckets();
-DROP FUNCTION rrd.max_end_time_to_delete(integer);
-SET SESSION AUTHORIZATION DEFAULT;
-
-DROP SCHEMA rrd;
 --
--- TOC entry 3 (OID 582083278)
+-- TOC entry 3 (OID 591228954)
 -- Name: rrd; Type: SCHEMA; Schema: -; Owner: 
 --
 
 CREATE SCHEMA rrd AUTHORIZATION pgsql;
 
 
+SET SESSION AUTHORIZATION 'pgsql';
+
+SET search_path = rrd, pg_catalog;
 
 --
--- TOC entry 11 (OID 588605676)
--- Name: max_end_time_to_delete(integer); Type: FUNCTION; Schema: rrd; Owner: decibel
+-- TOC entry 16 (OID 591228955)
+-- Name: update(); Type: FUNCTION; Schema: rrd; Owner: pgsql
+--
+
+CREATE FUNCTION "update"() RETURNS integer
+    AS '
+DECLARE
+    v_max_end_time rrd.bucket.end_time%TYPE;
+    v_last_end_time rrd.bucket.end_time%TYPE;
+    v_rows int;
+    v_total_rows int;
+    v_rrd rrd.rrd%ROWTYPE;
+    v_source rrd.source%ROWTYPE;
+    v_sql text;
+BEGIN
+    -- First, make sure all the buckets are up to date
+    v_total_rows := rrd.update_buckets();
+
+    -- Run through each source, updating each RRD for each source
+    FOR v_source IN SELECT * FROM rrd.source
+    LOOP
+    RAISE INFO ''rrd.update: source_name = %'', v_source.source_name;
+        -- Run through all the RRDs
+        FOR v_rrd IN SELECT * FROM rrd.rrd ORDER BY coalesce( parent, -1 ), rrd_id
+        LOOP
+            v_rows := 0;
+            SELECT max(end_time)
+                INTO v_max_end_time
+                FROM rrd.bucket
+                WHERE rrd_id = v_rrd.rrd_id
+            ;
+
+            IF v_max_end_time IS NOT NULL THEN
+                SELECT INTO v_last_end_time
+                        last_end_time
+                    FROM rrd.source_status
+                    WHERE rrd_id = v_rrd.rrd_id
+                        AND source_id = v_source.source_id
+                ;
+                IF NOT FOUND THEN
+                    v_last_end_time := ''1970-01-01''::timestamptz;
+                END IF;
+
+                IF v_last_end_time = v_max_end_time THEN
+                    RAISE INFO ''Nothing to do for % rrd_id %, skipping...'', v_source.source_name, v_rrd.rrd_id;
+                ELSE
+                    RAISE INFO ''Inserting into % for rrd_id % from % to %'', v_source.source_name, v_rrd.rrd_id, v_last_end_time, v_max_end_time;
+                    IF v_rrd.parent IS NULL THEN
+                        v_sql :=
+                        ''INSERT INTO '' || v_source.insert_table || ''
+                                            ( bucket_id, '' || v_source.group_clause || '', ''
+                                                        || v_source.insert_aggregate_fields || '' )
+                            SELECT a.rrd_bucket_id, '' || v_source.group_clause || ''
+                                        , '' || v_source.primary_aggregate || ''
+                                FROM
+                                    (SELECT b.bucket_id AS rrd_bucket_id, s.*
+                                        FROM rrd.bucket b
+                                            JOIN '' || v_source.source_table || '' s
+                                                ON (
+                                                    b.prev_end_time  < '' || quote_ident(v_source.source_timestamptz_field) || ''
+                                                    AND b.end_time >= '' || quote_ident(v_source.source_timestamptz_field) || '' )
+                                        WHERE b.rrd_id = '' || quote_literal(v_rrd.rrd_id) || ''
+                                            AND b.end_time <= '' || quote_literal(v_max_end_time) || ''
+                                            AND b.end_time > '' || quote_literal(v_last_end_time) || ''
+                                    ) a
+                                GROUP BY rrd_bucket_id, '' || v_source.group_clause || '';''
+                        ;
+                    ELSE
+                        -- Thanks to dealing with rrd.bucket twice, this query is a bit tricky. We want to look at rrd.bucket
+                        -- for the rrd we''re *updating*, so that we know what our ranges are. Then, we want to query the 
+                        -- parent data, and group it by the different ranges
+                        v_sql := 
+                        ''INSERT INTO '' || v_source.insert_table || ''
+                                            ( bucket_id, '' || v_source.group_clause || '', ''
+                                                        || v_source.insert_aggregate_fields || '' )
+                            SELECT a.rrd_bucket_id, '' || v_source.group_clause || ''
+                                        , '' || v_source.rrd_aggregate || ''
+                                FROM 
+                                    -- Wrap this whole thing in a sub-select to avoid field name conflicts
+                                    (
+                                    SELECT b.bucket_id AS rrd_bucket_id, r.*
+                                        FROM '' || v_source.insert_table || '' r
+                                            JOIN rrd.bucket p ON (r.bucket_id = p.bucket_id)
+                                            , rrd.bucket b
+
+                                        -- Get just the appropriate buckets for the RRD we are *updating*
+                                        WHERE b.rrd_id = '' || quote_literal(v_rrd.rrd_id) || ''
+                                            AND b.end_time <= '' || quote_literal(v_max_end_time) || ''
+                                            AND b.end_time > '' || quote_literal(v_last_end_time) || ''
+
+                                        -- Select the parent data but only for the appropriate time slots
+                                            AND p.rrd_id = '' || quote_literal(v_rrd.parent) || ''
+                                            AND p.end_time <= b.end_time
+                                            AND p.end_time > b.prev_end_time
+                                    ) a
+                                GROUP BY rrd_bucket_id, '' || v_source.group_clause || '';''
+                        ;
+                    END IF;
+                    RAISE DEBUG ''Executing query: %'', v_sql;
+                    EXECUTE v_sql;
+
+                    GET DIAGNOSTICS v_rows = ROW_COUNT;
+                    RAISE INFO ''% rows inserted'', v_rows;
+
+                    UPDATE rrd.source_status
+                        SET last_end_time = v_max_end_time
+                        WHERE rrd_id = v_rrd.rrd_id
+                            AND source_id = v_source.source_id
+                    ;
+                    IF NOT FOUND THEN
+                        INSERT INTO rrd.source_status( rrd_id, source_id, last_end_time )
+                            VALUES( v_rrd.rrd_id, v_source.source_id, v_max_end_time )
+                        ;
+                    END IF;
+                END IF;
+            END IF;
+
+            v_total_rows := v_total_rows + v_rows;
+            --debug.f(''alert_rrd %s rows added for rrd_id %s'', v_rows, v_rrd.rrd_id);
+        END LOOP;
+    END LOOP;
+
+    --debug.f(''alert_rrd exit'');
+    RETURN v_total_rows;
+END;
+'
+    LANGUAGE plpgsql;
+
+
+--
+-- TOC entry 4 (OID 591228957)
+-- Name: rrd; Type: TABLE; Schema: rrd; Owner: pgsql
+--
+
+CREATE TABLE rrd (
+    rrd_id integer NOT NULL,
+    keep_buckets integer NOT NULL,
+    parent integer,
+    parent_buckets integer,
+    time_per_bucket interval(0) NOT NULL,
+    rrd_name character varying(40) NOT NULL,
+    CONSTRAINT rrd_rrd__ck_parent_rrd_id CHECK (((parent IS NULL) OR (parent < rrd_id)))
+) WITHOUT OIDS;
+
+
+--
+-- TOC entry 5 (OID 591228960)
+-- Name: source_status; Type: TABLE; Schema: rrd; Owner: pgsql
+--
+
+CREATE TABLE source_status (
+    rrd_id integer NOT NULL,
+    source_id integer NOT NULL,
+    last_end_time timestamp with time zone NOT NULL
+) WITHOUT OIDS;
+
+
+--
+-- TOC entry 6 (OID 591228964)
+-- Name: bucket; Type: TABLE; Schema: rrd; Owner: pgsql
+--
+
+CREATE TABLE bucket (
+    bucket_id serial NOT NULL,
+    rrd_id integer NOT NULL,
+    end_time timestamp with time zone NOT NULL,
+    prev_end_time timestamp with time zone NOT NULL
+) WITHOUT OIDS;
+
+
+--
+-- TOC entry 7 (OID 591228969)
+-- Name: source; Type: TABLE; Schema: rrd; Owner: pgsql
+--
+
+CREATE TABLE source (
+    source_id serial NOT NULL,
+    source_name character varying(80),
+    insert_table text NOT NULL,
+    source_table text NOT NULL,
+    source_timestamptz_field text NOT NULL,
+    group_clause text NOT NULL,
+    insert_aggregate_fields text NOT NULL,
+    primary_aggregate text NOT NULL,
+    rrd_aggregate text NOT NULL
+) WITHOUT OIDS;
+
+
+--
+-- TOC entry 17 (OID 591228975)
+-- Name: max_end_time_to_delete(integer); Type: FUNCTION; Schema: rrd; Owner: pgsql
 --
 
 CREATE FUNCTION max_end_time_to_delete(integer) RETURNS timestamp with time zone
@@ -46,11 +220,18 @@ BEGIN
     -- For each rrd if no data has been captured yet we''ll get a null. If we do
     -- that means don''t delete anything.
 
-    -- Update maximum end_time that can be removed based on alert_rrd_status
+    -- Update maximum end_time that can be removed based on rrd_source_status
+    -- We don''t want to delete any buckets that have never been updated. We also
+    -- need to consider that there may be sources with no records in source_status, so
+    -- we do an outer join.
+    -- We also need to take our parent RRDs into account.
     SELECT INTO v_min_end_time
-            last_end_time
-        FROM page_log.rrd_status
-        WHERE rrd_id = p_rrd_id
+            min(last_end_time)
+        FROM rrd.source_status ss
+            JOIN rrd.rrd r ON (ss.rrd_id = r.rrd_id)
+            RIGHT JOIN rrd.source s ON (ss.source_id = s.source_id)
+        WHERE r.rrd_id = p_rrd_id
+            OR r.parent = p_rrd_id
     ;
 
     /*
@@ -59,49 +240,23 @@ BEGIN
                 , coalesce(v_min_end_time::text, ''NULL'')
         );
         */
-    RAISE DEBUG ''v_min_end_time for rrd % after page_log.rrd_status = %'', p_rrd_id, v_min_end_time;
-
-    -- If we get other RRDs in the system, their checks would go here:
-    /*
-    SELECT INTO v_min_end_time
-            min(last_end_time, v_min_end_time)
-        FROM blah_rrd
-        WHERE rrd_id = rrd.rrd_id
-    ;
-    */
-
-    -- Check on child RRDs
-    -- Handle this one differently in case there are no children
-    SELECT INTO v_min_end_time
-            min(
-                    (SELECT  coalesce( max(last_end_time), v_min_end_time )
-                        FROM page_log.rrd_status s
-                            JOIN rrd.rrd r ON (s.rrd_id = r.rrd_id)
-                        WHERE r.parent = p_rrd_id
-                    )
-                    , v_min_end_time
-                )
-    ;
-    
-    /*
-    SELECT debug.f(''update_rrd_buckets v_min_end_time for rrd_id %s children = %s''
-                , p_rrd_id::text
-                , CASE WHEN v_min_end_time::text IS NULL THEN ''NULL'' ELSE v_min_end_time END
-        );
-        */
-    RAISE DEBUG ''v_min_end_time for rrd % children = %'', p_rrd_id, v_min_end_time;
+    RAISE DEBUG ''v_min_end_time for rrd % after rrd.source_status = %'', p_rrd_id, v_min_end_time;
 
     -- Check on keep_buckets
-    SELECT INTO v_min_end_time
-            min(    (SELECT max(end_time)
-                                    FROM rrd.bucket
-                                    WHERE rrd_id = p_rrd_id
-                                ) - time_per_bucket * keep_buckets
-                            , v_min_end_time
-                        )
-        FROM rrd.rrd
-        WHERE rrd_id = p_rrd_id
-    ;
+    -- Find the last bucket created, and subtract keep buckets from it
+    -- No reason to run this if v_min_end_time is already null
+    IF v_min_end_time IS NOT NULL THEN
+        SELECT INTO v_min_end_time
+                min(    (SELECT max(end_time)
+                                        FROM rrd.bucket
+                                        WHERE rrd_id = p_rrd_id
+                                    ) - time_per_bucket * keep_buckets
+                                , v_min_end_time
+                            )
+            FROM rrd.rrd
+            WHERE rrd_id = p_rrd_id
+        ;
+    END IF;
     
     /*
     SELECT debug.f(''update_rrd_buckets v_min_end_time for rrd_id %s keep_buckets = %s''
@@ -118,8 +273,8 @@ END;
 
 
 --
--- TOC entry 13 (OID 588605677)
--- Name: update_buckets(); Type: FUNCTION; Schema: rrd; Owner: decibel
+-- TOC entry 18 (OID 591228976)
+-- Name: update_buckets(); Type: FUNCTION; Schema: rrd; Owner: pgsql
 --
 
 CREATE FUNCTION update_buckets() RETURNS integer
@@ -137,7 +292,7 @@ BEGIN
     FOR v_rrd IN SELECT * FROM rrd.rrd ORDER BY coalesce( parent, -1 ), rrd_id
     LOOP
         --debug.f(''update_buckets deleting old buckets for rrd_id %'', v_rrd.rrd_id);
-        RAISE LOG ''update_buckets deleting old buckets for rrd_id %'', v_rrd.rrd_id;
+        RAISE INFO ''update_buckets deleting old buckets for rrd_id %'', v_rrd.rrd_id;
         -- Find out the most recent bucket we can delete
         v_delete_end_time := rrd.max_end_time_to_delete(v_rrd.rrd_id);
         -- Do the delete (won''t find any records if v_delete_end_time ended up NULL)
@@ -156,7 +311,7 @@ BEGIN
         --debug.f(''update_buckets % buckets deleted for rrd_id %'', SQL%ROWCOUNT, v_rrd.rrd_id);
         -- Add new records
         --debug.f(''update_buckets adding new buckets for rrd_id %'', v_rrd.rrd_id);
-        RAISE LOG ''update_buckets: % buckets deleted, adding new buckets for rrd_id %'', v_rows, v_rrd.rrd_id;
+        RAISE INFO ''update_buckets: % buckets deleted, adding new buckets for rrd_id %'', v_rows, v_rrd.rrd_id;
         -- Is parent NULL? If so do things differently
         IF v_rrd.parent IS NULL THEN
             -- First, see if buckets already exist.
@@ -173,7 +328,7 @@ BEGIN
                             , v_rrd.rrd_id
                     );
                 */
-                RAISE DEBUG ''update_buckets no data found in rrd.bucket for top level rrd_id %, checking page_log.log'' , v_rrd.rrd_id ;
+                RAISE LOG ''update_buckets no data found in rrd.bucket for top level rrd_id %, checking page_log.log'' , v_rrd.rrd_id ;
                 SELECT min(log_time)
                     INTO v_first_end_time
                     FROM page_log.log
@@ -183,14 +338,14 @@ BEGIN
             -- Now, figure out what bucket we should start adding with
             IF v_first_end_time IS NULL THEN
                 --debug.f(''update_buckets no data found in page_log.log, skipping to next RRD'');
-                RAISE DEBUG ''update_buckets no data found in page_log.log, skipping to next RRD'';
+                RAISE LOG ''update_buckets no data found in page_log.log, skipping to next RRD'';
             ELSE
                 v_first_end_time := rrd.interval_time( v_first_end_time, v_rrd.time_per_bucket) + v_rrd.time_per_bucket;
                 --debug.f(''update_buckets new first_end_time is %'', v_first_end_time);
-                RAISE DEBUG ''update_buckets new first_end_time is %'', v_first_end_time;
-                v_rows :=  add_buckets(v_rrd.rrd_id, v_rrd.time_per_bucket, v_first_end_time, NULL);
+                RAISE LOG ''update_buckets new first_end_time is %'', v_first_end_time;
+                v_rows :=  rrd.add_buckets(v_rrd.rrd_id, v_rrd.time_per_bucket, v_first_end_time, NULL::timestamptz);
                 v_buckets_added = v_buckets_added + v_rows;
-                RAISE LOG ''update_buckets: % buckets added'', v_rows;
+                RAISE INFO ''update_buckets: % buckets added'', v_rows;
             END IF;
         ELSE
             -- Parent is NOT NULL.
@@ -211,7 +366,7 @@ BEGIN
                             , v_rrd.rrd_id, v_rrd.parent
                     );
                     */
-                RAISE DEBUG ''update_buckets no buckets found for rrd_id %, checking parent (%) for data'' , v_rrd.rrd_id, v_rrd.parent ;
+                RAISE LOG ''update_buckets no buckets found for rrd_id %, checking parent (%) for data'' , v_rrd.rrd_id, v_rrd.parent ;
                 SELECT min(end_time)
                     INTO v_first_end_time
                     FROM rrd.bucket
@@ -221,16 +376,16 @@ BEGIN
 
             IF v_first_end_time IS NULL THEN
                 --debug.f(''update_buckets no data available for rrd_id %, skipping to next RRD'', v_rrd.rrd_id);
-                RAISE DEBUG ''update_buckets no data available for rrd_id %, skipping to next RRD'', v_rrd.rrd_id;
+                RAISE LOG ''update_buckets no data available for rrd_id %, skipping to next RRD'', v_rrd.rrd_id;
             ELSE
                 SELECT max(end_time)
                     INTO v_last_end_time
                     FROM rrd.bucket
                     WHERE rrd_id = v_rrd.parent
                 ;
-                v_rows := add_buckets(v_rrd.rrd_id, v_rrd.time_per_bucket, v_first_end_time, v_last_end_time);
+                v_rows := rrd.add_buckets(v_rrd.rrd_id, v_rrd.time_per_bucket, v_first_end_time, v_last_end_time);
                 v_buckets_added = v_buckets_added + v_rows;
-                RAISE LOG ''update_buckets: % buckets added'', v_rows;
+                RAISE INFO ''update_buckets: % buckets added'', v_rows;
             END IF;
         END IF;
     END LOOP;
@@ -242,39 +397,8 @@ END;
 
 
 --
--- TOC entry 4 (OID 588605678)
--- Name: rrd; Type: TABLE; Schema: rrd; Owner: decibel
---
-
-CREATE TABLE rrd (
-    rrd_id integer NOT NULL,
-    minor_divisor integer NOT NULL,
-    major_divisor integer NOT NULL,
-    keep_buckets integer NOT NULL,
-    parent integer,
-    parent_buckets integer,
-    time_per_bucket interval(0) NOT NULL,
-    rrd_name character varying(40) NOT NULL,
-    CONSTRAINT rrd_rrd__ck_parent_rrd_id CHECK (((parent IS NULL) OR (parent < rrd_id)))
-) WITHOUT OIDS;
-
-
---
--- TOC entry 5 (OID 588605683)
--- Name: bucket; Type: TABLE; Schema: rrd; Owner: decibel
---
-
-CREATE TABLE bucket (
-    bucket_id serial NOT NULL,
-    rrd_id integer NOT NULL,
-    end_time timestamp with time zone NOT NULL,
-    prev_end_time timestamp with time zone NOT NULL
-) WITHOUT OIDS;
-
-
---
--- TOC entry 12 (OID 588605686)
--- Name: interval_time(timestamp with time zone, interval); Type: FUNCTION; Schema: rrd; Owner: decibel
+-- TOC entry 19 (OID 591228977)
+-- Name: interval_time(timestamp with time zone, interval); Type: FUNCTION; Schema: rrd; Owner: pgsql
 --
 
 CREATE FUNCTION interval_time(timestamp with time zone, interval) RETURNS timestamp with time zone
@@ -291,8 +415,8 @@ SELECT ''1970-01-01 GMT''::timestamptz +
 
 
 --
--- TOC entry 14 (OID 588605687)
--- Name: add_buckets(integer, interval, timestamp with time zone, timestamp with time zone); Type: FUNCTION; Schema: rrd; Owner: decibel
+-- TOC entry 20 (OID 591228978)
+-- Name: add_buckets(integer, interval, timestamp with time zone, timestamp with time zone); Type: FUNCTION; Schema: rrd; Owner: pgsql
 --
 
 CREATE FUNCTION add_buckets(integer, interval, timestamp with time zone, timestamp with time zone) RETURNS integer
@@ -345,24 +469,33 @@ END;
 
 
 --
--- Data for TOC entry 15 (OID 588605678)
--- Name: rrd; Type: TABLE DATA; Schema: rrd; Owner: decibel
+-- Data for TOC entry 21 (OID 591228957)
+-- Name: rrd; Type: TABLE DATA; Schema: rrd; Owner: pgsql
 --
 
-COPY rrd (rrd_id, minor_divisor, major_divisor, keep_buckets, parent, parent_buckets, time_per_bucket, rrd_name) FROM stdin;
-1	1	10	60	\N	\N	00:01:00	last hour
-2	1	10	60	1	4	00:04:00	last 4 hours
-3	1	10	60	2	3	00:12:00	last 12 hours
-4	2	12	48	1	30	00:30:00	last day
-5	2	8	56	4	6	03:00:00	last week
-6	6	42	168	4	8	04:00:00	last month
-7	30	30	365	6	6	1 day	last year
+COPY rrd (rrd_id, keep_buckets, parent, parent_buckets, time_per_bucket, rrd_name) FROM stdin;
+1	60	\N	\N	00:01:00	last hour
+2	60	1	4	00:04:00	last 4 hours
+3	60	2	3	00:12:00	last 12 hours
+4	48	1	30	00:30:00	last day
+5	56	4	6	03:00:00	last week
+6	168	4	8	04:00:00	last month
+7	365	6	6	1 day	last year
 \.
 
 
 --
--- Data for TOC entry 16 (OID 588605683)
--- Name: bucket; Type: TABLE DATA; Schema: rrd; Owner: decibel
+-- Data for TOC entry 22 (OID 591228960)
+-- Name: source_status; Type: TABLE DATA; Schema: rrd; Owner: pgsql
+--
+
+COPY source_status (rrd_id, source_id, last_end_time) FROM stdin;
+\.
+
+
+--
+-- Data for TOC entry 23 (OID 591228964)
+-- Name: bucket; Type: TABLE DATA; Schema: rrd; Owner: pgsql
 --
 
 COPY bucket (bucket_id, rrd_id, end_time, prev_end_time) FROM stdin;
@@ -370,8 +503,18 @@ COPY bucket (bucket_id, rrd_id, end_time, prev_end_time) FROM stdin;
 
 
 --
--- TOC entry 7 (OID 588605688)
--- Name: rrd_rrd__rrd_id; Type: CONSTRAINT; Schema: rrd; Owner: decibel
+-- Data for TOC entry 24 (OID 591228969)
+-- Name: source; Type: TABLE DATA; Schema: rrd; Owner: pgsql
+--
+
+COPY source (source_id, source_name, insert_table, source_table, source_timestamptz_field, group_clause, insert_aggregate_fields, primary_aggregate, rrd_aggregate) FROM stdin;
+1	page_log	page_log.rrd	page_log.log	log_time	page_id,project_id,other	hits,min_hits,max_hits,total_duration,min_duration,max_duration	count(*),count(*),count(*),sum(duration),min(duration),max(duration)	sum(hits),min(min_hits),max(max_hits),sum(total_duration),min(min_duration),max(max_duration)
+\.
+
+
+--
+-- TOC entry 10 (OID 591228979)
+-- Name: rrd_rrd__rrd_id; Type: CONSTRAINT; Schema: rrd; Owner: pgsql
 --
 
 ALTER TABLE ONLY rrd
@@ -379,17 +522,8 @@ ALTER TABLE ONLY rrd
 
 
 --
--- TOC entry 8 (OID 588605690)
--- Name: rrd_rrd__rrd_name; Type: CONSTRAINT; Schema: rrd; Owner: decibel
---
-
-ALTER TABLE ONLY rrd
-    ADD CONSTRAINT rrd_rrd__rrd_name UNIQUE (rrd_name);
-
-
---
--- TOC entry 9 (OID 588605692)
--- Name: rrd_bucket__bucket_id; Type: CONSTRAINT; Schema: rrd; Owner: decibel
+-- TOC entry 12 (OID 591228981)
+-- Name: rrd_bucket__bucket_id; Type: CONSTRAINT; Schema: rrd; Owner: pgsql
 --
 
 ALTER TABLE ONLY bucket
@@ -397,8 +531,35 @@ ALTER TABLE ONLY bucket
 
 
 --
--- TOC entry 10 (OID 588605694)
--- Name: rrd_bucket__rrd_id__end_time; Type: CONSTRAINT; Schema: rrd; Owner: decibel
+-- TOC entry 14 (OID 591228983)
+-- Name: rrd_source__source_id; Type: CONSTRAINT; Schema: rrd; Owner: pgsql
+--
+
+ALTER TABLE ONLY source
+    ADD CONSTRAINT rrd_source__source_id PRIMARY KEY (source_id);
+
+
+--
+-- TOC entry 15 (OID 591228985)
+-- Name: rrd_source__source_name; Type: CONSTRAINT; Schema: rrd; Owner: pgsql
+--
+
+ALTER TABLE ONLY source
+    ADD CONSTRAINT rrd_source__source_name UNIQUE (source_name);
+
+
+--
+-- TOC entry 11 (OID 591228987)
+-- Name: rrd_rrd__rrd_name; Type: CONSTRAINT; Schema: rrd; Owner: pgsql
+--
+
+ALTER TABLE ONLY rrd
+    ADD CONSTRAINT rrd_rrd__rrd_name UNIQUE (rrd_name);
+
+
+--
+-- TOC entry 13 (OID 591228989)
+-- Name: rrd_bucket__rrd_id__end_time; Type: CONSTRAINT; Schema: rrd; Owner: pgsql
 --
 
 ALTER TABLE ONLY bucket
@@ -406,8 +567,17 @@ ALTER TABLE ONLY bucket
 
 
 --
--- TOC entry 17 (OID 588605696)
--- Name: rrd_rrd__rrd_parent; Type: FK CONSTRAINT; Schema: rrd; Owner: decibel
+-- TOC entry 26 (OID 591228991)
+-- Name: rrd_source_status__rrd_id; Type: FK CONSTRAINT; Schema: rrd; Owner: pgsql
+--
+
+ALTER TABLE ONLY source_status
+    ADD CONSTRAINT rrd_source_status__rrd_id FOREIGN KEY (rrd_id) REFERENCES rrd(rrd_id);
+
+
+--
+-- TOC entry 25 (OID 591228995)
+-- Name: rrd_rrd__rrd_parent; Type: FK CONSTRAINT; Schema: rrd; Owner: pgsql
 --
 
 ALTER TABLE ONLY rrd
@@ -415,10 +585,27 @@ ALTER TABLE ONLY rrd
 
 
 --
--- TOC entry 18 (OID 588605700)
--- Name: rrd_bucket__rrd_id; Type: FK CONSTRAINT; Schema: rrd; Owner: decibel
+-- TOC entry 27 (OID 591228999)
+-- Name: rrd_bucket__rrd_id; Type: FK CONSTRAINT; Schema: rrd; Owner: pgsql
 --
 
 ALTER TABLE ONLY bucket
     ADD CONSTRAINT rrd_bucket__rrd_id FOREIGN KEY (rrd_id) REFERENCES rrd(rrd_id);
+
+
+--
+-- TOC entry 8 (OID 591228962)
+-- Name: bucket_bucket_id_seq; Type: SEQUENCE SET; Schema: rrd; Owner: pgsql
+--
+
+SELECT pg_catalog.setval('bucket_bucket_id_seq', 1, false);
+
+
+--
+-- TOC entry 9 (OID 591228967)
+-- Name: source_source_id_seq; Type: SEQUENCE SET; Schema: rrd; Owner: pgsql
+--
+
+SELECT pg_catalog.setval('source_source_id_seq', 1, false);
+
 
