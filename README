@@ -1,4 +1,4 @@
-# $Id: README,v 1.1 1999/07/11 18:28:54 nugget Exp $
+# $Id: README,v 1.1.1.1 1999/07/11 18:28:54 nugget Exp $
 #
 # The stats-sql directory contains all the bootstrap and maintenance sql
 # code used in creating/rebuilding/maintaining the stats database.
