@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Id: bcp.sh,v 1.9 2002/12/15 22:24:38 decibel Exp $
+# $Id: bcp.sh,v 1.10 2003/03/10 03:08:42 decibel Exp $
 
 table_list='tables.txt'
 savedir='./'
@@ -46,7 +46,7 @@ do
 			echo "${savedir}${table}.bcp* already exists, no BCP will be performed!"
 		else
 			echo "bcp'ing..."
-			${SYBASE}/bin/bcp ${table} out ${savedir}${table}.bcp -c -t, -S${server} -U${user} -P${password} | grep -v \
+			${SYBASE}/bin/bcp ${table} out ${savedir}${table}.bcp -c -S${server} -U${user} -P${password} | grep -v \
 				'1000 rows successfully bulk-copied'
 		fi
 	fi
