@@ -11,7 +11,7 @@ end
 go
 create procedure $procedure
 (
-	@name varchar(60)
+	@objname varchar(60)
 )
 as
 begin
@@ -27,15 +27,24 @@ begin
 		@colstatus tinyint
 	declare @typename sysname(30)
 
-	select @objid = object_id(@name)
+	select @objid = object_id(@objname)
 	
 	if @objid is null
 	begin
-		raiserror 99999 "Object '%1!' does not exist!", @name
+		raiserror 99999 "Object '%1!' does not exist!", @objname
 		return
 	end
 
-	select @outputline = 'create table ' + @name
+	if @objname like "%.%.%" and
+		substring(@objname, 1, charindex(".", @objname) - 1) != db_name()
+	begin
+		/* 17460, "Object must be in the current database." */
+		exec sp_getmessage 17460, @msg out
+		print @msg
+		return  (1)
+	end
+
+	SELECT @outputline = 'create table ' + object_name(@object_id)
 	print @outputline
 	print '('
 
