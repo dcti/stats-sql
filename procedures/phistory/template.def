@@ -1,14 +1,20 @@
--- $Id: template.def,v 1.1 2000/10/18 10:59:07 decibel Exp $
+-- $Id: template.def,v 1.2 2000/10/18 11:12:51 decibel Exp $
 
 \set procedure=p_phistory_${2}
 
 use ${1}
 go
 
+\echo "Creating table #phistory"
+create table #phistory
+(
+	DATE		smalldatetime,
+	WORK_UNITS	numeric(20,0)
+)
+go
+
 \echo "Creating procedure $procedure, using ORDER BY ${3}"
 create procedure $procedure
-(
-)
 as
 	select DATE, sum(WORK_UNITS) as WORK_UNITS
 	from #phistory

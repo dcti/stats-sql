@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Definitions
-version='$Id: phistory.sh,v 1.1 2000/10/18 10:59:07 decibel Exp $'
+version='$Id: phistory.sh,v 1.2 2000/10/18 11:12:51 decibel Exp $'
 sqlpath=phistory/
 deletescript=${sqlpath}delete.sql
 insertscript=${sqlpath}template
@@ -14,10 +14,10 @@ sqshargs=""
 # Functions
 function setupsql () {
 	echo
-	echo Adding $2
-	sqsh $sqshargs -i ${deletescript} $1 $2 $3
+	echo "==> Adding $2 (args: $3)"
+	sqsh $sqshargs -i ${deletescript} $1 $2
 	if [ "$deleteonly" != "true" ]; then
-		sqsh $sqshargs -i ${insertscript}.def $1 $2 $3
+		sqsh $sqshargs -i ${insertscript}.def $1 $2 "$3"
 	fi
 	return
 }
@@ -56,9 +56,9 @@ fi
 
 sqsh $sqshargs -i $main_proc $database
 
-setupsql $database "date_asc" "DATE"
-setupsql $database "date_desc" "DATE desc"
-setupsql $database "work_units_asc" "WORK_UNITS, DATE"
-setupsql $database "work_units_desc" "WORK_UNITS desc, DATE"
+setupsql $database 'date_asc' 'DATE'
+setupsql $database 'date_desc' 'DATE desc'
+setupsql $database 'work_units_asc' 'WORK_UNITS, DATE'
+setupsql $database 'work_units_desc' 'WORK_UNITS desc, DATE'
 
 [ -f ${sqlpath}depends ] && echo && cat ${sqlpath}depends

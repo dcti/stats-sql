@@ -1,4 +1,4 @@
--- $Id: main.def,v 1.2 2000/10/18 10:59:07 decibel Exp $
+-- $Id: main.def,v 1.3 2000/10/18 11:12:51 decibel Exp $
 
 \set procedure=p_phistory
 
@@ -101,7 +101,7 @@ as
 	deallocate cursor retires
 
 	declare @result int, @proc varchar(40)
-	select @proc = "${1}_" + @sort_field + "_" + @sort_direction
+	select @proc = "${1}_" + @sort_field + "_" + @sort_dir
 	if (object_id(@proc) is NULL)
 	begin
 		raiserror 99999 "Procedure '%1!' does not exist!", @proc
@@ -110,7 +110,7 @@ as
 	else
 	begin
 		exec @result = @proc
-		return @@result
+		return @result
 	end
 go
 
