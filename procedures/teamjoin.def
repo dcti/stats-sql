@@ -1,4 +1,4 @@
--- $Id: teamjoin.def,v 1.5 2000/08/22 09:53:27 decibel Exp $
+-- $Id: teamjoin.def,v 1.6 2000/08/22 11:17:39 decibel Exp $
 
 \set procedure=p_teamjoin
 
@@ -50,29 +50,49 @@ as
 		end
 
 	/* Grab just the date portion of today */
-	declare @date smalldatetime
-	select @date = getdate()
-	exec sp__date_only @date output
-
-	/* Update the entry for the previous team, if there is one */
-	update jcn_Team_Joins2
-		set LEAVE_DATE = @date,
-			LEAVE_TEAM_ID = @team
-	where ID = @id
-		and LEAVE_DATE = null
-	-- note that there should always be 1 or 0 records where LEAVE_DATE = null
-	-- for a given participant
+	declare @today smalldatetime
+	select @today = getdate()
+	exec sp__date_only @today output
+	declare @yesterday smalldatetime
+	select @yesterday = dateadd(day, -1, @today)
 
 	/* If the participant already has a record for today, nuke it */
 	delete jcn_Team_Joins2
 	where ID = @id
-		and JOIN_DATE = @date
+		and JOIN_DATE = @today
 
-	/* Insert a new record, unless we're joining 'team 0' */
-	if @team != 0
+	/* If the person was on the same team yesterday, update that record
+		instead of adding a new one */
+	if @team = (
+		select TEAM_ID
+		from jcn_team_joins2
+		where ID = @id
+			and ( LAST_DATE = null or LAST_DATE = @yesterday )
+	)
 	begin
-		insert jcn_Team_Joins2 (ID, TEAM_ID, JOIN_DATE)
-		values (@id, @team, @date)
+		update jcn_team_joins2
+			set LAST_DATE = null,
+				LEAVE_TEAM_ID = 0
+		where ID = @id
+			and ( LAST_DATE = null or LAST_DATE = @yesterday )
+	end
+	else
+	begin
+		/* Update the entry for the previous team, if there is one */
+		update jcn_Team_Joins2
+			set LAST_DATE = @yesterday,
+				LEAVE_TEAM_ID = @team
+		where ID = @id
+			and ( LAST_DATE = null or LAST_DATE = @yesterday )
+		-- note that there should always be 1 or 0 records where LAST_DATE = null
+		-- for a given participant
+	
+		/* Insert a new record, unless we're joining 'team 0' */
+		if @team != 0
+		begin
+			insert jcn_Team_Joins2 (ID, TEAM_ID, JOIN_DATE)
+			values (@id, @team, @today )
+		end
 	end
 
 	/* Update Stats_Participant (redundant info; should eventually go away) */
