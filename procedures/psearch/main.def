@@ -1,4 +1,4 @@
--- $Id: main.def,v 1.7 2000/06/09 09:43:25 decibel Exp $
+-- $Id: main.def,v 1.8 2000/10/23 11:40:42 decibel Exp $
 
 \set procedure=p_psearch
 
@@ -129,8 +129,6 @@ begin
 	exec @procname @project_id
 	set nocount on
 	set rowcount 0
-
-	drop table #psearch
 
         return
 end
