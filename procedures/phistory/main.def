@@ -1,4 +1,4 @@
--- $Id: main.def,v 1.9 2002/10/02 22:29:24 decibel Exp $
+-- $Id: main.def,v 1.10 2002/10/06 17:11:12 decibel Exp $
 
 \set procedure=p_phistory
 
@@ -82,7 +82,7 @@ as
 	end
 	else
 	begin
-		exec @result = @proc @scale
+		exec @result = @proc @project_id, @scale
 		return @result
 	end
 go
