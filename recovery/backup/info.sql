@@ -1,6 +1,6 @@
--- $Id: info.sql,v 1.2 2000/11/05 23:07:03 decibel Exp $
+-- $Id: info.sql,v 1.3 2000/11/09 10:13:06 decibel Exp $
 
-sp_help ${1}
+sp_help "${1}"
 go -f
-sp__objspace ${1}
+sp__objspace "${1}"
 go -f
