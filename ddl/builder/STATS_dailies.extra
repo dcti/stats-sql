@@ -1,4 +1,4 @@
-	-- $Id :$
+-- $Id :$
 	exec sp_bindefault def0, "${table}.top_oparticipant"
 	exec sp_bindefault def0, "${table}.top_opblocks"
 	exec sp_bindefault def0, "${table}.top_yparticipant"

@@ -1,4 +1,4 @@
-	-- $Id: STATS_participant.extra,v 1.1 2000/03/06 07:39:59 decibel Exp $
+-- $Id: STATS_participant.extra,v 1.2 2000/03/26 21:12:41 decibel Exp $
 	exec sp_bindefault defspace, "${table}.EMAIL"
 	exec sp_bindefault defspace, "${table}.PASSWORD"
 	exec sp_bindefault def0, "${table}.LISTMODE"

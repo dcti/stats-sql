@@ -1,4 +1,4 @@
-	-- $Id: STATS_participant.idx,v 1.1 2000/03/06 07:38:25 decibel Exp $
+-- $Id: STATS_participant.idx,v 1.2 2000/03/26 21:12:41 decibel Exp $
 	create unique clustered index iParticipantEMAIL on ${table}(EMAIL) 
 	alter table ${table} add constraint pk_Participant primary key nonclustered (id) 
 	create index iParticipantTEAM on ${table}(TEAM) 
