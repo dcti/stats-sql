@@ -1,4 +1,4 @@
-# $Id: escape_wildcards.def,v 1.4 2000/01/27 07:45:50 decibel Exp $
+# $Id: escape_wildcards.def,v 1.5 2000/01/27 09:14:58 decibel Exp $
 
 use stats
 go
