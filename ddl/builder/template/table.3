@@ -1,0 +1,6 @@
+-- $Id: table.3,v 1.1 2000/03/08 04:09:15 decibel Exp $
+
+if NOT exists (select * from #abort)
+begin
+print 'Doing post creation processing for table %1!', $table
+
