@@ -1,3 +1,5 @@
+$Id:
+
 * Add DDL script to create defaults def0 and defspace
 
 * Design structures for plans a, b, and c for stats v2:
@@ -10,5 +12,11 @@ contests (OGR)
 
 * Develop stored procedure version of retire_to logic which is currently in a PHP script.
 
+* Procedure-ize statproc mechanisms, change all objects to dbo-owned.  Eliminate the need to drop and recreate CACHE tables
+every night.
+
+* Change statproc so portions (imports, participant adds, team adds) can be performed hourly
+
 * Clean up defaults created with automatic names and replace with shared, common value defaults
 
+* Compile list of other stats which can be cheaply produced but with high appeal to participants
