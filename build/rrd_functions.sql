@@ -269,7 +269,7 @@ BEGIN
                 LOOP
                     IF v_sql IS NOT NULL THEN
                         v_sql := v_sql || ''
-                                UNION ALL'';;
+                                UNION ALL'';
                     END IF;
                     v_sql := v_sql || ''
                         SELECT min('' || quote_ident(v_source.source_timestamptz_field) || '') AS ts
