@@ -1,0 +1,7 @@
+#
+# $Id: moveconf.pm.default,v 1.1 2003/03/31 01:37:07 decibel Exp $
+
+package moveconf;
+
+$syb_user = "backup";
+$syb_password = "password";
