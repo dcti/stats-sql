@@ -1,4 +1,4 @@
--- $Id: p_retire.sql,v 1.2 2003/10/30 16:11:26 decibel Exp $
+-- $Id: p_retire.sql,v 1.3 2003/10/30 16:25:03 decibel Exp $
 
 /*
  Participant Retire
@@ -22,11 +22,12 @@
  8. select list of retired accounts to return from function. for each one, run p_teamjoin to update team status
 */
 
-CREATE OR REPLACE FUNCTION p_pretire(integer,integer) RETURNS setof RECORD
-    AS '
+CREATE OR REPLACE FUNCTION p_retire(integer, integer, boolean) RETURNS int
+AS '
     DECLARE
         participant_id ALIAS FOR $1;
         new_participant_id ALIAS FOR $2;
+        no_limit ALIAS FOR $3;
 
         i integer;
     BEGIN
@@ -35,11 +36,13 @@ CREATE OR REPLACE FUNCTION p_pretire(integer,integer) RETURNS setof RECORD
             RAISE EXCEPTION ''Participant IDs must be different.'';
     END IF; 
 
-    SELECT COUNT(*) INTO i
-        FROM stats_participant
-        WHERE retire_to IN (participant_id, new_participant_id);
-    IF i > 10 THEN
-        RAISE EXCEPTION ''You may only retire 10 accounts into any one account.'';
+    IF NOT no_limit THEN
+        SELECT COUNT(*) INTO i
+            FROM stats_participant
+            WHERE retire_to IN (participant_id, new_participant_id);
+        IF i > 10 THEN
+            RAISE EXCEPTION ''You may only retire 10 accounts into any one account.'';
+        END IF;
     END IF;
 
     SELECT retire_to INTO i
@@ -76,9 +79,19 @@ CREATE OR REPLACE FUNCTION p_pretire(integer,integer) RETURNS setof RECORD
 
     RETURN;
      END;
-    ' LANGUAGE 'plpgsql'
-    VOLATILE
+' LANGUAGE 'plpgsql'
+VOLATILE
 ;
 
-GRANT EXECUTE ON FUNCTION p_pretire(integer, integer) TO PUBLIC;
+CREATE OR REPLACE FUNCTION p_retire(integer, integer) RETURNS int
+AS '
+    BEGIN
+    RETURN p_pretire($1, $2, false);
+    END;
+' LANGUAGE 'plpgsql'
+VOLATILE
+;
+
+GRANT EXECUTE ON FUNCTION p_retire(integer, integer, boolean) TO PUBLIC;
+GRANT EXECUTE ON FUNCTION p_retire(integer, integer) TO PUBLIC;
 
