@@ -1,4 +1,4 @@
--- $Id: index.sql,v 1.9 2003/04/14 21:46:50 decibel Exp $
+-- $Id: index.sql,v 1.10 2003/04/14 21:48:45 decibel Exp $
 -- All indices.  Also includes creating primary keys, as creating
 -- the primary key implies creating an index
 
@@ -6,7 +6,7 @@
 
 select now() as start into temp start_time;
 \t
-select '$RCSName:  $ start time: ' || start from start_time;
+select '$RCSfile: index.sql,v $ start time: ' || start from start_time;
 \t
 
 CREATE UNIQUE INDEX csc_master__id_date ON csc_master USING btree (id, date);
@@ -292,4 +292,4 @@ ALTER TABLE ONLY team_rank_last_update
 
 
 \t
-select '$RCSName:  $ stop time: ' || now() || ', duration: ' || age(now(),start) from start_time;
+select '$RCSfile: index.sql,v $ stop time: ' || now() || ', duration: ' || age(now(),start) from start_time;

@@ -1,10 +1,10 @@
--- $Id: cluster.sql,v 1.9 2003/04/14 21:46:50 decibel Exp $
+-- $Id: cluster.sql,v 1.10 2003/04/14 21:48:45 decibel Exp $
 
 \set ON_ERROR_STOP 1
 
 select now() as start into temp start_time;
 \t
-select '$RCSName:  $ start time: ' || start from start_time;
+select '$RCSfile: cluster.sql,v $ start time: ' || start from start_time;
 \t
 
 CLUSTER CSC_master_pkey ON CSC_master;
@@ -36,4 +36,4 @@ CLUSTER rank ON csc_CACHE_tm_RANK;
 CLUSTER rank ON csc_CACHE_tm_YRANK;
 
 \t
-select '$RCSName:  $ stop time: ' || now() || ', duration: ' || age(now(),start) from start_time;
+select '$RCSfile: cluster.sql,v $ stop time: ' || now() || ', duration: ' || age(now(),start) from start_time;
