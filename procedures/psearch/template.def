@@ -1,0 +1,27 @@
+use stats
+go
+
+\set procedure=p_psearch_${1}
+
+\echo "Creating procedure $procedure"
+
+create procedure $procedure
+as
+begin
+	-- NOTE!!!!
+	-- You should not be calling this procedure directly, it should
+	-- be called from 'psearch'.
+
+	select p.id, p.listmode, p.contact_name, p.email, convert(varchar, r.first, 100) as 'first',
+			convert(varchar, r.last, 100) as 'last', r.blocks, r.days_working, r.overall_rate,
+			r.rank, r.change
+                from STATS_Participant p, statproc.${1}_CACHE_em_RANK r, #csc_psearch cp
+                where p.id = r.id
+                	and p.id = cp.id
+                	and r.id = cp.id
+		order by r.rank, p.email
+        return
+end
+go
+grant exec on $procedure to public
+go
