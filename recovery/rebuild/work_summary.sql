@@ -1,6 +1,6 @@
 #!/usr/bin/sqsh -i
 #
-# $Id: work_summary.sql,v 1.2 2000/10/08 07:47:35 decibel Exp $
+# $Id: work_summary.sql,v 1.3 2000/10/21 22:54:31 decibel Exp $
 #
 # Creates a summary table containing all work for a project
 #
@@ -43,10 +43,20 @@ update #WorkSummary1
 	where sp.ID = #WorkSummary1.ID
 		and sp.RETIRE_TO > 0
 
+create table WorkSummary_${1} (
+	ID int,
+	TEAM_ID int,
+	FIRST_DATE smalldatetime,
+	LAST_DATE smalldatetime,
+	WORK_TOTAL numeric(20,0),
+	WORK_TODAY numeric(20,0)
+)
+go
+
 print "Second pass summary"
-select ws.ID, ws.TEAM_ID, min(FIRST_DATE) as FIRST_DATE, max(LAST_DATE) as LAST_DATE,
+insert into WorkSummary_5 (ID, TEAM_ID, FIRST_DATE, LAST_DATE, WORK_TOTAL, WORK_TODAY)
+	select ws.ID, ws.TEAM_ID, min(FIRST_DATE) as FIRST_DATE, max(LAST_DATE) as LAST_DATE,
 		sum(WORK_TOTAL) as WORK_TOTAL, sum(WORK_TODAY) as WORK_TODAY
-	into WorkSummary_${1}
 	from #WorkSummary1 ws, Stats_Participant sp
 	where ws.ID = sp.ID
 		and sp.LISTMODE <= 9
