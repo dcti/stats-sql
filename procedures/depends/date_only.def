@@ -1,0 +1,36 @@
+-- $Id: date_only.def,v 1.1 2000/08/19 23:19:46 decibel Exp $
+
+\set procedure=p_date_only
+
+if ( "${1}" = "" )
+begin
+	print "Database not specified! Using 'stats' as default!"
+	use stats
+end
+else
+begin
+	use ${1}
+end
+go
+
+if (object_id("$procedure") is not null)
+begin
+        print "Dropping procedure $procedure"
+        drop procedure $procedure
+end
+go
+
+\echo "Creating procedure $procedure"
+create procedure $procedure
+(
+	@date smalldatetime output	/* Datetime to convert */
+)
+as
+	
+	select @date = datename(month, @date) + " " + datename(day, @date) + " " + datename(year, @date)
+
+go
+
+grant execute on $procedure to public
+go
+
