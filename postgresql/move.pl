@@ -16,11 +16,19 @@ $s->execute;
 my $n = $s->{NUM_OF_FIELDS};
 die "no result set" if $n == 0;
 
-my $ins = "INSERT INTO $ARGV[1] (" . join($s->{NAME}) . ") VALUES(";
+my $ins = "INSERT INTO $ARGV[1] ("
+foreach (0..$n-2) {
+    $ins .= "$s->{NAME}[$_], ";
+}
+$ins .= "$s->{NAME}[$n-1]";
+
+$ins .= ") VALUES(";
 foreach (0..$n-2) {
     $ins .= "?, ";
 }
 $ins .= "?)";
+
+print "Executing $ins\n";
 
 my $sth = $pgsql->prepare($ins);
 
