@@ -8,3 +8,4 @@ These error codes are to be returned by procedures.
 
 -100 and below are user-defined
 -100	No records found
+-101	Cursor returned an error
