@@ -1,6 +1,6 @@
 #!/usr/bin/sqsh -i
 #
-# $Id: team_rank.sql,v 1.1 2000/09/26 04:17:14 decibel Exp $
+# $Id: team_rank.sql,v 1.2 2000/09/27 19:21:05 decibel Exp $
 #
 # Repopulates Team_Members for a project.
 # Notes:
@@ -14,29 +14,39 @@ set flushmessage on
 go
 
 print "Deleting old data"
-delete Team_Members
+delete Team_Rank
 where PROJECT_ID = ${1}
 
 print "Inserting new data"
-insert into Team_Members (PROJECT_ID, ID, TEAM_ID, FIRST_DATE, LAST_DATE, WORK_TODAY, WORK_TOTAL,
-		DAY_RANK, DAY_RANK_PREVIOUS, OVERALL_RANK, OVERALL_RANK_PREVIOUS)
-	select ${1}, ws.ID, ws.TEAM_ID, min(ws.FIRST_DATE) as FIRST_DATE, max(ws.LAST_DATE) as LAST_DATE, 0, sum(ws.WORK_TOTAL),
-		@max_rank, @max_rank, @max_rank, @max_rank
-	from WorkSummary_${1} ws, STATS_Team st
-	where st.LISTMODE <= 9
-	group by TEAM_ID, ID
-
-print "Updating records with today's info"
 declare @stats_date smalldatetime
 select @stats_date = LAST_STATS_DATE
         from Projects
         where PROJECT_ID = ${1}
-update Team_Members
-	set WORK_TODAY = ec.WORK_UNITS
-	from Team_Contrib ec
-	where ec.ID = Team_Members.ID
-		and ec.TEAM_ID = Team_Members.ID
-		and Team_Members.PROJECT_ID = ${1}
-		and ec.PROJECT_ID = ${1}
-		and ec.DATE = @stats_date
+declare @max_rank int
+select @max_rank = count(*)+1 from STATS_Team
+
+insert into Team_Rank (PROJECT_ID, TEAM_ID, FIRST_DATE, LAST_DATE, WORK_TODAY, WORK_TOTAL,
+		DAY_RANK, DAY_RANK_PREVIOUS, OVERALL_RANK, OVERALL_RANK_PREVIOUS,
+		MEMBERS_TODAY, MEMBERS_OVERALL, MEMBERS_CURRENT)
+	select ${1}, tm.TEAM_ID, min(tm.FIRST_DATE) as FIRST_DATE, max(tm.LAST_DATE) as LAST_DATE, sum(tm.WORK_TODAY),
+			sum(tm.WORK_TOTAL),
+		@max_rank, @max_rank, @max_rank, @max_rank,
+		count(*), sum(sign(WORK_TODAY)), 0
+	from Team_Members tm
+	group by TEAM_ID
+
+print "Counting current team membership"
+select TEAM_ID, count(*) as MEMBERS
+	into #Team_Members_Current
+	from Team_Joins
+	where JOIN_DATE <= @stats_date
+		and isnull(LAST_DATE, @stats_date) >= @stats_date
+	group by TEAM_ID
+
+print "Updating MEMBERS_CURRENT"
+update Team_Rank
+	set MEMBERS_CURRENT = MEMBERS
+	from #Team_Members_Current tmc
+	where tmc.TEAM_ID = Team_Rank.TEAM_ID
+		and PROJECT_ID = ${1}
 go
