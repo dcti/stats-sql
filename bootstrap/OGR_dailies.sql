@@ -1,5 +1,5 @@
 /*
-# $Id: OGR_dailies.sql,v 1.4 2000/06/04 21:55:14 decibel Exp $
+# $Id: OGR_dailies.sql,v 1.5 2000/06/05 20:42:45 bwilson Exp $
 #
 # This table holds summary statistics for each day of each project.
 #
@@ -72,3 +72,4 @@ grant insert on Daily_Summary to statproc
 grant select on Daily_Summary to public
 go
 
+. 
