@@ -1,4 +1,4 @@
--- $Id: teamjoin.def,v 1.4 2000/08/22 09:35:30 decibel Exp $
+-- $Id: teamjoin.def,v 1.5 2000/08/22 09:53:27 decibel Exp $
 
 \set procedure=p_teamjoin
 
@@ -52,7 +52,7 @@ as
 	/* Grab just the date portion of today */
 	declare @date smalldatetime
 	select @date = getdate()
-	exec p_date_only @date output
+	exec sp__date_only @date output
 
 	/* Update the entry for the previous team, if there is one */
 	update jcn_Team_Joins2
