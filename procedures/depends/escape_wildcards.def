@@ -1,0 +1,63 @@
+# $Id: escape_wildcards.def,v 1.4 2000/01/27 07:45:50 decibel Exp $
+
+use stats
+go
+
+\set procedure=p_escape_wildcards
+if object_id("$procedure") is not NULL
+begin
+	print 'Deleting procedure %1!', $procedure
+	drop procedure $procedure
+end
+go
+
+print 'Creating procedure %1!', $procedure
+go
+
+create procedure $procedure
+	@textin		varchar(255),
+	@textout	varchar(255)	output
+as
+begin
+	set nocount on
+	set rowcount 0
+
+	declare	@pos int,
+		@nextchar varchar(5),
+		@out varchar(255)
+
+	select @pos = 1,
+		@out = NULL
+
+	while @pos <= datalength(@textin)
+	begin
+		select @nextchar = substring(@textin, @pos, 1)
+
+		if @nextchar = '%'
+		begin
+			select @nextchar = '[%]'
+		end
+		else if @nextchar = '_'
+		begin
+			select @nextchar = '[_]'
+		end
+
+		if @pos = 1
+		begin
+			select @out = @nextchar
+		end
+		else
+		begin
+			select @out = @out + @nextchar
+		end
+		select @pos = @pos + 1
+	end
+
+	select @textout = @out
+
+        return
+end
+go
+
+grant exec on $procedure to public
+go
