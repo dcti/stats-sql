@@ -1,4 +1,4 @@
-# $Id: RC5_64_master.sql,v 1.2 1999/09/29 17:56:41 nugget Exp $
+# $Id: RC5_64_master.sql,v 1.3 1999/09/29 20:50:34 nugget Exp $
 #
 # RC5_64_master
 #
@@ -25,11 +25,14 @@ create table RC5_64_master
 )
 go
 
+create clustered index team on RC5_64_master(team) with allow_dup_row
+go
+
+create index id on RC5_64_master(id) 
+go
+
+grant select on RC5_64_master to public
+go
+
 grant insert on RC5_64_master to statproc
-go
-
-create index id on RC5_64_master(id)
-go
-
-create index team on RC5_64_master(team)
 go
