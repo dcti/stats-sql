@@ -1,0 +1,27 @@
+-- $Id: accounts.sql,v 1.1 2003/11/19 21:53:59 decibel Exp $
+
+--
+-- Users
+--
+
+CREATE USER www WITH NOCREATEDB NOCREATEUSER;
+CREATE USER backup WITH NOCREATEDB NOCREATEUSER;
+CREATE USER statproc WITH NOCREATEDB NOCREATEUSER;
+
+
+--
+-- Groups
+--
+
+CREATE GROUP www WITH;
+ALTER GROUP www ADD USER www;
+
+CREATE GROUP processing WITH;
+ALTER GROUP processing ADD USER statproc;
+
+CREATE GROUP backup WITH;
+ALTER GROUP backup ADD USER backup;
+
+CREATE GROUP coder WITH;
+CREATE GROUP wheel WITH;
+CREATE GROUP helpdesk WITH;
