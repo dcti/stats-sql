@@ -1,6 +1,6 @@
 #!/usr/local/bin/sqsh -i
 #
-# $Id: team_rank_2.sql,v 1.3 2002/10/23 03:05:40 decibel Exp $
+# $Id: team_rank_2.sql,v 1.4 2002/10/23 05:03:32 decibel Exp $
 #
 # Repopulates Team_Members for a project.
 #
@@ -51,12 +51,12 @@ update Team_Rank set DAY_RANK_PREVIOUS = DAY_RANK,
 		WORK_TOTAL = WORK_TOTAL + s.WORK_TODAY,
 		MEMBERS_TODAY = s.MEMBERS_TODAY,
 		MEMBERS_OVERALL = s.MEMBERS_OVERALL,
-		MEMBERS_CURRENT = tmc.MEMBERS
+		MEMBERS_CURRENT = isnull(tmc.MEMBERS,0)
 	from #TeamSummary s, #Team_Members_Current tmc
 	where Team_Rank.PROJECT_ID = s.PROJECT_ID
-		and Team_Rank.PROJECT_ID = tmc.PROJECT_ID
-		and s.PROJECT_ID = tmc.PROJECT_ID
+		and Team_Rank.PROJECT_ID *= tmc.PROJECT_ID
+		and s.PROJECT_ID *= tmc.PROJECT_ID
 		and Team_Rank.TEAM_ID = s.TEAM_ID
-		and Team_Rank.TEAM_ID = tmc.TEAM_ID
-		and s.TEAM_ID = tmc.TEAM_ID
+		and Team_Rank.TEAM_ID *= tmc.TEAM_ID
+		and s.TEAM_ID *= tmc.TEAM_ID
 go
