@@ -1,4 +1,4 @@
-# $id$
+# $Id: log_database.sql,v 1.2 1999/10/10 22:18:31 decibel Exp $
 #
 # This script will create the log database and tables. The
 # log database devices must have already been created.
