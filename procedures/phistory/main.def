@@ -1,4 +1,4 @@
--- $Id: main.def,v 1.4 2000/10/18 22:13:18 decibel Exp $
+-- $Id: main.def,v 1.5 2000/10/18 22:14:28 decibel Exp $
 
 \set procedure=p_phistory
 
@@ -105,7 +105,7 @@ as
 		from Projects
 		where PROJECT_ID = @project_id
 
-	select @proc = "${1}_" + @sort_field + "_" + @sort_dir
+	select @proc = "$procedure_" + @sort_field + "_" + @sort_dir
 	if (object_id(@proc) is NULL)
 	begin
 		raiserror 99999 "Procedure '%1!' does not exist!", @proc
