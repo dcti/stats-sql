@@ -1,26 +1,26 @@
--- $Id: schema_dump.sql,v 1.1 2003/03/12 23:33:18 nerf Exp $
+-- $Id: schema_dump.sql,v 1.2 2003/04/05 00:14:13 decibel Exp $
 -- dump of stats database via pg_dump -s
 -- using this as template for table and index creation (table.sql and index.sql)
 
 CREATE TABLE csc_dailies (
     date date NOT NULL,
-    blocks numeric(10,0) NOT NULL,
+    blocks int NOT NULL,
     participants integer NOT NULL,
     top_oparticipant integer NOT NULL,
-    top_opblocks numeric(10,0) NOT NULL,
+    top_opblocks int NOT NULL,
     top_yparticipant integer NOT NULL,
-    top_ypblocks numeric(10,0) NOT NULL,
+    top_ypblocks int NOT NULL,
     teams integer NOT NULL,
     top_oteam integer NOT NULL,
-    top_otblocks numeric(10,0) NOT NULL,
+    top_otblocks int NOT NULL,
     top_yteam integer NOT NULL,
-    top_ytblocks numeric(10,0) NOT NULL
+    top_ytblocks int NOT NULL
 ) WITHOUT OIDS;
 
 
 
 CREATE TABLE csc_master (
-    id numeric(7,0) NOT NULL,
+    id int NOT NULL,
     team integer NOT NULL,
     date date NOT NULL,
     blocks numeric(7,0) NOT NULL
@@ -210,7 +210,7 @@ CREATE TABLE projects (
 
 
 CREATE TABLE stats_participant (
-    id numeric(10,0) NOT NULL,
+    id int NOT NULL,
     email character varying(64) NOT NULL,
     "password" character(8) NOT NULL,
     listmode smallint NOT NULL,
@@ -310,7 +310,7 @@ CREATE TABLE stats_os (
 
 
 CREATE TABLE stats_team (
-    team numeric(10,0) NOT NULL,
+    team int NOT NULL,
     listmode smallint NOT NULL,
     "password" character(8),
     name character(64) NOT NULL,
@@ -448,12 +448,12 @@ CREATE TABLE team_rank_backup (
 
 
 CREATE TABLE csc_cache_em_rank (
-    idx numeric(10,0) NOT NULL,
-    id numeric(10,0),
+    idx int NOT NULL,
+    id int,
     email character varying(64),
     first date,
     last date,
-    blocks numeric(10,0),
+    blocks int,
     days_working integer,
     overall_rate numeric(14,4),
     rank integer,
@@ -464,12 +464,12 @@ CREATE TABLE csc_cache_em_rank (
 
 
 CREATE TABLE csc_cache_em_yrank (
-    idx numeric(10,0) NOT NULL,
-    id numeric(10,0),
+    idx int NOT NULL,
+    id int,
     email character varying(64),
     first date,
     last date,
-    blocks numeric(10,0),
+    blocks int,
     days_working integer,
     overall_rate numeric(14,4),
     rank integer,
@@ -480,22 +480,22 @@ CREATE TABLE csc_cache_em_yrank (
 
 
 CREATE TABLE csc_cache_tm_members (
-    id numeric(10,0) NOT NULL,
+    id int NOT NULL,
     team integer NOT NULL,
     first date NOT NULL,
     last date NOT NULL,
-    blocks numeric(10,0) NOT NULL
+    blocks int NOT NULL
 ) WITHOUT OIDS;
 
 
 
 CREATE TABLE csc_cache_tm_rank (
-    idx numeric(10,0) NOT NULL,
-    team numeric(10,0),
+    idx int NOT NULL,
+    team int,
     name character varying(64),
     first date,
     last date,
-    blocks numeric(10,0),
+    blocks int,
     days_working integer,
     overall_rate numeric(14,4),
     rank integer,
@@ -509,12 +509,12 @@ CREATE TABLE csc_cache_tm_rank (
 
 
 CREATE TABLE csc_cache_tm_yrank (
-    idx numeric(10,0) NOT NULL,
-    team numeric(10,0),
+    idx int NOT NULL,
+    team int,
     name character varying(64),
     first date,
     last date,
-    blocks numeric(10,0),
+    blocks int,
     days_working integer,
     overall_rate numeric(14,4),
     rank integer,
