@@ -15,7 +15,7 @@ create procedure $procedure
 (	@objname varchar(92) = null  /* the object we want size on */
 )
 as
-	-- $Id: sp__objspace.def,v 1.5 2002/06/10 23:09:19 decibel Exp $
+	-- $Id: sp__objspace.def,v 1.6 2002/10/01 04:18:06 decibel Exp $
 	/*
 	** Procname:  sp__objspace.sql
 	** Purpose :  Expanced version of sp_spaceused
@@ -31,6 +31,7 @@ as
 	declare @unalloc         int         /* unallocated space of db in kb  */
 	declare @unalloc_datalog int         /* unallocated data and log space */
 	declare @reserved        int         /* reserved space                 */
+
 
 
 	/*
@@ -217,6 +218,10 @@ as
 		select name, type, usage, function, dev_sz_mb "size_mb", vdevno
 		from #db_devices
 
+		set flushmessage on
+		print ""
+		set flushmessage off
+
 
 		/*
 		** 4) Gather tbl allocation info
@@ -242,10 +247,18 @@ as
   		select distinct
 			  name        = o.name
 			, no_rows     = sum(rowcnt(i.doampg))
-			, reserved    = ((sum(reserved_pgs(i.id,i.doampg) / 1024) + (sum(reserved_pgs(i.id,i.ioampg) / 1024))) * d.low)
-			, data        = (sum(data_pgs(i.id,i.doampg) / 1024) * d.low)
-			, index_size  = (sum(data_pgs(i.id,i.ioampg) / 1024) * d.low)
-			, unused      = (((sum(reserved_pgs(i.id,i.doampg) / 1024) + sum(reserved_pgs(i.id,i.ioampg) / 1024)) - (sum(data_pgs(i.id,i.doampg) / 1024) + sum(data_pgs(i.id,i.ioampg) / 1024))) * d.low)
+			, reserved    = ( convert(numeric(20,0), sum(reserved_pgs(i.id,i.doampg)))  +
+		                          convert(numeric(20,0), sum(reserved_pgs(i.id,i.ioampg))) ) * d.low / 1024
+			, data        = ( convert(numeric(20,0), sum(data_pgs(i.id,i.doampg))) * d.low) / 1024
+			, index_size  = ( convert(numeric(20,0), sum(data_pgs(i.id,i.ioampg))) * d.low) / 1024
+			, unused      = (
+					  (
+					    ( convert(numeric(20,0), sum(reserved_pgs(i.id,i.doampg))) +
+					      convert(numeric(20,0), sum(reserved_pgs(i.id,i.ioampg))) ) -
+					    ( convert(numeric(20,0), sum(data_pgs(i.id,i.doampg)))     +
+					      convert(numeric(20,0), sum(data_pgs(i.id,i.ioampg)))     )
+					  ) * d.low
+					) / 1024
   		from
 			  sysindexes i
 			, master.dbo.spt_values d
@@ -293,7 +306,7 @@ as
   			and o.id               = i.id
  
   		/*
-		** 5a) Report:  All tbls' allocations
+		** 5a) Report:  Allocations for all tables
   		*/
   		select
 			  Table_Name = table_name
@@ -388,14 +401,18 @@ begin
     select name        = substring(i.name, 1, 20),
            type        = "D",
            no_rows        = rowcnt(i.doampg),
-           reserved    = ((reserved_pgs(i.id,i.doampg) +
-                           reserved_pgs(i.id,i.ioampg)) * d.low) / 1024,
-           data        = (data_pgs(i.id,i.doampg) * d.low) / 1024,
+           reserved    = ( ( convert(numeric(20,0), reserved_pgs(i.id,i.doampg)) +
+                             convert(numeric(20,0), reserved_pgs(i.id,i.ioampg)) ) * d.low) / 1024,
+           data        = (convert(numeric(20,0), data_pgs(i.id,i.doampg)) * d.low) / 1024,
            index_size  = 0,
-           unused      = (((reserved_pgs(i.id,i.doampg)  +
-                            reserved_pgs(i.id,i.ioampg)) -
-                           (data_pgs(i.id,i.doampg)      +
-                            data_pgs(i.id,i.ioampg)))    * d.low) / 1024
+           unused      = (
+	                   (
+			     ( convert(numeric(20,0), reserved_pgs(i.id,i.doampg)) +
+                               convert(numeric(20,0), reserved_pgs(i.id,i.ioampg)) ) -
+                             ( convert(numeric(20,0), data_pgs(i.id,i.doampg))     +
+                               convert(numeric(20,0), data_pgs(i.id,i.ioampg))     )
+			    ) * d.low
+			  ) / 1024
     from sysindexes i, master.dbo.spt_values d,  sysobjects o
     where i.indid             = 0
       and d.number            = 1
@@ -411,14 +428,18 @@ begin
     select table_name  =  substring(i.name, 1, 20) ,
            type        = "C",
            no_rows        = rowcnt(i.doampg),
-           reserved    = ((reserved_pgs(i.id,i.doampg) +
-                           reserved_pgs(i.id,i.ioampg)) * d.low) / 1024,
-           data        = (data_pgs(i.id,i.doampg) * d.low) / 1024,
-           index_size  = (data_pgs(i.id,i.ioampg) * d.low) / 1024,
-           unused      = (((reserved_pgs(i.id,i.doampg)  +
-                            reserved_pgs(i.id,i.ioampg)) -
-                           (data_pgs(i.id,i.doampg)      +
-                            data_pgs(i.id,i.ioampg)))    * d.low) / 1024
+           reserved    = ( ( convert(numeric(20,0), reserved_pgs(i.id,i.doampg)) +
+                             convert(numeric(20,0), reserved_pgs(i.id,i.ioampg)) ) * d.low) / 1024,
+           data        = (convert(numeric(20,0), data_pgs(i.id,i.doampg)) * d.low) / 1024,
+           index_size  = (convert(numeric(20,0), data_pgs(i.id,i.ioampg)) * d.low) / 1024,
+           unused      = (
+	                   (
+			     ( convert(numeric(20,0), reserved_pgs(i.id,i.doampg)) +
+                               convert(numeric(20,0), reserved_pgs(i.id,i.ioampg)) ) -
+                             ( convert(numeric(20,0), data_pgs(i.id,i.doampg))     +
+                               convert(numeric(20,0), data_pgs(i.id,i.ioampg))     )
+			   ) * d.low
+			 ) / 1024
     from sysobjects o, sysindexes i, master.dbo.spt_values d
     where i.indid  = 1
       and d.number = 1
