@@ -22,6 +22,9 @@ as
 	return @rank
 go
 
+grant execute on rank_rc5_64_e_o_rank to public
+go
+
 
 drop procedure rank_rc5_64_e_y_rank
 go
@@ -42,6 +45,9 @@ as
 	where id = @id
 	
 	return @rank
+go
+
+grant execute on rank_rc5_64_e_y_rank to public
 go
 
 
@@ -66,6 +72,9 @@ as
 	return @rank
 go
 
+grant execute on rank_rc5_64_t_o_rank to public
+go
+
 
 drop procedure rank_rc5_64_t_y_rank
 go
@@ -87,3 +96,7 @@ as
 	
 	return @rank
 go
+
+grant execute on rank_rc5_64_t_y_rank to public
+go
+

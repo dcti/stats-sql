@@ -65,3 +65,7 @@ begin
 	return @rnk
 end
 go
+
+grant execute on rank to public
+go
+
