@@ -17,6 +17,7 @@ as
 begin
 	set nocount on
 
+	declare @msg varchar(250)
 	declare @objid int
 	declare @outputline varchar(255), @work varchar(255)
 	declare @colname sysname(30),
@@ -44,7 +45,7 @@ begin
 		return  (1)
 	end
 
-	SELECT @outputline = 'create table ' + object_name(@object_id)
+	SELECT @outputline = 'create table ' + object_name(@objid)
 	print @outputline
 	print '('
 
