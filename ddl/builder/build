@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Definitions
-version='$Id: build,v 1.1 2000/02/20 19:05:49 decibel Exp $'
+version='$Id: build,v 1.2 2000/02/26 23:22:48 decibel Exp $'
 template="template/"
 work="work/"
 
@@ -68,13 +68,14 @@ if [ x"$database" = x ]; then
 fi
 
 if [ x"$tables" = x ]; then
-	echo "You must specify at least one table to build."
+	echo "You must specify at least one table or index to build."
 	exit 1
 fi
 
 tables=`echo $tables | sed -e 's/.def//g' -e 's/.idx//g' | tr -s " " | tr "[:space:]" "\n" | sort | uniq`
 
 for table in $tables; do
+	# Build the table
 	if [ $buildtable = true ]; then 
 		
 		# Make sure the  definition exists
@@ -93,4 +94,26 @@ for table in $tables; do
 		if [ $debug != "true" ]; then sqsh $sqshoptions -i $workfile; fi
 
 	fi
+
+	# Build the indexes
+	if [ $buildindex = true ]; then 
+		
+		# Make sure the index definition exists
+		index=$table
+		if [ -f ${index}.idx ]; then file=$index.idx
+		else echo "No index definition for $index" > /dev/stderr; continue;
+		fi
+
+		# Build the work-file
+		workfile="${workdir}${index}.idx.sql"
+		sed -e "s/@DATABASENAME@/${database}/g" -e "s/@TABLENAME@/${index}/g" \
+			${templatedir}index.1 > $workfile
+		cat ${index}.idx >> $workfile
+		sed -e "s/@DATABASENAME@/${database}/g" -e "s/@TABLENAME@/${index}/g" \
+			${templatedir}index.2 >> $workfile
+		
+		if [ $debug != "true" ]; then sqsh $sqshoptions -i $workfile; fi
+
+	fi
+
 done
