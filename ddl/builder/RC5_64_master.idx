@@ -1,4 +1,0 @@
--- $Id: RC5_64_master.idx,v 1.1 2000/04/04 04:13:10 decibel Exp $
-	create unique clustered index pk_${table} on ${table}(id, date)
-	create index team_date on ${table}(team, date)
-	create index date on ${table}(date)

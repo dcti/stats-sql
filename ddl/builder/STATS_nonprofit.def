@@ -1,9 +1,0 @@
--- $Id: STATS_nonprofit.def,v 1.2 2000/03/26 21:12:41 decibel Exp $
-	create table ${table}
-	(
-		nonprofit		int		not NULL,
-		name			char(64)	not NULL,
-		url			char(64)	not NULL,
-		comments		text		not NULL	
-	)
-	

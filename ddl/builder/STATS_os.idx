@@ -1,2 +1,0 @@
--- $Id: STATS_os.idx,v 1.3 2000/03/26 21:12:41 decibel Exp $
-	create unique clustered index os on ${table}(os)

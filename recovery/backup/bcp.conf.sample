@@ -1,4 +1,4 @@
-# $Id: bcp.conf.sample,v 1.3 2002/12/15 22:25:04 decibel Exp $
+# $Id: bcp.conf.sample,v 1.4 2002/12/25 23:17:02 decibel Exp $
 #
 # Configuration for bcp.sh
 #
@@ -10,4 +10,4 @@ user=backup_username		#Username to use to login to sybase
 password=backup_user_password	#Password
 
 SYBASE='/usr/local/sybase'	#Proper setting for $SYBASE environment file
-savedir='~/blower/'		#Directory to save files to
+savedir="$HOME~/blower/"	#Directory to save files to

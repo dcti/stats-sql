@@ -1,2 +1,0 @@
--- $Id: RC5_64_master.extra,v 1.1 2000/04/04 04:13:10 decibel Exp $
-	exec sp_bindefault def0, "${table}.team"

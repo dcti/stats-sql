@@ -1,9 +1,0 @@
--- $Id: RC5_64_platform.def,v 1.1 2000/04/04 04:13:10 decibel Exp $
-	create table ${table}
-	(
-		cpu			int		not NULL,
-		os			int		not NULL,
-		ver			int		not NULL,
-		date			smalldatetime	not NULL,
-		blocks			numeric(9, 0)	not NULL
-	)

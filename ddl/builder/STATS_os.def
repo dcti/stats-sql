@@ -1,8 +1,0 @@
--- $Id: STATS_os.def,v 1.3 2000/03/26 21:12:41 decibel Exp $
-	create table ${table}
-	(
-		os			int		not NULL,
-		name			char(32)	not NULL,
-		image			char(64)	NULL,
-		category		char(32)	NULL
-	)

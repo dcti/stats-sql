@@ -1,8 +1,0 @@
--- $Id: RC5_64_master.def,v 1.1 2000/04/04 04:13:10 decibel Exp $
-	create table ${table}
-	(
-		id			int		not NULL,
-		team			int		not NULL,
-		date			smalldatetime	not NULL,
-		blocks			numeric(7, 0)	not NULL
-	)
