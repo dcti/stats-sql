@@ -1,6 +1,6 @@
 #!/usr/bin/sqsh -i
 #
-# $Id: team_members.sql,v 1.2 2000/09/27 07:13:40 decibel Exp $
+# $Id: team_members.sql,v 1.3 2000/10/21 22:51:07 decibel Exp $
 #
 # Repopulates Team_Members for a project.
 # Notes:
@@ -23,7 +23,8 @@ insert into Team_Members (PROJECT_ID, ID, TEAM_ID, FIRST_DATE, LAST_DATE, WORK_T
 	select ${1}, ws.ID, ws.TEAM_ID, min(ws.FIRST_DATE) as FIRST_DATE, max(ws.LAST_DATE) as LAST_DATE, 0, sum(ws.WORK_TOTAL),
 		0, 0, 0, 0
 	from WorkSummary_${1} ws, STATS_Team st
-	where st.LISTMODE <= 9
+	where st.team = ws.TEAM_ID
+		and st.LISTMODE <= 9
 	group by TEAM_ID, ID
 
 print "Updating records with today's info"
@@ -33,7 +34,7 @@ select @stats_date = LAST_STATS_DATE
         where PROJECT_ID = ${1}
 update Team_Members
 	set WORK_TODAY = ec.WORK_UNITS
-	from Team_Contrib ec
+	from Email_Contrib ec
 	where ec.ID = Team_Members.ID
 		and ec.TEAM_ID = Team_Members.ID
 		and Team_Members.PROJECT_ID = ${1}
