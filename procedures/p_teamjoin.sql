@@ -1,4 +1,4 @@
--- $Id: p_teamjoin.sql,v 1.1 2003/10/22 03:22:46 thejet Exp $
+-- $Id: p_teamjoin.sql,v 1.2 2003/10/22 03:58:52 thejet Exp $
 
 \set ON_ERROR_STOP 1
 
@@ -8,61 +8,59 @@ CREATE OR REPLACE FUNCTION p_teamjoin(integer, integer) RETURNS void
     DECLARE
         today date := CURRENT_DATE;
         yesterday date := CURRENT_DATE -1; 
+        tempvar integer;
         participant_id ALIAS FOR $1;
-        team_id ALIAS FOR $2;
+        new_team_id ALIAS FOR $2;
     BEGIN
 	/* Error checking */
 	IF participant_id = 0 THEN
-            RAISE EXCEPTION ''0 is an invalid participant id''
+            RAISE EXCEPTION ''0 is an invalid participant id'';
         END IF;
 
-	IF team_id IS NULL THEN
-            RAISE EXCEPTION ''No team specified''
+	IF new_team_id IS NULL THEN
+            RAISE EXCEPTION ''No team specified'';
 	END IF;
 
-	IF team_id != 0 THEN
-            PERFORM SELECT team FROM stats_team WHERE team = team_id;
+	IF new_team_id != 0 THEN
+            SELECT team INTO tempvar FROM stats_team WHERE team = new_team_id;
             IF NOT FOUND THEN
-                RAISE EXCEPTION ''Invalid Team Specified''
+                RAISE EXCEPTION ''Invalid Team Specified'';
             END IF;
         END IF;
 
-        /* Start the transaction */
-        BEGIN WORK;
-
 	/* If the participant already has a record for today, nuke it */
-	PERFORM DELETE team_joins
+	DELETE FROM team_joins
             WHERE id = participant_id 
 	        AND join_date = today;
 
 	/* If the person was on the same team yesterday, update that record
 		instead of adding a new one */
-        PERFORM SELECT * FROM team_joins WHERE id = participant_id
-                    AND (last_date IS NULL OR last_date = yesterday);
+        SELECT team_id INTO tempvar FROM team_joins WHERE id = participant_id
+                AND (last_date IS NULL OR last_date = yesterday) AND team_id = new_team_id;
         IF FOUND THEN
-            PERFORM UPDATE team_joins
+            UPDATE team_joins
                 SET last_date = NULL,
                     leave_team_id = 0
                 WHERE id = participant_id
                     AND ( last_date IS NULL OR last_date = yesterday );
         ELSE	
             /* Update the entry for the previous team, if there is one */
-            PERFORM UPDATE team_joins
+            UPDATE team_joins
                 SET last_date = yesterday,
-                    leave_team_id = team_id
+                    leave_team_id = new_team_id
                 WHERE id = participant_id
                     AND ( last_date IS NULL OR last_date = yesterday );
-		// note that there should always be 1 or 0 records where LAST_DATE = null
-		// for a given participant
+		/* note that there should always be 1 or 0 records where LAST_DATE = null
+		   for a given participant */
 	
             /* Insert a new record, unless we''re joining ''team 0'' */
-            IF team_id != 0 THEN
-                    PERFORM INSERT team_joins (id, team_id, join_date)
-                        VALUES (participant_id, team_id, today);
+            IF new_team_id != 0 THEN
+                    INSERT INTO team_joins (id, team_id, join_date)
+                        VALUES (participant_id, new_team_id, today);
             END IF;
 	END IF;
 
-        COMMIT WORK;
+        RETURN;
     END;
     ' LANGUAGE 'plpgsql'
     VOLATILE
