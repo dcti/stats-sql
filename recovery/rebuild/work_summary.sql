@@ -1,6 +1,6 @@
 #!/usr/bin/sqsh -i
 #
-# $Id: work_summary.sql,v 1.5 2000/10/22 02:02:57 decibel Exp $
+# $Id: work_summary.sql,v 1.6 2000/11/01 04:51:57 decibel Exp $
 #
 # Creates a summary table containing all work for a project
 #
@@ -65,7 +65,7 @@ create table WorkSummary_${1} (
 go
 
 print "Second pass summary"
-insert into WorkSummary_5 (ID, TEAM_ID, FIRST_DATE, LAST_DATE, WORK_TOTAL, WORK_TODAY)
+insert into WorkSummary_${1} (ID, TEAM_ID, FIRST_DATE, LAST_DATE, WORK_TOTAL, WORK_TODAY)
 	select ws.ID, ws.TEAM_ID, min(FIRST_DATE) as FIRST_DATE, max(LAST_DATE) as LAST_DATE,
 		sum(WORK_TOTAL) as WORK_TOTAL, sum(WORK_TODAY) as WORK_TODAY
 	from #WorkSummary ws, Stats_Participant sp
