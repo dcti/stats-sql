@@ -178,6 +178,7 @@ CREATE TABLE log (
     other character(1)
 );
 
+GRANT SELECT, DELETE ON log TO GROUP processing;
 
 SET SESSION AUTHORIZATION 'pgsql';
 
