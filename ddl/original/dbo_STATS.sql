@@ -1,4 +1,4 @@
--- $Id: dbo_STATS.sql,v 1.1 1999/12/10 04:04:36 decibel Exp $
+-- $Id: dbo_STATS.sql,v 1.2 1999/12/10 17:05:47 bwilson Exp $
 --
 -- Description
 --
@@ -142,32 +142,52 @@ go
 create table STATS_participant
 (
 	id			numeric(10, 0)	not NULL	identity,
-	email			char(64)	not NULL,
-	password		char(8)		NULL,
-	listmode		smallint	not NULL	default 0,
-	nonprofit		int		not NULL	default 0,
-	team			int		not NULL	default 0,
-	retire_to		int		not NULL	default 0,
-	friend_a		int		not NULL	default 0,
-	friend_b		int		not NULL	default 0,
-	friend_c		int		not NULL	default 0,
-	friend_d		int		not NULL	default 0,
-	friend_e		int		not NULL	default 0,
-	dem_yob			int		NULL,
-	dem_heard		int		NULL,
-	dem_gender		char(1)		NULL,
-	dem_motivation		int		NULL,
-	dem_country		char(8)		NULL,
-	contact_name		char(50)	NULL,
-	contact_phone		char(20)	NULL,
-	motto			char(255)	NULL
+	email			varchar(64)	not NULL,
+	password		varchar(8)	not NULL,
+	listmode		smallint	not NULL,
+	nonprofit		int		not NULL,
+	team			int		not NULL,
+	retire_to		int		not NULL,
+	friend_a		int		not NULL,
+	friend_b		int		not NULL,
+	friend_c		int		not NULL,
+	friend_d		int		not NULL,
+	friend_e		int		not NULL,
+	dem_yob			int		not NULL,
+	dem_heard		int		not NULL,
+	dem_gender		char(1)		not NULL,
+	dem_motivation		int		not NULL,
+	dem_country		char(8)		not NULL,
+	contact_name		char(50)	not NULL,
+	contact_phone		char(20)	not NULL,
+	motto			char(255)	not NULL
 )
 go
-create clustered index team on STATS_participant(team)
+exec sp_bindefault defspace, 'STATS_Participant.EMAIL'
+exec sp_bindefault defspace, 'STATS_Participant.PASSWORD'
+exec sp_bindefault def0, 'STATS_Participant.LISTMODE'
+exec sp_bindefault def0, 'STATS_Participant.NONPROFIT'
+exec sp_bindefault def0, 'STATS_Participant.TEAM'
+exec sp_bindefault def0, 'STATS_Participant.RETIRE_TO'
+exec sp_bindefault def0, 'STATS_Participant.FRIEND_A'
+exec sp_bindefault def0, 'STATS_Participant.FRIEND_B'
+exec sp_bindefault def0, 'STATS_Participant.FRIEND_C'
+exec sp_bindefault def0, 'STATS_Participant.FRIEND_D'
+exec sp_bindefault def0, 'STATS_Participant.FRIEND_E'
+exec sp_bindefault def0, 'STATS_Participant.DEM_YOB'
+exec sp_bindefault def0, 'STATS_Participant.DEM_HEARD'
+exec sp_bindefault defspace, 'STATS_Participant.DEM_GENDER'
+exec sp_bindefault def0, 'STATS_Participant.DEM_MOTIVATION'
+exec sp_bindefault defspace, 'STATS_Participant.DEM_COUNTRY'
+exec sp_bindefault defspace, 'STATS_Participant.CONTACT_NAME'
+exec sp_bindefault defspace, 'STATS_Participant.CONTACT_PHONE'
+exec sp_bindefault defspace, 'STATS_Participant.MOTTO'
 go
-create index email on STATS_participant(email)
-create index retire_to on STATS_participant(email)
-create index id on STATS_participant(id)
+create unique clustered index iParticipantEMAIL on STATS_Participant(EMAIL) with fillfactor = 75
+go
+alter table STATS_Participant add constraint pk_Participant primary key nonclustered (id) with fillfactor = 75
+create index iParticipantTEAM on STATS_participant(TEAM) with fillfactor = 75
+create index iParticipantRETIRE_TO on STATS_participant(RETIRE_TO) with fillfactor = 75
 go
 
 
