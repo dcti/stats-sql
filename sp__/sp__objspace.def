@@ -1,7 +1,4 @@
-use sybsystemprocs
-go
-
-create procedure sp__objspace
+ create procedure sp__objspace
 (	@objname varchar(92) = null  /* the object we want size on */
 )
 as
@@ -286,7 +283,7 @@ as
   		*/
   		select
 			  Table_Name = table_name
-         	, "Rows"     = right(space(7)  + convert(varchar(7), no_rows), 7)
+         	, "Rows"     = right(space(10) + convert(varchar(10), no_rows), 10)
          	, Reserved   = right(space(10) + convert(varchar(10),reserved)   + " Kb", 10)
          	, Data       = right(space(10) + convert(varchar(10),data)       + " Kb", 10)
          	, Index_Size = right(space(10) + convert(varchar(10),index_size) + " Kb", 10)
@@ -505,5 +502,4 @@ begin
 end
 return
  
-go
 /* ### DEFNCOPY: END OF DEFINITION */
