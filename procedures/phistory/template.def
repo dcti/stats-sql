@@ -1,4 +1,4 @@
--- $Id: template.def,v 1.3 2000/10/18 22:13:18 decibel Exp $
+-- $Id: template.def,v 1.4 2002/10/02 22:29:24 decibel Exp $
 
 \set procedure=p_phistory_${2}
 
@@ -6,21 +6,23 @@ use ${1}
 go
 
 \echo "Creating table #phistory"
-create table #phistory
+create table #ids
 (
-	DATE		smalldatetime,
-	WORK_UNITS	numeric(20,0)
+	id	int
 )
 go
 
 \echo "Creating procedure $procedure, using ORDER BY ${3}"
 create procedure $procedure
 (
+	@project	smallint,	/* Project to grab data for */
 	@scale		numeric(20,0)	/* What to scale the results by */
 )
 as
 	select DATE, sum(WORK_UNITS)/@scale as WORK_UNITS
-	from #phistory
+	from Email_Contrib ec, #ids i
+	where ec.project_id = @project
+		and ec.id = i.id
 	group by DATE
 	order by ${3}
 
@@ -31,3 +33,4 @@ go
 grant execute on $procedure to public
 go
 
+-- vi: set noexpandtab ts=8 sw=8

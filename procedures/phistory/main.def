@@ -1,4 +1,4 @@
--- $Id: main.def,v 1.8 2000/10/18 22:53:38 decibel Exp $
+-- $Id: main.def,v 1.9 2002/10/02 22:29:24 decibel Exp $
 
 \set procedure=p_phistory
 
@@ -58,49 +58,16 @@ as
 		return -5
 	end
 	
-	/* Don't hold any locks */
+	/* Dont hold any locks */
 	set transaction isolation level 0
 
 	set rowcount 0
 
-	/* Create a temp table to store info for this person and their retire_to's */
-	create table #phistory
-	(
-		DATE		smalldatetime,
-		WORK_UNITS	numeric(20,0)
-	)
-	insert into #phistory(DATE, WORK_UNITS)
-		select DATE, WORK_UNITS
-		from Email_Contrib
-		where ID = @id and PROJECT_ID = @project_id
-
-	/* Build the cursor */
-	declare retires cursor for
-		select id
+	/* Create a temp table to store ids */
+	select convert(int,id) as id into #ids
 		from STATS_Participant
 		where RETIRE_TO = @id
-
-	declare @retired_id int
-
-	open retires
-
-	fetch retires into @retired_id
-
-	while (@@sqlstatus = 0)
-	begin
-		insert into #phistory(DATE, WORK_UNITS)
-			select DATE, WORK_UNITS
-			from Email_Contrib
-			where ID = @retired_id and PROJECT_ID = @project_id
-
-		fetch retires into @retired_id
-	end
-
-	/* If there was an error, die here */
-	if (@@sqlstatus = 1) return -101
-
-	close retires
-	deallocate cursor retires
+			OR id = @id
 
 	declare @scale numeric(20,0), @result int, @proc varchar(40)
 	select @scale = WORK_UNIT_SCALE
@@ -123,3 +90,4 @@ go
 grant execute on $procedure to public
 go
 
+-- vi: set noexpandtab ts=8 sw=8
