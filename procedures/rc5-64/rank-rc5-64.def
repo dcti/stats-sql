@@ -1,10 +1,10 @@
 use stats
 go
 
-drop procedure rank_rc5_64_e_o_rank
+drop procedure p_rank_rc5_64_e_o_rank
 go
 
-create procedure rank_rc5_64_e_o_rank
+create procedure p_rank_rc5_64_e_o_rank
 (	@id numeric(7,0) = 0		/* Participant ID to look up */
 )
 as
@@ -22,14 +22,14 @@ as
 	return @rank
 go
 
-grant execute on rank_rc5_64_e_o_rank to public
+grant execute on p_rank_rc5_64_e_o_rank to public
 go
 
 
-drop procedure rank_rc5_64_e_y_rank
+drop procedure p_rank_rc5_64_e_y_rank
 go
 
-create procedure rank_rc5_64_e_y_rank
+create procedure p_rank_rc5_64_e_y_rank
 (	@id numeric(7,0) = 0		/* Participant ID to look up */
 )
 as
@@ -47,14 +47,14 @@ as
 	return @rank
 go
 
-grant execute on rank_rc5_64_e_y_rank to public
+grant execute on p_rank_rc5_64_e_y_rank to public
 go
 
 
-drop procedure rank_rc5_64_t_o_rank
+drop procedure p_rank_rc5_64_t_o_rank
 go
 
-create procedure rank_rc5_64_t_o_rank
+create procedure p_rank_rc5_64_t_o_rank
 (	@id numeric(7,0) = 0		/* Participant ID to look up */
 )
 as
@@ -72,14 +72,14 @@ as
 	return @rank
 go
 
-grant execute on rank_rc5_64_t_o_rank to public
+grant execute on p_rank_rc5_64_t_o_rank to public
 go
 
 
-drop procedure rank_rc5_64_t_y_rank
+drop procedure p_rank_rc5_64_t_y_rank
 go
 
-create procedure rank_rc5_64_t_y_rank
+create procedure p_rank_rc5_64_t_y_rank
 (	@id numeric(7,0) = 0		/* Participant ID to look up */
 )
 as
@@ -97,6 +97,6 @@ as
 	return @rank
 go
 
-grant execute on rank_rc5_64_t_y_rank to public
+grant execute on p_rank_rc5_64_t_y_rank to public
 go
 

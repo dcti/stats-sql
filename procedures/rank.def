@@ -1,10 +1,10 @@
 use stats
 go
 
-drop procedure rank
+drop procedure p_rank
 go
 
-create procedure rank
+create procedure p_rank
 (	@section char(1) = null,	/* What section to look at (i.e. e for email, t for team) */
 	@contest varchar(10) = null,	/* Contest that we want the ranking on */
 	@timeframe char(1) = null,	/* Timeframe we want to look at (overall v. yesterday) */
@@ -15,11 +15,12 @@ begin
 	declare @procname	varchar(30)	/* Name of the table to look in */
 	declare @rnk		int		/* Rank of participant */
 
-	/* 1.0 Error checking */
+	/* Error checking */
 
-	/* 1.1 Make sure all the parameters were specified */
+	/* Make sure all the parameters were specified */
 	if ( (@section = null) or (@contest = null) or (@timeframe = null) or (@id = 0) )
 	begin
+		raiserror 99999 "Not enough parameters"
 		print "usage:"
 		print "	rank section, contest, timeframe, id"
 		print "where:"
@@ -30,42 +31,37 @@ begin
 		return -5
 	end
 
-	print "Error check done"
-
+	/* Process @section */
 	select @section = lower(@section)
-	if not @section in ("e", "o")
+	if not @section in ("e", "t")
 	begin
-		print "Invalid section '%1!' specified, must be 'e' or 't'", @section
+		raiserror 99999 "Invalid section '%1!' specified, must be 'e' or 't'", @section
 		return -5
 	end
 	
-	/* 1.2  */
+	/* Process @timeframe  */
 	select @timeframe = lower(@timeframe)
 	if not @timeframe in ("", "o", "y")
 	begin
-		print "Invalid timeframe '%1!' specified, must be 'o' or 'y'", @timeframe
+		raiserror 99999 "Invalid timeframe '%1!' specified, must be 'o' or 'y'", @timeframe
 		return -5
 	end
 
-	print "substitutions done"
-
 	/* Build the procedure name */
-	select @procname = "rank_" + @contest + "_" + @section + "_" + @timeframe + "_rank"
+	select @procname = "p_rank_" + @contest + "_" + @section + "_" + @timeframe + "_rank"
 	
 	/* See if the silly procedure exists */
 	if (object_id(@procname) is NULL)
 	begin
-		print "The procedure '%1!' does not exist!",@procname
+		raiserror 99999 "Procedure '%1!' does not exist!", @procname
 		return -1
 	end
-
-	print "Running procedure '%1!'...", @procname
 
 	exec @rnk = @procname @id
 	return @rnk
 end
 go
 
-grant execute on rank to public
+grant execute on p_rank to public
 go
 
