@@ -1,11 +1,5 @@
 \set ON_ERROR_STOP 1
 
- create group processing;
- create group backup;
- create group www;
- create group wheel;
- create group helpdesk;
- create group coder;
  grant Select on csc_CACHE_tm_MEMBERS to public;
  grant Select on STATS_Team_Blocked to public;
  grant Insert on STATS_Team_Blocked to group processing;
