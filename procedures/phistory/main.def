@@ -1,4 +1,4 @@
--- $Id: main.def,v 1.6 2000/10/18 22:17:48 decibel Exp $
+-- $Id: main.def,v 1.7 2000/10/18 22:19:23 decibel Exp $
 
 \set procedure=p_phistory
 
@@ -27,7 +27,7 @@ create procedure $procedure
 	@project_id tinyint,			/* Project ID */
 	@id int = 0,				/* Participant ID */
 	@sort_field varchar(30) = "DATE",	/* Field to sort on */
-	@sort_dir char(4) = "asc"		/* Sort direction (asc or desc) */
+	@sort_dir char(4) = "desc"		/* Sort direction (asc or desc) */
 )
 as
 
