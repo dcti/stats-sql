@@ -1,0 +1,11 @@
+#!/bin/sh
+# $Id: doall2,v 1.1 2003/04/08 22:40:38 decibel Exp $
+
+dropdb stats
+createdb -D PGDATA_stats stats || exit 1
+psql stats < tables.sql || exit 1
+psql -e stats < copy.sql || exit 1
+./move.pl stats STATS_Participant || exit 1
+./move.pl stats STATS_team || exit 1
+psql stats < index.sql 2>&1 | grep -v NOTICE || exit 1
+psql stats < cleanup.sql 2>&1 || exit 1
