@@ -11,6 +11,7 @@ SET check_function_bodies = false;
 --
 
 CREATE SCHEMA rrd AUTHORIZATION pgsql;
+GRANT USAGE ON SCHEMA rrd TO PUBLIC;
 
 
 SET SESSION AUTHORIZATION 'pgsql';
@@ -221,4 +222,10 @@ SELECT pg_catalog.setval('bucket_bucket_id_seq', 1, false);
 
 SELECT pg_catalog.setval('source_source_id_seq', 1, false);
 
+GRANT SELECT ON rrd TO PUBLIC;
+GRANT SELECT ON source TO PUBLIC;
+GRANT SELECT,UPDATE ON source_source_id_seq TO PUBLIC;
+GRANT ALL ON bucket TO PUBLIC;
+GRANT ALL ON source_status TO PUBLIC;
+GRANT SELECT,UPDATE ON bucket_bucket_id_seq TO PUBLIC;
 

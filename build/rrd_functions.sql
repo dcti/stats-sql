@@ -423,3 +423,8 @@ END;
 '
     LANGUAGE plpgsql;
 
+GRANT EXECUTE ON FUNCTION update() TO public;
+GRANT EXECUTE ON FUNCTION update_buckets() TO public;
+GRANT EXECUTE ON FUNCTION add_buckets(int, interval, timestamptz, timestamptz) TO public;
+GRANT EXECUTE ON FUNCTION interval_time(timestamptz, interval) TO public;
+GRANT EXECUTE ON FUNCTION max_end_time_to_delete(int) TO public;
