@@ -137,10 +137,10 @@ END;
 
 --
 -- TOC entry 7 (OID 443365)
--- Name: rrd; Type: TABLE; Schema: page_log; Owner: pgsql
+-- Name: rrs; Type: TABLE; Schema: page_log; Owner: pgsql
 --
 
-CREATE TABLE rrd (
+CREATE TABLE rrs (
     bucket_id integer NOT NULL,
     page_id integer NOT NULL,
     project_id integer NOT NULL,
@@ -156,11 +156,11 @@ CREATE TABLE rrd (
 
 --
 -- TOC entry 8 (OID 443370)
--- Name: v_rrd; Type: VIEW; Schema: page_log; Owner: pgsql
+-- Name: v_rrs; Type: VIEW; Schema: page_log; Owner: pgsql
 --
 
-CREATE VIEW v_rrd AS
-    SELECT b.rrd_id, b.end_time, b.prev_end_time, r.bucket_id, r.page_id, r.project_id, r.hits, r.min_hits, r.max_hits, r.total_duration, r.min_duration, r.max_duration, r.other, (r.total_duration / (hits)::double precision) AS avg_duration FROM (rrd r JOIN rrd.bucket b ON ((r.bucket_id = b.bucket_id)));
+CREATE VIEW v_rrs AS
+    SELECT b.rrs_id, b.end_time, b.prev_end_time, r.bucket_id, r.page_id, r.project_id, r.hits, r.min_hits, r.max_hits, r.total_duration, r.min_duration, r.max_duration, r.other, (r.total_duration / (hits)::double precision) AS avg_duration FROM (rrs r JOIN rrs.bucket b ON ((r.bucket_id = b.bucket_id)));
 
 
 SET SESSION AUTHORIZATION 'pgsql';
@@ -184,10 +184,10 @@ SET SESSION AUTHORIZATION 'pgsql';
 
 --
 -- TOC entry 13 (OID 443372)
--- Name: page_log_rrd__bucket_id; Type: INDEX; Schema: page_log; Owner: pgsql
+-- Name: page_log_rrs__bucket_id; Type: INDEX; Schema: page_log; Owner: pgsql
 --
 
-CREATE INDEX page_log_rrd__bucket_id ON rrd USING btree (bucket_id);
+CREATE INDEX page_log_rrs__bucket_id ON rrs USING btree (bucket_id);
 
 
 --
@@ -210,28 +210,28 @@ ALTER TABLE ONLY page
 
 --
 -- TOC entry 14 (OID 443377)
--- Name: rrd__page_project_other_bucket; Type: CONSTRAINT; Schema: page_log; Owner: pgsql
+-- Name: rrs__page_project_other_bucket; Type: CONSTRAINT; Schema: page_log; Owner: pgsql
 --
 
-ALTER TABLE ONLY rrd
-    ADD CONSTRAINT rrd__page_project_other_bucket PRIMARY KEY (page_id, project_id, other, bucket_id);
+ALTER TABLE ONLY rrs
+    ADD CONSTRAINT rrs__page_project_other_bucket PRIMARY KEY (page_id, project_id, other, bucket_id);
 
 
 --
 -- TOC entry 19 (OID 443383)
--- Name: rrd__page_page_id; Type: FK CONSTRAINT; Schema: page_log; Owner: pgsql
+-- Name: rrs__page_page_id; Type: FK CONSTRAINT; Schema: page_log; Owner: pgsql
 --
 
-ALTER TABLE ONLY rrd
-    ADD CONSTRAINT rrd__page_page_id FOREIGN KEY (page_id) REFERENCES page(page_id);
+ALTER TABLE ONLY rrs
+    ADD CONSTRAINT rrs__page_page_id FOREIGN KEY (page_id) REFERENCES page(page_id);
 
 
 --
 -- TOC entry 20 (OID 443387)
--- Name: rrd__ri_bucket_id; Type: FK CONSTRAINT; Schema: page_log; Owner: pgsql
+-- Name: rrs__ri_bucket_id; Type: FK CONSTRAINT; Schema: page_log; Owner: pgsql
 --
 
-ALTER TABLE ONLY rrd
-    ADD CONSTRAINT rrd__ri_bucket_id FOREIGN KEY (bucket_id) REFERENCES rrd.bucket(bucket_id) ON DELETE CASCADE;
+ALTER TABLE ONLY rrs
+    ADD CONSTRAINT rrs__ri_bucket_id FOREIGN KEY (bucket_id) REFERENCES rrs.bucket(bucket_id) ON DELETE CASCADE;
 
 
