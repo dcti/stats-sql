@@ -39,7 +39,7 @@ while (my @a = $s->fetchrow) {
     $sth->execute(@a) or die;
     $counter++;
 
-    if($counter % 10 == 0) {
+    if($counter % 100 == 0) {
         print "\r$counter";
     }
 }
