@@ -13,7 +13,7 @@ my $syb = DBI->connect("DBI:Sybase:dbname=$ARGV[0]", $moveconf::syb_user, $movec
 print "Connect to postgresql...\n";
 my $pgsql = DBI->connect("DBI:Pg:dbname=$ARGV[0]", $moveconf::pg_user) or die;
 
-my $s = $syb->prepare("select * from $ARGV[1]");
+my $s = $syb->prepare("select * from $ARGV[1] $ARGV[2]");
 $s->execute;
 my $n = $s->{NUM_OF_FIELDS};
 die "no result set" if $n == 0;
