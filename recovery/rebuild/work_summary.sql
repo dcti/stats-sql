@@ -1,6 +1,6 @@
 #!/usr/local/bin/sqsh -i
 #
-# $Id: work_summary.sql,v 1.15 2002/04/14 04:56:51 decibel Exp $
+# $Id: work_summary.sql,v 1.16 2002/10/06 06:34:50 decibel Exp $
 #
 # Creates a summary table containing all work for a project
 #
@@ -69,22 +69,13 @@ update #WorkSummary
 	where sp.ID = #WorkSummary.ID
 		and sp.RETIRE_TO > 0
 		and (sp.RETIRE_DATE <= @last or sp.RETIRE_DATE is NULL)
-
-create table WorkSummary_${1} (
-	ID int,
-	TEAM_ID int,
-	FIRST_DATE smalldatetime,
-	LAST_DATE smalldatetime,
-	WORK_TOTAL numeric(20,0),
-	WORK_TODAY numeric(20,0),
-	WORK_YESTERDAY numeric(20,0)
-)
 go
 
 print "Second pass summary"
 insert into WorkSummary_${1} (ID, TEAM_ID, FIRST_DATE, LAST_DATE, WORK_TOTAL, WORK_TODAY, WORK_YESTERDAY)
 	select ws.ID, ws.TEAM_ID, min(FIRST_DATE) as FIRST_DATE, max(LAST_DATE) as LAST_DATE,
 		sum(WORK_TOTAL) as WORK_TOTAL, sum(WORK_TODAY) as WORK_TODAY, sum(WORK_YESTERDAY) as WORK_YESTERDAY
+	into WorkSummary_${1}
 	from #WorkSummary ws
 	where ws.ID not in (select ID
 					from STATS_Participant_Blocked
