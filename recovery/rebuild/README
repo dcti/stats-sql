@@ -4,7 +4,7 @@ How to rebuild a project from the base tables:
 
 2. Build the WorkSummary table:
 
-psql -f worksummary.sql -v ProjectID=$PROJECT_ID stats
+./worksummary.sh $PROJECT_ID
 
 This takes about an hour for RC5 with no web traffic.
 
@@ -28,4 +28,4 @@ See stats-proc/daily/runday and runday2
 7. Finally, if you're cleaning up from a bombed run, you'll need to remove the lockfile from ~statproc/log
 
 
-$Id: README,v 1.2 2003/09/09 20:43:55 decibel Exp $
+$Id: README,v 1.3 2004/01/07 18:38:55 decibel Exp $
