@@ -1,5 +1,5 @@
 /*
- $Id: team_rank_2.sql,v 1.4.2.2 2003/04/30 06:38:01 decibel Exp $
+ $Id: team_rank_2.sql,v 1.4.2.3 2003/09/08 23:26:56 decibel Exp $
 
  Repopulates Team_Members fOR a project.
 
@@ -10,7 +10,6 @@
 
 \echo ::Updating Team_Rank - Pass 2
 \echo Creating summary table
-;
 
 SELECT team_id, min(first_date) AS first_date, max(last_date) AS last_date,
         sum(work_today) AS work_today, sum(sign(work_today)) AS members_today, count(*) AS members_overall
