@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Id: bcp.sh,v 1.6 2000/11/09 13:18:18 decibel Exp $
+# $Id: bcp.sh,v 1.7 2002/10/04 16:29:29 decibel Exp $
 
 table_list='tables.txt'
 savedir='./'
@@ -34,6 +34,7 @@ do
 	echo "Starting backup of $table"
 	echo "getting table info..."
 	sqsh -S $server -U $user -P $password ${sqsh_flags} -i tabledef.sql $table > ${savedir}${table}.def
+	sqsh -S $server -U $user -P $password ${sqsh_flags} -i indexes.sql $table > ${savedir}${table}.idx
 	echo "getting table def..."
 	sqsh -S $server -U $user -P $password ${sqsh_flags} -i info.sql $table > ${savedir}${table}.info
 	if [ $nobcp = false ]; then
