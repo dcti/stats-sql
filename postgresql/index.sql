@@ -1,8 +1,13 @@
--- $Id: index.sql,v 1.6 2003/04/14 20:31:17 decibel Exp $
+-- $Id: index.sql,v 1.7 2003/04/14 21:19:03 decibel Exp $
 -- All indices.  Also includes creating primary keys, as creating
 -- the primary key implies creating an index
 
 \set ON_ERROR_STOP 1
+
+select now() as start into temp start_time;
+\t
+select '$File:$ start time: ' || start from start_time;
+\t
 
 CREATE UNIQUE INDEX csc_master__id_date ON csc_master USING btree (id, date);
 
@@ -285,3 +290,6 @@ ALTER TABLE ONLY team_rank_last_update
     ADD CONSTRAINT team_rank_last_update_pkey PRIMARY KEY (project_id);
 
 
+
+\t
+select '$File:$ stop time: ' || now() || ', duration: ' || age(now(),start) from start_time;

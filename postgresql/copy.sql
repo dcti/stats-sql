@@ -1,5 +1,11 @@
--- $Id: copy.sql,v 1.14 2003/04/14 20:31:17 decibel Exp $
+-- $Id: copy.sql,v 1.15 2003/04/14 21:19:03 decibel Exp $
 \set ON_ERROR_STOP 1
+
+select now() as start into temp start_time;
+\t
+select '$File:$ start time: ' || start from start_time;
+\t
+
 COPY CSC_dailies FROM '/home/decibel/blower/CSC_dailies.bcp' WITH DELIMITER '\t';
 COPY CSC_master FROM '/home/decibel/blower/CSC_master.bcp' WITH DELIMITER '\t';
 COPY CSC_platform FROM '/home/decibel/blower/CSC_platform.bcp' WITH DELIMITER '\t';
@@ -63,3 +69,6 @@ COPY csc_CACHE_tm_MEMBERS FROM '/home/decibel/blower/statproc.csc_CACHE_tm_MEMBE
 COPY csc_CACHE_tm_RANK FROM '/home/decibel/blower/statproc.csc_CACHE_tm_RANK.bcp' WITH DELIMITER '\t' NULL '';
 
 COPY csc_CACHE_tm_YRANK FROM '/home/decibel/blower/statproc.csc_CACHE_tm_YRANK.bcp' WITH DELIMITER '\t' NULL '';
+
+\t
+select '$File:$ stop time: ' || now() || ', duration: ' || age(now(),start) from start_time;

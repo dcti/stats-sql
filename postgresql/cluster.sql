@@ -1,6 +1,11 @@
--- $Id: cluster.sql,v 1.6 2003/04/14 20:31:17 decibel Exp $
+-- $Id: cluster.sql,v 1.7 2003/04/14 21:19:03 decibel Exp $
 
---\set ON_ERROR_STOP 1
+\set ON_ERROR_STOP 1
+
+select now() as start into temp start_time;
+\t
+select '$File:$ start time: ' || start from start_time;
+\t
 
 CLUSTER CSC_master_pkey ON CSC_master;
 CLUSTER csc_platform_pkey ON CSC_platform;
@@ -29,3 +34,6 @@ CLUSTER rank ON csc_CACHE_em_RANK;
 CLUSTER rank ON csc_CACHE_em_YRANK;
 CLUSTER rank ON csc_CACHE_tm_RANK;
 CLUSTER rank ON csc_CACHE_tm_YRANK;
+
+\t
+select '$File:$ stop time: ' || now() || ', duration: ' || age(now(),start) from start_time;

@@ -1,6 +1,11 @@
--- $Id: email_rank.sql,v 1.3 2003/04/14 20:57:20 decibel Exp $
+-- $Id: email_rank.sql,v 1.4 2003/04/14 21:19:03 decibel Exp $
 
---\set ON_ERROR_STOP 1
+\set ON_ERROR_STOP 1
+
+select now() as start into temp start_time;
+\t
+select '$File:$ start time: ' || start from start_time;
+\t
 
  grant Select on Email_Rank to public;
  grant Insert on Email_Rank to group processing;
@@ -19,3 +24,6 @@ ALTER TABLE ONLY email_rank
     ADD CONSTRAINT email_rank_pkey PRIMARY KEY (project_id, id);
 
 CLUSTER Email_Rank_pkey ON Email_Rank;
+
+\t
+select '$File:$ stop time: ' || now() || ', duration: ' || age(now(),start) from start_time;
