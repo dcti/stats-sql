@@ -1,5 +1,5 @@
 /*
-# $Id: OGR_master.sql,v 1.2 2000/04/13 15:00:19 bwilson Exp $
+# $Id: OGR_master.sql,v 1.3 2000/04/20 13:14:01 bwilson Exp $
 #
 # Email_Contrib
 #
@@ -39,7 +39,7 @@ go
 alter table Email_Contrib
 	add constraint pkEmail_Contrib primary key clustered (ID, DATE, PROJECT_ID)
 go
-create index team_date on Email_Contrib(TEAM, DATE, PROJECT_ID)
+create index team_date on Email_Contrib(TEAM_ID, DATE, PROJECT_ID)
 create index date_project on Email_Contrib(DATE, PROJECT_ID)
 go
 

@@ -46,7 +46,7 @@ insert Projects
 go
 insert Projects
 	values (6, 'CSC', 'CSC', 'V', NULL, NULL, NULL, NULL, 10000, 'CSC contest',
-			'blocks', power(2.0, 28), 'keys', power(2.0, 64),
+			'blocks', power(2.0, 28), 'keys', power(2.0, 56),
 			'http://www.csc.com',
 			'CS Communications, Inc.',
 			'http://stats.distributed.net/csc/logo.gif')

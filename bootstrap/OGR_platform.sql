@@ -1,5 +1,5 @@
 /*
-# $Id: OGR_platform.sql,v 1.2 2000/04/13 15:00:19 bwilson Exp $
+# $Id: OGR_platform.sql,v 1.3 2000/04/20 13:14:01 bwilson Exp $
 #
 # OGR_Platform
 #
@@ -39,8 +39,8 @@ create clustered index iOSDATE
 	on Platform_Contrib (OS, DATE, PROJECT_ID)
 go
 alter table Platform_Contrib
-	add constraint pk_OGR_Platform
-	primary key nonclustered (CPU, OS, VER, DATE, PROJECT_ID)
+	add constraint pkPlatform_Contrib
+	primary key nonclustered (PROJECT_ID, CPU, OS, VER, DATE)
 go
 create index iCPUDATE
 	on Platform_Contrib (CPU, DATE, PROJECT_ID)

@@ -1,12 +1,10 @@
 /*
-# $Id: OGR_dailies.sql,v 1.2 2000/04/11 14:11:12 bwilson Exp $
+# $Id: OGR_dailies.sql,v 1.3 2000/04/20 13:14:01 bwilson Exp $
 #
-# OGR
-#
-# This table holds miscellaneous figures for each day of each project.
+# This table holds summary statistics for each day of each project.
 #
 # In addition to creating the table, this script will attempt to
-# populate it with data from an existing OGR_Master table.
+# populate it with data from an existing Email_Contrib table.
 #
 # For safety's sake, this script does not include the appropriate
 # "drop table" command.  If the table already exists, you will have
@@ -43,52 +41,32 @@ go
 
 print 'Population routine'
 go
-insert into
-  Daily_Summary (date, PROJECT_ID, WORK_UNITS, PARTICIPANTS,
-                 TOP_oparticipant, TOP_OPWORK,
-                 TOP_YPARTICIPANT, TOP_YPWORK,
-                 teams,
-                 TOP_OTEAM, TOP_OTWORK,
-                 TOP_yteam, TOP_YTWORK)
-  select
-    date,
-    PROJECT_ID,
-    sum(blocks) as blocks,
-    count(distinct id) as participants,
-    0 as TOP_oparticipant,
-    0 as TOP_OPWORK,
-    0 as TOP_YPARTICIPANT,
-    0 as TOP_YPWORK,
-    0 as teams,
-    0 as TOP_OTEAM,
-    0 as TOP_OTWORK,
-    0 as TOP_yteam,
-    0 as TOP_YTEAMWORK
-  from OGR_Master
-  group by date, PROJECT_ID
-  order by date, PROJECT_ID
+insert Daily_Summary (DATE, PROJECT_ID, WORK_UNITS,
+		PARTICIPANTS, TOP_OPARTICIPANT, TOP_OPWORK, TOP_YPARTICIPANT, TOP_YPWORK,
+		TEAMS, TOP_OTEAM, TOP_OTWORK, TOP_YTEAM, TOP_YTWORK)
+	select DATE, PROJECT_ID, sum(WORK_UNITS), 
+		count(distinct ID), 0, 0, 0, 0,
+  		0, 0, 0 ,0, 0)
+	from Email_Contrib
+	group by DATE, PROJECT_ID
+	order by DATE, PROJECT_ID
 go
 
-select distinct date, PROJECT_ID, team
-into #teamcounts
-from OGR_Master
-go
-
-select date, PROJECT_ID, count(team) as teamcount
-  into #teamsums
-  from #teamcounts
-  group by date, PROJECT_ID
+select DATE, PROJECT_ID, count(distinct TEAM_ID) as TEAMCOUNT
+	into #teamcounts
+	from Email_Contrib
+	group by DATE, PROJECT_ID
 go
 
 update Daily_Summary
-  set teams = teamcount
-  from Daily_Summary, #teamsums
-  where #teamsums.date = Daily_Summary.date
-  	and #teamsums.PROJECT_ID = Daily_Summary.PROJECT_ID
+  set TEAMS = TEAMCOUNT
+  from Daily_Summary, #teamcounts
+  where #teamcounts.DATE = Daily_Summary.DATE
+  	and #teamcounts.PROJECT_ID = Daily_Summary.PROJECT_ID
 go
 
 alter table Daily_Summary
-	add constraint pk_Daily_Summary primary key clustered (date, PROJECT_ID)
+	add constraint pk_Daily_Summary primary key clustered (DATE, PROJECT_ID)
 go
 grant insert on Daily_Summary to statproc
 grant select on Daily_Summary to public
