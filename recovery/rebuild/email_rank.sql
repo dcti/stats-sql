@@ -1,6 +1,6 @@
 #!/usr/bin/sqsh -i
 #
-# $Id: email_rank.sql,v 1.2 2000/10/08 07:21:55 decibel Exp $
+# $Id: email_rank.sql,v 1.3 2000/10/11 20:01:33 decibel Exp $
 #
 # Repopulates Email_Rank for a project.
 # Notes:
@@ -30,15 +30,15 @@ go
 
 print "Updating records with today's info"
 print "  create temp table"
-declare @stats_date smalldatetime
-select @stats_date = LAST_STATS_DATE
-        from Projects
+declare @yesterday_date smalldatetime
+select @yesterday_date = max(date)
+        from Email_Contrib
         where PROJECT_ID = ${1}
 select ID, WORK_UNITS
 	into #WorkToday
 	from Email_Contrib
 	where PROJECT_ID = ${1}
-		and DATE = @stats_date
+		and DATE = @yesterday_date
 go
 
 print "  update temp table for retires"
