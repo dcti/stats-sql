@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Definitions
-version='$Id: build,v 1.7 2000/03/31 05:56:57 decibel Exp $'
+version='$Id: build,v 1.8 2000/03/31 06:21:49 decibel Exp $'
 template="template/"
 work="work/"
 
@@ -96,7 +96,7 @@ if [ $delete = true ]; then
 		# Build the sql file
 		workfile="${workdir}${table}.del.sql"
 
-		sed -e "s/@DATABASENAME@/${database}/g" -e "s/@TABLENAME@/${table}/g" ${templatedir}delete.1 > $workfile
+		sed -e "s/@DATABASE_NAME@/${database}/g" -e "s/@TABLE_NAME@/${table}/g" ${templatedir}delete.1 > $workfile
 
 		if [ $debug != "true" ]; then
 			sqsh $sqshoptions -h -i $workfile
@@ -118,15 +118,15 @@ for table in $tables; do
 		# Build the work-file
 		workfile="${workdir}${table}.def.sql"
 
-		sed -e "s/@DATABASENAME@/${database}/g" -e "s/@TABLENAME@/${table}/g" ${templatedir}table.1 > $workfile
+		sed -e "s/@DATABASE_NAME@/${database}/g" -e "s/@TABLE_NAME@/${table}/g" ${templatedir}table.1 > $workfile
 		cat ${table}.def >> $workfile
-		sed -e "s/@DATABASENAME@/${database}/g" -e "s/@TABLENAME@/${table}/g" ${templatedir}table.2 >> $workfile
+		sed -e "s/@DATABASE_NAME@/${database}/g" -e "s/@TABLE_NAME@/${table}/g" ${templatedir}table.2 >> $workfile
 
 		# If there's an '.extra' file, include it.
 		if [ -f ${table}.extra ]; then
-			sed -e "s/@DATABASENAME@/${database}/g" -e "s/@TABLENAME@/${table}/g" ${templatedir}table.3 >> $workfile
+			sed -e "s/@DATABASE_NAME@/${database}/g" -e "s/@TABLE_NAME@/${table}/g" ${templatedir}table.3 >> $workfile
 			cat ${table}.extra >> $workfile
-			sed -e "s/@DATABASENAME@/${database}/g" -e "s/@TABLENAME@/${table}/g" ${templatedir}table.4 >> $workfile
+			sed -e "s/@DATABASE_NAME@/${database}/g" -e "s/@TABLE_NAME@/${table}/g" ${templatedir}table.4 >> $workfile
 		fi
 
 		if [ $debug != "true" ]; then
@@ -149,9 +149,9 @@ for table in $tables; do
 		# Build the work-file
 		workfile="${workdir}${index}.idx.sql"
 
-		sed -e "s/@DATABASENAME@/${database}/g" -e "s/@TABLENAME@/${index}/g" ${templatedir}index.1 > $workfile
+		sed -e "s/@DATABASE_NAME@/${database}/g" -e "s/@TABLE_NAME@/${index}/g" ${templatedir}index.1 > $workfile
 		cat ${index}.idx >> $workfile
-		sed -e "s/@DATABASENAME@/${database}/g" -e "s/@TABLENAME@/${index}/g" ${templatedir}index.2 >> $workfile
+		sed -e "s/@DATABASE_NAME@/${database}/g" -e "s/@TABLE_NAME@/${index}/g" ${templatedir}index.2 >> $workfile
 		
 		if [ $debug != "true" ]; then
 			sqsh $sqshoptions -h -i $workfile
