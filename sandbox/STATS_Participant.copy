@@ -1,4 +1,4 @@
--- $Id: STATS_Participant.copy,v 1.1 2000/03/31 07:14:54 decibel Exp $
+-- $Id: STATS_Participant.copy,v 1.2 2000/04/04 04:14:07 decibel Exp $
 
 	print ':: Filling temptable with id, rand()'
 end
@@ -13,7 +13,7 @@ go
 if NOT exists (select * from #abort)
 begin
 	set identity_insert ${destinationdb}..${table} on
-	print ":: Inserting into ${database}..STATS_Participant"
+	print ":: Inserting into ${destinationdb}..STATS_Participant"
 end
 go
 	
