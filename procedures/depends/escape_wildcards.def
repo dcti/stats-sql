@@ -1,11 +1,11 @@
--- $Id: escape_wildcards.def,v 1.6 2000/03/17 04:55:58 decibel Exp $
+-- $Id: escape_wildcards.def,v 1.7 2001/12/26 01:16:43 decibel Exp $
 
 \set procedure=p_escape_wildcards
 
 if ( "${1}" = "" )
 begin
-	print "Database not specified! Using 'stats' as default!"
-	use stats
+	print "Database not specified! Using 'sybsystemprocs' as default!"
+	use sybsystemprocs
 end
 else
 begin
