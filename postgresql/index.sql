@@ -1,4 +1,4 @@
--- $Id: index.sql,v 1.3 2003/04/14 14:04:37 decibel Exp $
+-- $Id: index.sql,v 1.4 2003/04/14 19:26:44 decibel Exp $
 -- All indices.  Also includes creating primary keys, as creating
 -- the primary key implies creating an index
 
@@ -142,12 +142,6 @@ ALTER TABLE ONLY daily_summary
     ADD CONSTRAINT daily_summary_pkey PRIMARY KEY (date, project_id);
 
 
-
-ALTER TABLE ONLY email_contrib
-    ADD CONSTRAINT email_contrib_pkey PRIMARY KEY (project_id, id, date);
-
-
-
 ALTER TABLE ONLY email_contrib_last_update
     ADD CONSTRAINT email_contrib_last_update_pkey PRIMARY KEY (project_id);
 
@@ -208,19 +202,8 @@ ALTER TABLE ONLY projects
 
 
 
-ALTER TABLE ONLY stats_participant
-    ADD CONSTRAINT stats_participant_pkey PRIMARY KEY (id);
-
-
-
-ALTER TABLE ONLY stats_participant
-    ADD CONSTRAINT stats_participant__email UNIQUE (email);
-
-
-
 ALTER TABLE ONLY stats_participant_blocked
     ADD CONSTRAINT stats_participant_blocked_pkey PRIMARY KEY (id);
-
 
 
 ALTER TABLE ONLY stats_participant_friend

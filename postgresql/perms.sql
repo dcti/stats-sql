@@ -6,9 +6,6 @@
  grant Delete on STATS_Team_Blocked to group processing;
  grant Select on csc_CACHE_tm_RANK to public;
  grant Select on csc_CACHE_tm_YRANK to public;
- grant Select on Email_Contrib to public;
- grant Insert on Email_Contrib to group processing;
- grant Update on Email_Contrib to group processing;
  grant Select on csc_daytable_master to public;
  grant Select on csc_daytable_platform to public;
  grant Select on Platform_Summary to public;
@@ -73,12 +70,6 @@
  grant Select on STATS_nonprofit to public;
  grant Select on STATS_os to public;
  grant Select on Team_Joins to public;
- grant Select on STATS_Participant to public;
- grant Insert on STATS_Participant to group processing;
- grant Update on STATS_Participant to group coder;
- grant Update on STATS_Participant to group helpdesk;
- grant Update on STATS_Participant to group www;
- grant Update on STATS_Participant to group wheel;
  grant Select on Team_Members to public;
  grant Insert on Team_Members to group processing;
  grant Insert on Team_Members to group wheel;
