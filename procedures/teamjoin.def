@@ -1,4 +1,4 @@
--- $Id: teamjoin.def,v 1.1 2000/08/17 01:12:57 decibel Exp $
+-- $Id: teamjoin.def,v 1.2 2000/08/19 23:25:54 decibel Exp $
 
 \set procedure=p_teamjoin
 
@@ -40,20 +40,30 @@ as
 		return -5
 	end
 
+	/* Grab just the date portion of today */
+	declare @date smalldatetime
+	select @date = getdate()
+	exec p_date_only @date output
+
 	/* Update the entry for the previous team, if there is one */
 	update jcn_Team_Joins2
-		set LEAVE_DATE = getdate(),
+		set LEAVE_DATE = @date,
 		set LEAVE_TEAM_ID = @team
 	where ID = @id
 		and LEAVE_DATE = null
 	-- note that there should always be 1 or 0 records where LEAVE_DATE = null
 	-- for a given participant
 
+	/* If the participant already has a record for today, nuke it */
+	delete jcn_Team_Joins2
+	where ID = @id
+		and JOIN_DATE = @date
+
 	/* Insert a new record, unless we're joining 'team 0' */
 	if @team != 0
 	begin
 		insert jcn_Team_Joins2 (ID, TEAM_ID, JOIN_DATE)
-		values (@id, @team, getdate())
+		values (@id, @team, @date)
 	end
 
 	/* Update Stats_Participant (redundant info; should eventually go away) */
@@ -65,6 +75,6 @@ as
 
 go
 
-grant execute on p_participant_all to public
+grant execute on $procedure to public
 go
 
