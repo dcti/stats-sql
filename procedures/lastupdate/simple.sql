@@ -1,64 +1,161 @@
 /*
-** p_lastupdate2
-** Replacement for p_lastupdate, without all the overhead of multiple procs
-** and unnecessary parameters.
-** Procedure specifically ignores the differences between when email, team
-** and project are last updated, as showing this to the users only serves to
-** cause confusion.
+** p_lastupdate_ details
+** Creates the 8 necessary procedures individually.  All files are defined here.
 */
 
-if object_id('p_lastupdate2') is not NULL
-begin
-	drop procedure p_lastupdate2
-end
+drop procedure p_lastupdate_e
 go
-create procedure p_lastupdate2
-(
-	@project_id tinyint = NULL
-)
+create procedure p_lastupdate_e
+	@project_id tinyint = NULL	
 as
 begin
-	declare @lastdate datetime
-	
-	/* Error checking */
 	if @project_id is NULL or @project_id not in (select PROJECT_ID from Projects)
 	begin
 		raiserror 99999 "Invalid project specified"
 	end
 
-	/* 
-	** When RC5_64 is merged into the main tables, this collapses to just
-	** the select statement from the else
-	*/
-	
-	/*
-	** We may want to use Projects.LAST_STATS_DATE instead, if we can decide
-	** that will always, only represent the last full stats run to complete.
-	** If that field represents the upload date, then we should have a new
-	** field for this purpose.
-	*/
-	
-	if @project_id = 5
-	begin
-		select @lastdate = max(date)
-			from RC5_64_platform
-	end
-	else
-	begin
-		select @lastdate = max(DATE)
-			from Platform_Contrib
-			where PROJECT_ID = @project_id
-	end
-	
-	/*
-	** This is probably a bit of overkill in this scenario, but makes
-	** sense in the general case
-	*/
-
-	select @lastdate as lastupdate
+	select max(LAST_DATE) as lastupdate
+		from Email_Rank
+		where PROJECT_ID = @project_id
 end
 go
-grant execute on p_lastupdate2 to public
+grant execute on p_lastupdate_e to public
 go
 
 
+drop procedure p_lastupdate_t
+go
+create procedure p_lastupdate_t
+	@project_id tinyint = NULL	
+as
+begin
+	if @project_id is NULL or @project_id not in (select PROJECT_ID from Projects)
+	begin
+		raiserror 99999 "Invalid project specified"
+	end
+
+	select max(LAST_DATE) as lastupdate
+		from Team_Rank
+		where PROJECT_ID = @project_id
+end
+go
+grant execute on p_lastupdate_t to public
+go
+
+drop procedure p_lastupdate_m
+go
+create procedure p_lastupdate_m
+	@project_id tinyint = NULL	
+as
+begin
+	declare @mindate datetime
+	
+	if @project_id is NULL or @project_id not in (select PROJECT_ID from Projects)
+	begin
+		raiserror 99999 "Invalid project specified"
+	end
+
+	select @mindate = dateadd(day, -30, getdate())
+
+	select max(DATE) as lastupdate
+		from Email_Contrib
+		where PROJECT_ID = @project_id
+			and DATE >= @mindate
+end
+go
+grant execute on p_lastupdate_m to public
+go
+
+drop procedure p_lastupdate_p
+go
+create procedure p_lastupdate_p
+	@project_id tinyint = NULL	
+as
+begin
+	if @project_id is NULL or @project_id not in (select PROJECT_ID from Projects)
+	begin
+		raiserror 99999 "Invalid project specified"
+	end
+
+	select max(DATE) as lastupdate
+		from Platform_Contrib
+		where PROJECT_ID = @project_id
+end
+go
+grant execute on p_lastupdate_p to public
+go
+
+
+
+drop procedure p_lastupdate_rc5_e
+go
+create procedure p_lastupdate_rc5_e
+	@project_id tinyint = NULL	
+as
+begin
+	if @project_id <> 5
+	begin
+		raiserror 99999 "Invalid project specified"
+	end
+
+	select max(last) as lastupdate
+		from statproc.rc5_64_CACHE_em_rank
+end
+go
+grant execute on p_lastupdate_rc5_e to public
+go
+
+
+drop procedure p_lastupdate_rc5_t
+go
+create procedure p_lastupdate_rc5_t
+	@project_id tinyint = NULL	
+as
+begin
+	if @project_id <> 5
+	begin
+		raiserror 99999 "Invalid project specified"
+	end
+
+	select max(last) as lastupdate
+		from statproc.rc5_64_CACHE_tm_rank
+end
+go
+grant execute on p_lastupdate_rc5_t to public
+go
+
+drop procedure p_lastupdate_rc5_m
+go
+create procedure p_lastupdate_rc5_m
+	@project_id tinyint = NULL	
+as
+begin
+	if @project_id <> 5
+	begin
+		raiserror 99999 "Invalid project specified"
+	end
+
+	select max(date) as lastupdate
+		from rc5_64_platform
+end
+go
+grant execute on p_lastupdate_rc5_m to public
+go
+
+drop procedure p_lastupdate_rc5_p
+go
+create procedure p_lastupdate_rc5_p
+	@project_id tinyint = NULL	
+as
+begin
+	if @project_id <> 5
+	begin
+		raiserror 99999 "Invalid project specified"
+	end
+
+	select max(date) as lastupdate
+		from rc5_64_platform
+end
+go
+grant execute on p_lastupdate_rc5_p to public
+go
