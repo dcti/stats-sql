@@ -1,4 +1,4 @@
--- $Id: copy.sql,v 1.8 2003/04/09 16:23:48 decibel Exp $
+-- $Id: copy.sql,v 1.9 2003/04/14 14:00:52 decibel Exp $
 \set ON_ERROR_STOP 1
 COPY CSC_dailies FROM '/home/decibel/blower/CSC_dailies.bcp' WITH DELIMITER '\t';
 COPY CSC_master FROM '/home/decibel/blower/CSC_master.bcp' WITH DELIMITER '\t';
@@ -18,7 +18,7 @@ COPY Email_Rank_Last_Update FROM '/home/decibel/blower/Email_Rank_Last_Update.bc
 
 COPY Platform_Contrib (PROJECT_ID, DATE, CPU, OS, VER, WORK_UNITS) FROM '/home/decibel/blower/Platform_Contrib.bcp' WITH DELIMITER '\t';
 
-COPY Platform_Contrib_Today (project_id, cpu, os, ver, vork_units) FROM '/home/decibel/blower/Platform_Contrib_Today.bcp' WITH DELIMITER '\t';
+COPY Platform_Contrib_Today (project_id, cpu, os, ver, work_units) FROM '/home/decibel/blower/Platform_Contrib_Today.bcp' WITH DELIMITER '\t';
 
 COPY Platform_Contrib_Last_Update FROM '/home/decibel/blower/Platform_Contrib_Last_Update.bcp' WITH DELIMITER '\t' NULL '';
 
