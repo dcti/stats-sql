@@ -1,0 +1,8 @@
+#!/bin/sh
+# $Id: doall3,v 1.1 2003/08/28 23:58:14 decibel Exp $
+
+./move.pl stats STATS_team || exit 1
+psql -e stats < index.sql 2>&1 | grep -v NOTICE || exit 1
+psql -e stats < cluster.sql 2>&1 || exit 1
+psql stats < perms.sql 2>&1 || exit 1
+psql stats < cleanup.sql 2>&1 || exit 1
