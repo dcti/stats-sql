@@ -1,16 +1,19 @@
 use stats
 go
 
+drop procedure rank
+go
+
 create procedure rank
-(	@section varchar(1) = null,	/* What section to look at (i.e. e for email, t for team) */
+(	@section char(1) = null,	/* What section to look at (i.e. e for email, t for team) */
 	@contest varchar(10) = null,	/* Contest that we want the ranking on */
-	@timeframe varchar(1) = null,	/* Timeframe we want to look at (overall v. yesterday) */
+	@timeframe char(1) = null,	/* Timeframe we want to look at (overall v. yesterday) */
 	@id numeric(7,0) = 0		/* Participant ID to look up */
 )
 as
 begin
-	declare @tablename	char(20)	/* Name of the table to look in */
-	declare @rank		int(4)		/* Rank of participant */
+	declare @procname	varchar(30)	/* Name of the table to look in */
+	declare @rnk		int		/* Rank of participant */
 
 	/* 1.0 Error checking */
 
@@ -18,50 +21,47 @@ begin
 	if ( (@section = null) or (@contest = null) or (@timeframe = null) or (@id = 0) )
 	begin
 		print "usage:"
-		print "	 participant_rank contest, timeframe, id"
+		print "	rank section, contest, timeframe, id"
 		print "where:"
+		print "	section is email or team (i.e. e or t)"
 		print "	contest is contest to check rank on"
-		print " timeframe is the ranking to check (i.e. o for overall or y for yesterday)"
+		print "	timeframe is the ranking to check (i.e. o for overall or y for yesterday)"
 		print "	id is the participant ID to check"
-		return(-5)
+		return -5
 	end
 
+	print "Error check done"
+
 	select @section = lower(@section)
-	if (@section = "e")
-		select @section = "em"
-	else if (@section = "t")
-		select @section = "tm"
-	else
+	if not @section in ("e", "o")
 	begin
 		print "Invalid section '%1!' specified, must be 'e' or 't'", @section
-		return(-5)
+		return -5
 	end
 	
 	/* 1.2  */
-	select @timeframe = upper(@timeframe)
-	if not @timeframe in ("", "O", "Y")
+	select @timeframe = lower(@timeframe)
+	if not @timeframe in ("", "o", "y")
 	begin
-		print "Invalid timeframe '%1!' specified, must be 'O' or 'Y'", @timeframe
-		return(-5)
+		print "Invalid timeframe '%1!' specified, must be 'o' or 'y'", @timeframe
+		return -5
 	end
-	if ( @timeframe = 'O' )
-		select @timeframe = ""
 
-	/* Build the table name */
-	select @tablename = "statproc." + @contest + "_CACHE_" + @section + "_" + @timeframe + "RANK"
+	print "substitutions done"
+
+	/* Build the procedure name */
+	select @procname = "rank_" + @contest + "_" + @section + "_" + @timeframe + "_rank"
 	
-	/* See if the silly table exists */
-	if (object_id(@tablename) is NULL)
+	/* See if the silly procedure exists */
+	if (object_id(@procname) is NULL)
 	begin
-		print "The table '%1!' does not exist!",@tablename
-		return(-1)
+		print "The procedure '%1!' does not exist!",@procname
+		return -1
 	end
 
-	/* Do the query */
-	select @rank = rank
-	from @tablename
-	where id = @id
+	print "Running procedure '%1!'...", @procname
 
-	return(@rank)
+	exec @rnk = @procname @id
+	return @rnk
 end
 go

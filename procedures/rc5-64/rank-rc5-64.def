@@ -61,7 +61,7 @@ as
 
 	select @rank = rank
 	from statproc.rc5_64_CACHE_tm_RANK
-	where id = @id
+	where Team = @id
 	
 	return @rank
 go
@@ -83,7 +83,7 @@ as
 
 	select @rank = rank
 	from statproc.rc5_64_CACHE_tm_YRANK
-	where id = @id
+	where Team = @id
 	
 	return @rank
 go
