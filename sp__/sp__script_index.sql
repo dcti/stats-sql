@@ -17,7 +17,7 @@ create procedure $procedure
 )
 as
 begin
-	-- $Id: sp__script_index.sql,v 1.2 2001/12/21 21:17:45 decibel Exp $
+	-- $Id: sp__script_index.sql,v 1.3 2001/12/21 21:58:33 decibel Exp $
 	set nocount on
 
 	declare @msg varchar(250)
@@ -75,7 +75,7 @@ begin
 			select @out = @out + 'clustered '
 		end
 
-		select @out = @out + 'index on ' + object_name(@objid) + ' ('
+		select @out = @out + 'index ' + @indname + ' on ' + @objname + ' ('
 		print @out
 
 		select @i = 1

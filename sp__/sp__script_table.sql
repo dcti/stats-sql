@@ -17,7 +17,7 @@ create procedure $procedure
 )
 as
 begin
-	-- $Id: sp__script_table.sql,v 1.6 2001/12/21 21:17:45 decibel Exp $
+	-- $Id: sp__script_table.sql,v 1.7 2001/12/21 21:58:33 decibel Exp $
 	set nocount on
 
 	declare @msg varchar(250)
@@ -48,7 +48,7 @@ begin
 		return  (1)
 	end
 
-	SELECT @outputline = 'create table ' + object_name(@objid)
+	SELECT @outputline = 'create table ' + @objname
 	print @outputline
 	print '('
 
