@@ -1,4 +1,4 @@
--- $Id: template2.def,v 1.1 2000/09/03 08:08:57 decibel Exp $
+-- $Id: template2.def,v 1.2 2000/10/13 18:38:19 decibel Exp $
 
 use ${1}
 go
@@ -16,6 +16,7 @@ as
 	** be called from 'lastupdate'.
 	*/
 
+	set transaction isolation level 0
 	select max(${4}) as lastupdate
 	from ${3}
 	where PROJECT_ID = @project_id

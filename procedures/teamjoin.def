@@ -1,4 +1,4 @@
--- $Id: teamjoin.def,v 1.7 2000/08/23 21:49:08 decibel Exp $
+-- $Id: teamjoin.def,v 1.8 2000/10/13 18:38:19 decibel Exp $
 
 \set procedure=p_teamjoin
 
@@ -58,23 +58,23 @@ as
 
 	/* If the participant already has a record for today, nuke it */
 	delete Team_Joins
-	where ID = @id
-		and JOIN_DATE = @today
+		where ID = @id
+			and JOIN_DATE = @today
 
 	/* If the person was on the same team yesterday, update that record
 		instead of adding a new one */
 	if @team = (
 		select TEAM_ID
-		from Team_Joins
-		where ID = @id
-			and ( LAST_DATE = null or LAST_DATE = @yesterday )
+			from Team_Joins
+			where ID = @id
+				and ( LAST_DATE = null or LAST_DATE = @yesterday )
 	)
 	begin
 		update Team_Joins
 			set LAST_DATE = null,
 				LEAVE_TEAM_ID = 0
-		where ID = @id
-			and ( LAST_DATE = null or LAST_DATE = @yesterday )
+			where ID = @id
+				and ( LAST_DATE = null or LAST_DATE = @yesterday )
 	end
 	else
 	begin
@@ -82,8 +82,8 @@ as
 		update Team_Joins
 			set LAST_DATE = @yesterday,
 				LEAVE_TEAM_ID = @team
-		where ID = @id
-			and ( LAST_DATE = null or LAST_DATE = @yesterday )
+			where ID = @id
+				and ( LAST_DATE = null or LAST_DATE = @yesterday )
 		-- note that there should always be 1 or 0 records where LAST_DATE = null
 		-- for a given participant
 	
@@ -91,14 +91,17 @@ as
 		if @team != 0
 		begin
 			insert Team_Joins (ID, TEAM_ID, JOIN_DATE)
-			values (@id, @team, @today )
+				values (@id, @team, @today )
 		end
 	end
 
 	/* Update Stats_Participant (redundant info; should eventually go away) */
 	update Stats_Participant
 		set team = @team
-	where ID = @id
+		where ID = @id
+	update STATS_Participant
+		set team = @team
+		where RETIRE_TO = @id
 
 	return
 
