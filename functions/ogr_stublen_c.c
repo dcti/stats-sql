@@ -1,4 +1,5 @@
 /* C-Source style ogr-stublength calculation */
+/* $Id: ogr_stublen_c.c,v 1.2 2003/12/12 22:45:41 thejet Exp $ */
 #include "postgres.h"
 #include <string.h>
 #include "fmgr.h"
