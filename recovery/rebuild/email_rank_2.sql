@@ -1,6 +1,6 @@
 #!/usr/local/bin/sqsh -i
 #
-# $Id: email_rank_2.sql,v 1.3 2002/03/04 07:40:27 decibel Exp $
+# $Id: email_rank_2.sql,v 1.4 2002/04/11 07:12:39 decibel Exp $
 #
 # Phase 1 of repopulating Email_Rank for a project. After this script, you should
 # re-rank, then run email_rank_2.sql.
@@ -21,10 +21,10 @@ create table #EmailSum (
 )
 go
 
-#dbcc traceon(3604,302,310)
-#set statistics io on
-#set statistics time on
-#set showplan on
+--dbcc traceon(3604,302,310)
+--set statistics io on
+--set statistics time on
+--set showplan on
 
 # It's worth creating the index...
 create unique clustered index pk on #EmailSum(ID)
