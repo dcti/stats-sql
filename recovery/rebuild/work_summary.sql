@@ -1,5 +1,5 @@
 /*
- $Id: work_summary.sql,v 1.18.2.3 2003/04/27 22:06:34 decibel Exp $
+ $Id: work_summary.sql,v 1.18.2.4 2003/04/27 22:11:25 decibel Exp $
 
  Creates a summary table containing all work for a project
 
@@ -11,7 +11,7 @@
 \echo Make sure that WorkSummary_:ProjectID does not exist!!!
 \echo 
 
-CREATE TEMP worksummary (
+CREATE TEMP TABLE worksummary (
     id              int     not null
     , team_id       int     not null
     , first_date    date    not null
