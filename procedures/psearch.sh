@@ -3,7 +3,7 @@
 sqlpath=psearch/
 deletescript=${sqlpath}delete.sql
 insertscript=${sqlpath}template.def
-main_proc=${sqlpath}main_proc.def
+main_proc=${sqlpath}main.def
 
 function setupsql () {
 	echo
