@@ -1,4 +1,4 @@
--- $Id: teamjoin.def,v 1.2 2000/08/19 23:25:54 decibel Exp $
+-- $Id: teamjoin.def,v 1.3 2000/08/21 00:36:54 decibel Exp $
 
 \set procedure=p_teamjoin
 
@@ -23,10 +23,11 @@ go
 \echo "Creating procedure $procedure"
 create procedure $procedure
 (
-	@id int = 0		/* Participant ID */
+	@id int = 0,		/* Participant ID */
 	@team int = null	/* Team to join */
 )
 as
+
 	/* Error checking */
 	if @id = 0
 	begin
@@ -48,7 +49,7 @@ as
 	/* Update the entry for the previous team, if there is one */
 	update jcn_Team_Joins2
 		set LEAVE_DATE = @date,
-		set LEAVE_TEAM_ID = @team
+			LEAVE_TEAM_ID = @team
 	where ID = @id
 		and LEAVE_DATE = null
 	-- note that there should always be 1 or 0 records where LEAVE_DATE = null
