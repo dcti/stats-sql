@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Definitions
-version='$Id: build,v 1.8 2000/03/31 06:21:49 decibel Exp $'
+version='$Id: build,v 1.9 2000/03/31 06:45:21 decibel Exp $'
 template="template/"
 work="work/"
 
@@ -27,7 +27,10 @@ templatedir=${prefix}${template}
 workdir=${prefix}${work}
 
 # Make sure we have a work directory where we expect it to be
-if [ ! -d $workdir ]; then mkdir $workdir; fi
+if [ ! -d $workdir ]; then
+	echo "Creating work directory $workdir"
+	mkdir $workdir
+fi
 
 # Parse the cowmand-line arguments
 while [ x"$1" != x ]; do
@@ -82,7 +85,7 @@ if [ x"$tables" = x ]; then
 	exit 1
 fi
 
-tables=`echo $tables | sed -e 's/.def//g' -e 's/.idx//g' | tr -s " " | tr "[:space:]" "\n" | sort | uniq`
+tables=`echo $tables | tr -s " " | tr "[:space:]" "\n" | cut -d"." -f1 | sort | uniq`
 
 # Thanks to linux's stupid idea that bash is a drop-in replacement for sh, we have to do this:
 if [ $debug != "true" ]; then
@@ -99,7 +102,7 @@ if [ $delete = true ]; then
 		sed -e "s/@DATABASE_NAME@/${database}/g" -e "s/@TABLE_NAME@/${table}/g" ${templatedir}delete.1 > $workfile
 
 		if [ $debug != "true" ]; then
-			sqsh $sqshoptions -h -i $workfile
+			sqsh $sqshoptions -h -i $workfile $force
 		else
 			echo "$workfile built"
 		fi
