@@ -1,11 +1,11 @@
 #!/bin/sh
 
 # Definitions
-version='$Id: lastupdate.sh,v 1.3 2000/03/17 04:55:58 decibel Exp $'
+version='$Id: lastupdate.sh,v 1.4 2000/06/07 08:23:14 decibel Exp $'
 sqlpath=lastupdate/
-deletescript=${sqlpath}lastupdate_delete.sql
-insertscript=${sqlpath}lastupdate_template.def
-main_proc=${sqlpath}main_proc.def
+deletescript=${sqlpath}delete.sql
+insertscript=${sqlpath}template
+main_proc=${sqlpath}main.def
 
 # Variable initialization
 deleteonly=false
@@ -15,7 +15,15 @@ sqshargs=""
 function setupsql () {
 	sqsh $sqshargs -i ${deletescript} $database $1
 	if [ "$deleteonly" != "true" ]; then
-		sqsh $sqshargs -i $insertscript $database $1 $2 $3
+		sqsh $sqshargs -i ${insertscript}.def $database $1 $2 $3
+	fi
+	return
+}
+
+function setupsql2 () {
+	sqsh $sqshargs -i ${deletescript} $database $1
+	if [ "$deleteonly" != "true" ]; then
+		sqsh $sqshargs -i ${insertscript}2.def $database $1 $2 $3
 	fi
 	return
 }
@@ -47,7 +55,7 @@ EOF
 	esac
 done
 
-if [ $database = "" ]; then
+if [ x$database = x ]; then
 	echo "You must specify a database to use!"
 	exit 1
 fi
@@ -67,5 +75,10 @@ setupsql rc5_64_t_o statproc.rc5_64_CACHE_tm_rank last
 setupsql rc5_64_t_y statproc.rc5_64_CACHE_tm_yrank last
 setupsql rc5_64_m rc5_64_master date
 setupsql rc5_64_p rc5_64_platform date
+
+setupsql2 ogr_e Email_Rank LAST_DATE
+setupsql2 ogr_t Team_Rank LAST_DATE
+setupsql2 ogr_m Email_Contrib DATE
+setupsql2 ogr_p Platform_Contrib DATE
 
 [ -f ${sqlpath}depends ] && echo && cat ${sqlpath}depends

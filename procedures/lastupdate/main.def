@@ -1,4 +1,4 @@
--- $Id: main_proc.def,v 1.3 2000/03/17 04:55:58 decibel Exp $
+-- $Id: main.def,v 1.1 2000/06/07 08:23:14 decibel Exp $
 
 \set procedure=p_lastupdate
 
@@ -16,7 +16,8 @@ go
 create procedure $procedure
 (	@section char(1) = null,	/* What section to look at (i.e. e for email, t for team) */
 	@contest varchar(10) = null,	/* Contest that we want the lastupdateing on */
-	@timeframe char(1) = null	/* Timeframe we want to look at (overall v. yesterday) */
+	@timeframe char(1) = null,	/* Timeframe we want to look at (overall v. yesterday) */
+	@project_id tinyint = 0		/* PROJECT_ID */
 )
 as
 begin
@@ -52,16 +53,28 @@ begin
 	end
 	else
 	begin
-		/* Process @timeframe  */
-		select @timeframe = lower(@timeframe)
-		if not @timeframe in ("o", "y")
+		if @contest in ("ogr")
 		begin
-			raiserror 99999 "Invalid timeframe '%1!' specified, must be 'o' or 'y'", @timeframe
-			return -5
+			
+			/* Build the procedure name */
+			select @procname = "p_lastupdate_" + @contest + "_" + @section
+		
 		end
-	
-		/* Build the procedure name */
-		select @procname = "p_lastupdate_" + @contest + "_" + @section + "_" + @timeframe 
+		else
+		begin
+
+			/* Process @timeframe  */
+			select @timeframe = lower(@timeframe)
+			
+			if not @timeframe in ("o", "y")
+			begin
+				raiserror 99999 "Invalid timeframe '%1!' specified, must be 'o' or 'y'", @timeframe
+				return -5
+			end
+		
+			/* Build the procedure name */
+			select @procname = "p_lastupdate_" + @contest + "_" + @section + "_" + @timeframe 
+		end
 	end
 	
 	/* See if the silly procedure exists */
@@ -71,7 +84,10 @@ begin
 		return -1
 	end
 
-	exec @procname
+	if @contest in ("ogr")
+		exec @procname @project_id
+	else
+		exec @procname
 	return 
 end
 go

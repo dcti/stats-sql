@@ -1,4 +1,4 @@
--- $Id: lastupdate_delete.sql,v 1.2 2000/03/17 04:55:58 decibel Exp $
+-- $Id: delete.sql,v 1.1 2000/06/07 08:23:14 decibel Exp $
 
 use ${1}
 go
