@@ -1,4 +1,4 @@
--- $Id: tables.sql,v 1.6 2003/04/05 00:30:04 decibel Exp $
+-- $Id: tables.sql,v 1.7 2003/04/08 15:47:06 decibel Exp $
 -- Create all table, but without indexes or primary keys
 
 CREATE TABLE csc_dailies (
@@ -39,120 +39,120 @@ CREATE TABLE csc_platform (
 
 CREATE TABLE daily_summary (
     date date NOT NULL,
-    project_id smallint NOT NULL,
-    work_units numeric(20,0) NOT NULL,
+    project_id int NOT NULL,
     participants integer NOT NULL,
     participants_new integer NOT NULL,
     top_oparticipant integer NOT NULL,
-    top_opwork numeric(20,0) NOT NULL,
     top_yparticipant integer NOT NULL,
-    top_ypwork numeric(20,0) NOT NULL,
     teams integer NOT NULL,
     teams_new integer NOT NULL,
     top_oteam integer NOT NULL,
-    top_otwork numeric(20,0) NOT NULL,
     top_yteam integer NOT NULL,
-    top_ytwork numeric(20,0) NOT NULL
+    work_units bigint NOT NULL,
+    top_opwork bigint NOT NULL,
+    top_otwork bigint NOT NULL,
+    top_ypwork bigint NOT NULL,
+    top_ytwork bigint NOT NULL
 ) WITHOUT OIDS;
 
 
 
 CREATE TABLE email_contrib (
+    project_id int NOT NULL,
     id integer NOT NULL,
-    team_id integer NOT NULL,
     date date NOT NULL,
-    project_id smallint NOT NULL,
-    work_units numeric(20,0) NOT NULL
+    team_id integer NOT NULL,
+    work_units bigint NOT NULL
 ) WITHOUT OIDS;
 
 
 
 CREATE TABLE email_contrib_last_update (
-    project_id smallint NOT NULL,
+    project_id int NOT NULL,
     last_date date
 ) WITHOUT OIDS;
 
 
 
 CREATE TABLE email_contrib_today (
-    project_id smallint NOT NULL,
+    project_id int NOT NULL,
     id integer NOT NULL,
     team_id integer NOT NULL,
-    work_units numeric(20,0) NOT NULL,
-    credit_id integer NOT NULL
+    credit_id integer NOT NULL,
+    work_units bigint NOT NULL
 ) WITHOUT OIDS;
 
 
 
 CREATE TABLE email_rank (
-    project_id smallint NOT NULL,
+    project_id int NOT NULL,
     id integer NOT NULL,
     first_date date NOT NULL,
     last_date date NOT NULL,
-    work_today numeric(20,0) NOT NULL,
-    work_total numeric(20,0) NOT NULL,
     day_rank integer NOT NULL,
     day_rank_previous integer NOT NULL,
     overall_rank integer NOT NULL,
-    overall_rank_previous integer NOT NULL
+    overall_rank_previous integer NOT NULL,
+    work_today bigint NOT NULL,
+    work_total bigint NOT NULL
 ) WITHOUT OIDS;
 
 
 
 CREATE TABLE email_rank_last_update (
-    project_id smallint NOT NULL,
+    project_id int NOT NULL,
     last_date date
 ) WITHOUT OIDS;
 
 
 
 CREATE TABLE log_info (
-    project_id smallint NOT NULL,
-    log_timestamp timestamp without time zone NOT NULL,
-    work_units numeric(20,0) NOT NULL,
+    error bit(1) NOT NULL,
+    project_id int NOT NULL,
     lines integer NOT NULL,
-    error bit(1) NOT NULL
+    log_timestamp timestamp without time zone NOT NULL,
+    work_units bigint NOT NULL
 ) WITHOUT OIDS;
 
 
 
 CREATE TABLE platform_contrib (
-    project_id smallint NOT NULL,
-    date date NOT NULL,
     cpu smallint NOT NULL,
     os smallint NOT NULL,
     ver smallint NOT NULL,
-    work_units numeric(20,0) NOT NULL
+    project_id int NOT NULL,
+    date date NOT NULL,
+    work_units bigint NOT NULL
 ) WITHOUT OIDS;
 
 
 
 CREATE TABLE platform_contrib_last_update (
-    project_id smallint NOT NULL,
+    project_id int NOT NULL,
     last_date date
 ) WITHOUT OIDS;
 
 
 
 CREATE TABLE platform_contrib_today (
-    project_id smallint NOT NULL,
     cpu smallint NOT NULL,
     os smallint NOT NULL,
     ver smallint NOT NULL,
-    work_units numeric(20,0) NOT NULL
+    project_id int NOT NULL,
+    work_units bigint NOT NULL
 ) WITHOUT OIDS;
 
 
 
 CREATE TABLE platform_summary (
-    project_id smallint NOT NULL,
     cpu smallint NOT NULL,
     os smallint NOT NULL,
     ver smallint NOT NULL,
+    project_id int NOT NULL,
     first_date date NOT NULL,
     last_date date NOT NULL,
-    work_today numeric(38,0) NOT NULL,
-    work_total numeric(22,0) NOT NULL
+    work_today bigint NOT NULL,
+    work_total numeric(24,0) NOT NULL
 ) WITHOUT OIDS;
 
 
@@ -165,10 +165,10 @@ CREATE TABLE project_status (
 
 
 CREATE TABLE project_statsrun (
-    project_id smallint NOT NULL,
+    project_id int NOT NULL,
     last_log character(11) NOT NULL,
     logs_for_day smallint NOT NULL,
-    work_for_day numeric(20,0) NOT NULL,
+    work_for_day bigint NOT NULL,
     last_hourly_date date,
     last_master_date date,
     last_email_date date,
@@ -179,14 +179,14 @@ CREATE TABLE project_statsrun (
 
 
 CREATE TABLE projects (
-    project_id smallint NOT NULL,
-    project_type character varying(10) NOT NULL,
-    name character varying(40) NOT NULL,
     status character(1) NOT NULL,
+    project_id int NOT NULL,
     start_date date,
     end_date date,
     due_date date,
-    prize numeric(38,2) NOT NULL,
+    project_type character varying(10) NOT NULL,
+    name character varying(40) NOT NULL,
+    prize numeric(16,2) NOT NULL,
     description character varying(255) NOT NULL,
     dist_unit_qty numeric(38,0) NOT NULL,
     dist_unit_name character varying(20) NOT NULL,
@@ -199,23 +199,18 @@ CREATE TABLE projects (
     logfile_prefix character varying(10) NOT NULL,
     sponsor_url character varying(255) NOT NULL,
     sponsor_name character varying(255) NOT NULL,
-    logo_url character varying(255) NOT NULL,
-    deprecated_fields character(1) NOT NULL,
-    work_unit_name character varying(20) NOT NULL,
-    dist_unit_scale numeric(38,0) NOT NULL,
-    work_unit_scale numeric(38,0) NOT NULL
+    logo_url character varying(255) NOT NULL
 ) WITHOUT OIDS;
 
 
 
 CREATE TABLE stats_participant (
-    id int NOT NULL,
-    email character varying(64) NOT NULL,
-    "password" character(8) NOT NULL DEFAULT '',
     listmode smallint NOT NULL,
     nonprofit smallint NOT NULL,
-    team integer NOT NULL,
+    id int NOT NULL,
     retire_to integer NOT NULL,
+    retire_date date,
+    team integer NOT NULL,
     friend_a integer NOT NULL,
     friend_b integer NOT NULL,
     friend_c integer NOT NULL,
@@ -223,13 +218,14 @@ CREATE TABLE stats_participant (
     friend_e integer NOT NULL,
     dem_yob integer NOT NULL,
     dem_heard smallint NOT NULL,
-    dem_gender character(1) NOT NULL,
     dem_motivation smallint NOT NULL,
+    dem_gender character(1) NOT NULL,
+    email character varying(64) NOT NULL,
+    "password" character(8) NOT NULL DEFAULT '',
     dem_country character varying(8) NOT NULL,
     contact_name character varying(50) NOT NULL,
     contact_phone character varying(20) NOT NULL,
-    motto character varying(255) NOT NULL,
-    retire_date date
+    motto character varying(255) NOT NULL
 ) WITHOUT OIDS;
 
 
@@ -261,8 +257,8 @@ CREATE TABLE stats_team_blocked (
 
 
 CREATE TABLE stats_country (
-    country character(64) NOT NULL,
-    code character(2) NOT NULL
+    code character(2) NOT NULL,
+    country character(64) NOT NULL
 ) WITHOUT OIDS;
 
 
@@ -309,8 +305,8 @@ CREATE TABLE stats_os (
 
 
 CREATE TABLE stats_team (
-    team int NOT NULL,
     listmode smallint NOT NULL,
+    team int NOT NULL,
     "password" character(8),
     name character(64) NOT NULL,
     url character(128),
@@ -335,48 +331,48 @@ CREATE TABLE team_joins (
 
 
 CREATE TABLE team_members (
-    project_id smallint NOT NULL,
+    project_id int NOT NULL,
     id integer NOT NULL,
     team_id integer NOT NULL,
     first_date date NOT NULL,
     last_date date NOT NULL,
-    work_today numeric(20,0) NOT NULL,
-    work_total numeric(20,0) NOT NULL,
     day_rank integer NOT NULL,
     day_rank_previous integer NOT NULL,
     overall_rank integer NOT NULL,
-    overall_rank_previous integer NOT NULL
+    overall_rank_previous integer NOT NULL,
+    work_today bigint NOT NULL,
+    work_total bigint NOT NULL
 ) WITHOUT OIDS;
 
 
 
 CREATE TABLE team_members_last_update (
-    project_id smallint NOT NULL,
+    project_id int NOT NULL,
     last_date date
 ) WITHOUT OIDS;
 
 
 
 CREATE TABLE team_rank (
-    project_id smallint NOT NULL,
+    project_id int NOT NULL,
     team_id integer NOT NULL,
     first_date date NOT NULL,
     last_date date NOT NULL,
-    work_today numeric(20,0) NOT NULL,
-    work_total numeric(20,0) NOT NULL,
     day_rank integer NOT NULL,
     day_rank_previous integer NOT NULL,
     overall_rank integer NOT NULL,
     overall_rank_previous integer NOT NULL,
     members_today integer NOT NULL,
     members_overall integer NOT NULL,
-    members_current integer NOT NULL
+    members_current integer NOT NULL,
+    work_today bigint NOT NULL,
+    work_total bigint NOT NULL
 ) WITHOUT OIDS;
 
 
 
 CREATE TABLE team_rank_last_update (
-    project_id smallint NOT NULL,
+    project_id int NOT NULL,
     last_date date
 ) WITHOUT OIDS;
 
@@ -385,8 +381,8 @@ CREATE TABLE team_rank_last_update (
 CREATE TABLE import_bcp (
     time_stamp date NOT NULL,
     email character varying(64) NOT NULL,
-    project_id smallint NOT NULL,
-    work_units numeric(20,0) NOT NULL,
+    project_id int NOT NULL,
+    work_units bigint NOT NULL,
     os integer NOT NULL,
     cpu integer NOT NULL,
     ver integer NOT NULL
@@ -396,52 +392,52 @@ CREATE TABLE import_bcp (
 
 CREATE TABLE email_rank_backup (
     backup_date date NOT NULL,
-    project_id smallint NOT NULL,
+    project_id int NOT NULL,
     id integer NOT NULL,
     first_date date NOT NULL,
     last_date date NOT NULL,
-    work_today numeric(20,0) NOT NULL,
-    work_total numeric(20,0) NOT NULL,
     day_rank integer NOT NULL,
     day_rank_previous integer NOT NULL,
     overall_rank integer NOT NULL,
-    overall_rank_previous integer NOT NULL
+    overall_rank_previous integer NOT NULL,
+    work_today bigint NOT NULL,
+    work_total bigint NOT NULL
 ) WITHOUT OIDS;
 
 
 
 CREATE TABLE team_members_backup (
     backup_date date NOT NULL,
-    project_id smallint NOT NULL,
+    project_id int NOT NULL,
     id integer NOT NULL,
     team_id integer NOT NULL,
     first_date date NOT NULL,
     last_date date NOT NULL,
-    work_today numeric(20,0) NOT NULL,
-    work_total numeric(20,0) NOT NULL,
     day_rank integer NOT NULL,
     day_rank_previous integer NOT NULL,
     overall_rank integer NOT NULL,
-    overall_rank_previous integer NOT NULL
+    overall_rank_previous integer NOT NULL,
+    work_today bigint NOT NULL,
+    work_total bigint NOT NULL
 ) WITHOUT OIDS;
 
 
 
 CREATE TABLE team_rank_backup (
     backup_date date NOT NULL,
-    project_id smallint NOT NULL,
+    project_id int NOT NULL,
     team_id integer NOT NULL,
     first_date date NOT NULL,
     last_date date NOT NULL,
-    work_today numeric(20,0) NOT NULL,
-    work_total numeric(20,0) NOT NULL,
     day_rank integer NOT NULL,
     day_rank_previous integer NOT NULL,
     overall_rank integer NOT NULL,
     overall_rank_previous integer NOT NULL,
     members_today integer NOT NULL,
     members_overall integer NOT NULL,
-    members_current integer NOT NULL
+    members_current integer NOT NULL,
+    work_today bigint NOT NULL,
+    work_total bigint NOT NULL
 ) WITHOUT OIDS;
 
 
