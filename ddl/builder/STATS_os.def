@@ -1,0 +1,7 @@
+	create table STATS_os
+	(
+		os			int		not NULL,
+		name			char(32)	not NULL,
+		image			char(64)	NULL,
+		category		char(32)	NULL
+	)
