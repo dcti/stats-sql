@@ -1,11 +1,10 @@
 #!/usr/bin/sqsh -i
 #
-# $Id: team_rank.sql,v 1.5 2000/11/01 19:01:20 decibel Exp $
+# $Id: team_rank.sql,v 1.6 2001/01/21 18:14:16 decibel Exp $
 #
 # Repopulates Team_Members for a project.
 # Notes:
 #	The script does *not* re-rank.
-#	It assumes that the summary table has been created using make_summary.sql
 #
 # Arguments:
 #       PROJECT_ID
