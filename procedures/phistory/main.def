@@ -1,0 +1,109 @@
+-- $Id: main.def,v 1.1 2000/10/18 10:28:24 decibel Exp $
+
+\set procedure=p_phistory
+
+if ( "${1}" = "" )
+begin
+	print "Database not specified! Using 'stats' as default!"
+	use stats
+end
+go
+if ( "${1}" != "" )
+begin
+	use ${1}
+end
+go
+
+if (object_id("$procedure") is not null)
+begin
+        print "Dropping procedure $procedure"
+        drop procedure $procedure
+end
+go
+
+\echo "Creating procedure $procedure"
+create procedure $procedure
+(
+	@project_id tinyint,		/* Project ID */
+	@id int = 0,			/* Participant ID */
+	@sort varchar(255) = NULL	/* Sort order (optional) */
+)
+as
+
+	/* Error checking */
+	if @project_id = 0
+	begin
+		raiserror 99999 "project ID not specified"
+		return -5
+	end
+
+	if @id = 0
+	begin
+		raiserror 99999 "participant ID not specified"
+		return -5
+	end
+
+	/* Don't hold any locks */
+	set transaction isolation level 0
+
+	/* Create a temp table to store info for this person and their retire_to's */
+	create table #phistory
+	(
+		DATE		smalldatetime,
+		WORK_UNITS	numeric(20,0)
+	)
+	insert into #phistory(DATE, WORK_UNITS)
+		select DATE, WORK_UNITS
+		from Email_Contrib
+		where ID = @id and PROJECT_ID = @project_id
+
+	/* Build the cursor */
+	declare retires cursor for
+		select id
+		from STATS_Participant
+		where RETIRE_TO = @id
+
+	declare @retired_id int
+
+	open retires
+
+	fetch retires into @retired_id
+
+	while (@@sqlstatus = 0)
+	begin
+		insert into #phistory(DATE, WORK_UNITS)
+			select DATE, WORK_UNITS
+			from Email_Contrib
+			where ID = @retired_id and PROJECT_ID = @project_id
+
+		fetch retires into @retired_id
+	end
+
+	/* If there was an error, die here */
+	if (@@sqlstatus = 1) return -101
+
+	close retires
+	deallocate cursor retires
+
+	if (@sort = NULL)
+	begin
+		select DATE, sum(WORK_UNITS) as WORK_UNITS
+		from #phistory
+		group by DATE
+		order by DATE desc
+	end
+	else
+	begin
+		declare @sql varchar(255)
+		select @sql = "select DATE, sum(WORK_UNITS) as WORK_UNITS from #phistory "
+		select @sql = @sql + "group by DATE order by " + @sort
+		exec @sql
+	end
+
+	return @@rowcount
+
+go
+
+grant execute on $procedure to public
+go
+
