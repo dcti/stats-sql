@@ -1,5 +1,7 @@
--- $Id: tables.sql,v 1.9 2003/04/09 16:23:48 decibel Exp $
+-- $Id: tables.sql,v 1.10 2003/04/14 14:00:59 decibel Exp $
 -- Create all table, but without indexes or primary keys
+
+\set ON_ERROR_STOP 1
 
 CREATE TABLE csc_dailies (
     date date NOT NULL,
