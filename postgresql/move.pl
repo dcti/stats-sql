@@ -16,7 +16,7 @@ $s->execute;
 my $n = $s->{NUM_OF_FIELDS};
 die "no result set" if $n == 0;
 
-my $ins = "INSERT INTO $ARGV[1] ("
+my $ins = "INSERT INTO $ARGV[1] (";
 foreach (0..$n-2) {
     $ins .= "$s->{NAME}[$_], ";
 }
