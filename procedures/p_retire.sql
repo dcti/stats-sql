@@ -1,4 +1,4 @@
--- $Id: p_retire.sql,v 1.5 2003/12/31 16:22:33 decibel Exp $
+-- $Id: p_retire.sql,v 1.6 2003/12/31 16:26:55 decibel Exp $
 
 /*
  Participant Retire
@@ -32,55 +32,55 @@ AS '
         i integer;
     BEGIN
 
-    IF participant_id = new_participant_id THEN
-            RAISE EXCEPTION ''Participant IDs must be different.'';
-    END IF; 
+        IF participant_id = new_participant_id THEN
+                RAISE EXCEPTION ''Participant IDs must be different.'';
+        END IF; 
 
-    IF NOT no_limit THEN
-        SELECT COUNT(*) INTO i
-            FROM stats_participant
-            WHERE retire_to IN (participant_id, new_participant_id);
-        IF i > 10 THEN
-            RAISE EXCEPTION ''You may only retire 10 accounts into any one account.'';
+        IF NOT no_limit THEN
+            SELECT COUNT(*) INTO i
+                FROM stats_participant
+                WHERE retire_to IN (participant_id, new_participant_id);
+            IF i > 10 THEN
+                RAISE EXCEPTION ''You may only retire 10 accounts into any one account.'';
+            END IF;
         END IF;
-    END IF;
 
-    SELECT retire_to INTO i
-        FROM stats_participant
-        WHERE id = participant_id
-        FOR UPDATE
-    ;
-    IF NOT FOUND THEN
-        RAISE EXCEPTION ''Invalid source participant id.'';
-    END IF;
-
-    IF i > 0 THEN
-            RAISE EXCEPTION ''Cant retire a retired account.'';
-    END IF;
-
-    SELECT retire_to INTO i
-        FROM stats_participant
-        WHERE id = new_participant_id
-        FOR UPDATE
-    ;
-    IF NOT FOUND THEN
-        RAISE EXCEPTION ''Invalid destination participant id.'';
-    END IF;
-
-    IF i > 0 THEN
-            RAISE EXCEPTION ''Cant retire into a retired account.'';
-    END IF;
-
-        -- Update both the newly retired participant, and everyone retired to that participant
-        -- Only update retire_date for the newly retired participant
-        UPDATE stats_participant
-            SET retire_to = new_participant_id, 
-                retire_date = CASE WHEN retire_date IS NULL THEN CURRENT_DATE ELSE retire_date END
-            WHERE id = participant_id OR retire_to = participant_id
+        SELECT retire_to INTO i
+            FROM stats_participant
+            WHERE id = participant_id
+            FOR UPDATE
         ;
+        IF NOT FOUND THEN
+            RAISE EXCEPTION ''Invalid source participant id.'';
+        END IF;
 
-    RETURN;
-     END;
+        IF i > 0 THEN
+                RAISE EXCEPTION ''Cant retire a retired account.'';
+        END IF;
+
+        SELECT retire_to INTO i
+            FROM stats_participant
+            WHERE id = new_participant_id
+            FOR UPDATE
+        ;
+        IF NOT FOUND THEN
+            RAISE EXCEPTION ''Invalid destination participant id.'';
+        END IF;
+
+        IF i > 0 THEN
+                RAISE EXCEPTION ''Cant retire into a retired account.'';
+        END IF;
+
+            -- Update both the newly retired participant, and everyone retired to that participant
+            -- Only update retire_date for the newly retired participant
+            UPDATE stats_participant
+                SET retire_to = new_participant_id, 
+                    retire_date = CASE WHEN retire_date IS NULL THEN CURRENT_DATE ELSE retire_date END
+                WHERE id = participant_id OR retire_to = participant_id
+            ;
+
+        RETURN 0;
+    END;
 ' LANGUAGE 'plpgsql'
 VOLATILE
 ;
