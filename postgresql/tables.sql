@@ -1,511 +1,543 @@
-create table CSC_dailies
-(
-	date			date	not NULL,
-	blocks			numeric(10,0)	not NULL,
-	participants		int		not NULL,
-	top_oparticipant	int		not NULL,
-	top_opblocks		numeric(10,0)	not NULL,
-	top_yparticipant	int		not NULL,
-	top_ypblocks		numeric(10,0)	not NULL,
-	teams			int		not NULL,
-	top_oteam		int		not NULL,
-	top_otblocks		numeric(10,0)	not NULL,
-	top_yteam		int		not NULL,
-	top_ytblocks		numeric(10,0)	not NULL
-)
-WITHOUT OIDS;
-create table CSC_master
-(
-	id			numeric(7,0)	not null,
-	team			int		not NULL,
-	date			date	not NULL,
-	blocks			numeric(7,0)	not NULL,
-    primary key(id,date)
-)
-WITHOUT OIDS;
-create table CSC_platform
-(
-	cpu			int		not NULL,
-	os			int		not NULL,
-	ver			int		not NULL,
-	date			date	not NULL,
-	blocks			numeric(7,0)	not NULL,
-    primary key(cpu,os,ver,date)
-)
-WITHOUT OIDS;
-create table Daily_Summary
-(
-	DATE			date	not NULL,
-	PROJECT_ID		int2		not NULL,
-	WORK_UNITS		numeric(20,0)	not NULL,
-	PARTICIPANTS		int		not NULL,
-	PARTICIPANTS_NEW	int		not NULL,
-	TOP_OPARTICIPANT	int		not NULL,
-	TOP_OPWORK		numeric(20,0)	not NULL,
-	TOP_YPARTICIPANT	int		not NULL,
-	TOP_YPWORK		numeric(20,0)	not NULL,
-	TEAMS			int		not NULL,
-	TEAMS_NEW		int		not NULL,
-	TOP_OTEAM		int		not NULL,
-	TOP_OTWORK		numeric(20,0)	not NULL,
-	TOP_YTEAM		int		not NULL,
-	TOP_YTWORK		numeric(20,0)	not NULL,
-    primary key(date,project_id)
-)
-WITHOUT OIDS;
-create table Email_Contrib
-(
-	ID			int		not NULL,
-	TEAM_ID			int		not NULL,
-	DATE			date	not NULL,
-	PROJECT_ID		int2		not NULL,
-	WORK_UNITS		numeric(20,0)	not NULL,
-    primary key (project_id,id,date)
-)
-WITHOUT OIDS;
-create table Email_Contrib_Last_Update
-(
-	PROJECT_ID		smallint	primary key,
-	last_date		date	NULL
-)
-WITHOUT OIDS;
-create table Email_Contrib_Today
-(
-	PROJECT_ID		int2		not NULL,
-	ID			int		not NULL,
-	TEAM_ID			int		not NULL,
-	WORK_UNITS		numeric(20,0)	not NULL,
-	CREDIT_ID		int		not NULL,
-    primary key(project_id,id)
-)
-WITHOUT OIDS;
-create table Email_Rank
-(
-	PROJECT_ID		int2		not NULL,
-	ID			int		not NULL,
-	FIRST_DATE		date	not NULL,
-	LAST_DATE		date	not NULL,
-	WORK_TODAY		numeric(20,0)	not NULL,
-	WORK_TOTAL		numeric(20,0)	not NULL,
-	DAY_RANK		int		not NULL,
-	DAY_RANK_PREVIOUS	int		not NULL,
-	OVERALL_RANK		int		not NULL,
-	OVERALL_RANK_PREVIOUS	int		not NULL,
-    primary key(project_id,id)
-)
-WITHOUT OIDS;
-create table Email_Rank_Last_Update
-(
-	PROJECT_ID		smallint	primary key,
-	last_date		date	NULL
-)
-WITHOUT OIDS;
-create table Log_Info
-(
-	PROJECT_ID		int2		not NULL,
-	LOG_TIMESTAMP		timestamp	not NULL,
-	WORK_UNITS		numeric(20,0)	not NULL,
-	LINES			int		not NULL,
-	ERROR			bit		not NULL,
-    primary key(project_id,log_timestamp)
-)
-WITHOUT OIDS;
-create table Platform_Contrib
-(
-	PROJECT_ID		int2		not NULL,
-	DATE			date	not NULL,
-	CPU			smallint	not NULL,
-	OS			smallint	not NULL,
-	VER			smallint	not NULL,
-	WORK_UNITS		numeric(20,0)	not NULL,
-    primary key(project_id,cpu,os,ver,date)
-)
-WITHOUT OIDS;
-create table Platform_Contrib_Last_Update
-(
-	PROJECT_ID		smallint	primary key,
-	last_date		date	NULL
-)
-WITHOUT OIDS;
-create table Platform_Contrib_Today
-(
-	PROJECT_ID		int2		not NULL,
-	CPU			smallint	not NULL,
-	OS			smallint	not NULL,
-	VER			smallint	not NULL,
-	WORK_UNITS		numeric(20,0)	not NULL
-)
-WITHOUT OIDS;
-create table Platform_Summary
-(
-	PROJECT_ID		int2		not NULL,
-	CPU			smallint	not NULL,
-	OS			smallint	not NULL,
-	VER			smallint	not NULL,
-	FIRST_DATE		date	not NULL,
-	LAST_DATE		date	not NULL,
-	WORK_TODAY		numeric(38,0)	not NULL,
-	WORK_TOTAL		numeric(22,0)	not NULL,
-    primary key(project_id,cpu,os,ver)
-)
-WITHOUT OIDS;
-create table Project_Status
-(
-	STATUS			char(1)		primary key,
-	DESCRIPTION		varchar(115)	not NULL
-)
-WITHOUT OIDS;
-create table Project_statsrun
-(
-	PROJECT_ID		int2		primary key,
-	LAST_LOG		char(11)	not NULL,
-	LOGS_FOR_DAY		int2		not NULL,
-	WORK_FOR_DAY		numeric(20,0)	not NULL,
-	LAST_HOURLY_DATE	date	NULL,
-	LAST_MASTER_DATE	date	NULL,
-	LAST_EMAIL_DATE		date	NULL,
-	LAST_TEAM_DATE		date	NULL,
-	LAST_SUMMARY_DATE	date	NULL
-)
-WITHOUT OIDS;
-create table Projects
-(
-	PROJECT_ID		int2		primary key,
-	PROJECT_TYPE		varchar(10)	not NULL,
-	NAME			varchar(40)	constraint Projects__NAME unique not NULL,
-	STATUS			char(1)		not NULL,
-	START_DATE		date	NULL,
-	END_DATE		date	NULL,
-	DUE_DATE		date	NULL,
-	PRIZE			numeric(38,2)		not NULL,
-	DESCRIPTION		varchar(255)	not NULL,
-	DIST_UNIT_QTY		numeric(38,0)	not NULL,
-	DIST_UNIT_NAME		varchar(20)	not NULL,
-	WORK_UNIT_QTY		numeric(38,0)	not NULL,
-	WORK_UNIT_DISP_MULTIPLIER numeric(38,0)	not NULL,
-	WORK_UNIT_DISP_DIVISOR	numeric(38,0)	not NULL,
-	WORK_UNIT_IMPORT_MULTIPLIER numeric(38,0)	not NULL,
-	UNSCALED_WORK_UNIT_NAME	varchar(20)	not NULL,
-	SCALED_WORK_UNIT_NAME	varchar(20)	not NULL,
-	LOGFILE_PREFIX		varchar(10)	not NULL,
-	SPONSOR_URL		varchar(255)	not NULL,
-	SPONSOR_NAME		varchar(255)	not NULL,
-	LOGO_URL		varchar(255)	not NULL,
-	deprecated_fields	char(1)		not NULL,
-	WORK_UNIT_NAME		varchar(20)	not NULL,
-	DIST_UNIT_SCALE		numeric(38,0)	not NULL,
-	WORK_UNIT_SCALE		numeric(38,0)	not NULL
-)
-WITHOUT OIDS;
-create table STATS_Participant
-(
-	id			numeric(10,0)	primary key,
-	email			varchar(64)	constraint STATS_Participant__EMAIL unique not NULL,
-	password		char(8)		not NULL,
-	listmode		smallint	not NULL,
-	nonprofit		smallint	not NULL,
-	team			int		not NULL,
-	retire_to		int		not NULL,
-	friend_a		int		not NULL,
-	friend_b		int		not NULL,
-	friend_c		int		not NULL,
-	friend_d		int		not NULL,
-	friend_e		int		not NULL,
-	dem_yob			int		not NULL,
-	dem_heard		smallint	not NULL,
-	dem_gender		char(1)		not NULL,
-	dem_motivation		smallint	not NULL,
-	dem_country		varchar(8)	not NULL,
-	contact_name		varchar(50)	not NULL,
-	contact_phone		varchar(20)	not NULL,
-	motto			varchar(255)	not NULL,
-	retire_date		date	NULL
-)
-WITHOUT OIDS;
-create table STATS_Participant_Blocked
-(
-	ID			int		primary key
-)
-WITHOUT OIDS;
-create table STATS_Participant_Friend
-(
-	id			int		not NULL,
-	friend			int		not NULL,
-    primary key(id,friend)
-)
-WITHOUT OIDS;
-create table STATS_Participant_Listmode
-(
-	listmode		smallint	primary key,
-	description		varchar(100)	constraint STATS_Participant_Listmode__description unique not NULL
-)
-WITHOUT OIDS;
-create table STATS_Team_Blocked
-(
-	TEAM_ID			int		primary key
-)
-WITHOUT OIDS;
-create table STATS_country
-(
-	country			char(64)	constraint STATS_country__country UNIQUE not NULL,
-	code			char(2)		primary key
-)
-WITHOUT OIDS;
-create table STATS_cpu
-(
-	cpu			int		primary key,
-	name			char(32)	not NULL,
-	image			char(64)	NULL,
-	category		char(32)	NULL
-)
-WITHOUT OIDS;
-create table STATS_dem_heard
-(
-	heard			smallint	primary key,
-	description		varchar(100)	constraint STATS_dem_heard__description unique not NULL
-)
-WITHOUT OIDS;
-create table STATS_dem_motivation
-(
-	motivation		smallint	primary key,
-	description		varchar(100)	constraint STATS_dem_motivation__description unique not NULL
-)
-WITHOUT OIDS;
-create table STATS_nonprofit
-(
-	nonprofit		int		primary key,
-	name			char(64)	not NULL,
-	url			char(64)	not NULL,
-	comments		text		not NULL
-)
-WITHOUT OIDS;
-create table STATS_os
-(
-	os			int		primary key,
-	name			char(32)	not NULL,
-	image			char(64)	NULL,
-	category		char(32)	NULL
-)
-WITHOUT OIDS;
-create table STATS_team
-(
-	team			numeric(10,0)	primary key,
-	listmode		smallint	not NULL,
-	password		char(8)		NULL,
-	name			char(64)	constraint STATS_Team__name unique NOT NULL,
-	url			char(128)	NULL,
-	contactname		char(64)	NULL,
-	contactemail		char(64)	NULL,
-	logo			char(128)	NULL,
-	showmembers		char(3)		NULL,
-	showpassword		char(16)	NULL,
-	description		text		NULL
-)
-WITHOUT OIDS;
-create table Team_Joins
-(
-	id			int		not NULL,
-	team_id			int		not NULL,
-	join_date		date	not NULL,
-	last_date		date	NULL,
-	leave_team_id		int		not NULL,
-    primary key(id,join_date,team_id)
-)
-WITHOUT OIDS;
-create table Team_Members
-(
-	PROJECT_ID		int2		not NULL,
-	ID			int		not NULL,
-	TEAM_ID			int		not NULL,
-	FIRST_DATE		date	not NULL,
-	LAST_DATE		date	not NULL,
-	WORK_TODAY		numeric(20,0)	not NULL,
-	WORK_TOTAL		numeric(20,0)	not NULL,
-	DAY_RANK		int		not NULL,
-	DAY_RANK_PREVIOUS	int		not NULL,
-	OVERALL_RANK		int		not NULL,
-	OVERALL_RANK_PREVIOUS	int		not NULL,
-    primary key(project_id,team_id,id)
-)
-WITHOUT OIDS;
-create table Team_Members_Last_Update
-(
-	PROJECT_ID		smallint	primary key,
-	last_date		date	NULL
-)
-WITHOUT OIDS;
-create table Team_Rank
-(
-	PROJECT_ID		int2		not NULL,
-	TEAM_ID			int		not NULL,
-	FIRST_DATE		date	not NULL,
-	LAST_DATE		date	not NULL,
-	WORK_TODAY		numeric(20,0)	not NULL,
-	WORK_TOTAL		numeric(20,0)	not NULL,
-	DAY_RANK		int		not NULL,
-	DAY_RANK_PREVIOUS	int		not NULL,
-	OVERALL_RANK		int		not NULL,
-	OVERALL_RANK_PREVIOUS	int		not NULL,
-	MEMBERS_TODAY		int		not NULL,
-	MEMBERS_OVERALL		int		not NULL,
-	MEMBERS_CURRENT		int		not NULL,
-    primary key(project_id,team_id)
-)
-WITHOUT OIDS;
-create table Team_Rank_Last_Update
-(
-	PROJECT_ID		smallint	primary key,
-	last_date		date	NULL
-)
-WITHOUT OIDS;
-create table import_bcp
-(
-	TIME_STAMP		date	not NULL,
-	EMAIL			varchar(64)	not NULL,
-	PROJECT_ID		int2		not NULL,
-	WORK_UNITS		numeric(20,0)	not NULL,
-	OS			int		not NULL,
-	CPU			int		not NULL,
-	VER			int		not NULL
-)
-WITHOUT OIDS;
-create table Email_Rank_Backup
-(
-	BACKUP_DATE		date	not NULL,
-	project_id		int2		not NULL,
-	id			int		not NULL,
-	first_date		date	not NULL,
-	last_date		date	not NULL,
-	work_today		numeric(20,0)	not NULL,
-	work_total		numeric(20,0)	not NULL,
-	day_rank		int		not NULL,
-	day_rank_previous	int		not NULL,
-	overall_rank		int		not NULL,
-	overall_rank_previous	int		not NULL
-)
-WITHOUT OIDS;
-create table Team_Members_Backup
-(
-	BACKUP_DATE		date	not NULL,
-	project_id		int2		not NULL,
-	id			int		not NULL,
-	team_id			int		not NULL,
-	first_date		date	not NULL,
-	last_date		date	not NULL,
-	work_today		numeric(20,0)	not NULL,
-	work_total		numeric(20,0)	not NULL,
-	day_rank		int		not NULL,
-	day_rank_previous	int		not NULL,
-	overall_rank		int		not NULL,
-	overall_rank_previous	int		not NULL
-)
-WITHOUT OIDS;
-create table Team_Rank_Backup
-(
-	BACKUP_DATE		date	not NULL,
-	project_id		int2		not NULL,
-	team_id			int		not NULL,
-	first_date		date	not NULL,
-	last_date		date	not NULL,
-	work_today		numeric(20,0)	not NULL,
-	work_total		numeric(20,0)	not NULL,
-	day_rank		int		not NULL,
-	day_rank_previous	int		not NULL,
-	overall_rank		int		not NULL,
-	overall_rank_previous	int		not NULL,
-	members_today		int		not NULL,
-	members_overall		int		not NULL,
-	members_current		int		not NULL
-)
-WITHOUT OIDS;
-create table csc_CACHE_em_RANK
-(
-	idx			numeric(10,0)	not null,
-	id			numeric(10,0)	NULL,
-	email			varchar(64)	NULL,
-	first			date	NULL,
-	last			date	NULL,
-	blocks			numeric(10,0)	NULL,
-	days_working		int		NULL,
-	overall_rate		numeric(14,4)	NULL,
-	rank			int		NULL,
-	change			int		NULL,
-	listmode		int		NULL
-)
-WITHOUT OIDS;
-create table csc_CACHE_em_YRANK
-(
-	idx			numeric(10,0)	not null,
-	id			numeric(10,0)	NULL,
-	email			varchar(64)	NULL,
-	first			date	NULL,
-	last			date	NULL,
-	blocks			numeric(10,0)	NULL,
-	days_working		int		NULL,
-	overall_rate		numeric(14,4)	NULL,
-	rank			int		NULL,
-	change			int		NULL,
-	listmode		int		NULL
-)
-WITHOUT OIDS;
-create table csc_CACHE_tm_MEMBERS
-(
-	id			numeric(10,0)	not NULL,
-	team			int		not NULL,
-	first			date	not NULL,
-	last			date	not NULL,
-	blocks			numeric(10,0)	not NULL
-)
-WITHOUT OIDS;
-create table csc_CACHE_tm_RANK
-(
-	Idx			numeric(10,0)	not null,
-	Team			numeric(10,0)	NULL,
-	Name			varchar(64)	NULL,
-	First			date	NULL,
-	Last			date	NULL,
-	Blocks			numeric(10,0)	NULL,
-	Days_Working		int		NULL,
-	Overall_Rate		numeric(14,4)	NULL,
-	Rank			int		NULL,
-	Change			int		NULL,
-	ListMode		int		NULL,
-	CurrentMembers		int		NULL,
-	ActiveMembers		int		NULL,
-	TotalMembers		int		NULL
-)
-WITHOUT OIDS;
-create table csc_CACHE_tm_YRANK
-(
-	Idx			numeric(10,0)	not null,
-	Team			numeric(10,0)	NULL,
-	Name			varchar(64)	NULL,
-	First			date	NULL,
-	Last			date	NULL,
-	Blocks			numeric(10,0)	NULL,
-	Days_Working		int		NULL,
-	Overall_Rate		numeric(14,4)	NULL,
-	Rank			int		NULL,
-	Change			int		NULL,
-	ListMode		int		NULL,
-	CurrentMembers		int		NULL,
-	ActiveMembers		int		NULL,
-	TotalMembers		int		NULL
-)
-WITHOUT OIDS;
-create table csc_daytable_master
-(
-	timestamp		timestamp	not NULL,
-	email			char(64)	NULL,
-	size			int		NULL
-)
-WITHOUT OIDS;
-create table csc_daytable_platform
-(
-	timestamp		timestamp	not NULL,
-	cpu			smallint	NULL,
-	os			smallint	NULL,
-	ver			smallint	NULL,
-	size			int		NULL
-)
-WITHOUT OIDS;
+-- $Id: tables.sql,v 1.4 2003/03/12 23:38:35 nerf Exp $
+-- Create all table, but without indexes or primary keys
+
+CREATE TABLE csc_dailies (
+    date date NOT NULL,
+    blocks numeric(10,0) NOT NULL,
+    participants integer NOT NULL,
+    top_oparticipant integer NOT NULL,
+    top_opblocks numeric(10,0) NOT NULL,
+    top_yparticipant integer NOT NULL,
+    top_ypblocks numeric(10,0) NOT NULL,
+    teams integer NOT NULL,
+    top_oteam integer NOT NULL,
+    top_otblocks numeric(10,0) NOT NULL,
+    top_yteam integer NOT NULL,
+    top_ytblocks numeric(10,0) NOT NULL
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE csc_master (
+    id numeric(7,0) NOT NULL,
+    team integer NOT NULL,
+    date date NOT NULL,
+    blocks numeric(7,0) NOT NULL
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE csc_platform (
+    cpu integer NOT NULL,
+    os integer NOT NULL,
+    ver integer NOT NULL,
+    date date NOT NULL,
+    blocks numeric(7,0) NOT NULL
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE daily_summary (
+    date date NOT NULL,
+    project_id smallint NOT NULL,
+    work_units numeric(20,0) NOT NULL,
+    participants integer NOT NULL,
+    participants_new integer NOT NULL,
+    top_oparticipant integer NOT NULL,
+    top_opwork numeric(20,0) NOT NULL,
+    top_yparticipant integer NOT NULL,
+    top_ypwork numeric(20,0) NOT NULL,
+    teams integer NOT NULL,
+    teams_new integer NOT NULL,
+    top_oteam integer NOT NULL,
+    top_otwork numeric(20,0) NOT NULL,
+    top_yteam integer NOT NULL,
+    top_ytwork numeric(20,0) NOT NULL
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE email_contrib (
+    id integer NOT NULL,
+    team_id integer NOT NULL,
+    date date NOT NULL,
+    project_id smallint NOT NULL,
+    work_units numeric(20,0) NOT NULL
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE email_contrib_last_update (
+    project_id smallint NOT NULL,
+    last_date date
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE email_contrib_today (
+    project_id smallint NOT NULL,
+    id integer NOT NULL,
+    team_id integer NOT NULL,
+    work_units numeric(20,0) NOT NULL,
+    credit_id integer NOT NULL
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE email_rank (
+    project_id smallint NOT NULL,
+    id integer NOT NULL,
+    first_date date NOT NULL,
+    last_date date NOT NULL,
+    work_today numeric(20,0) NOT NULL,
+    work_total numeric(20,0) NOT NULL,
+    day_rank integer NOT NULL,
+    day_rank_previous integer NOT NULL,
+    overall_rank integer NOT NULL,
+    overall_rank_previous integer NOT NULL
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE email_rank_last_update (
+    project_id smallint NOT NULL,
+    last_date date
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE log_info (
+    project_id smallint NOT NULL,
+    log_timestamp timestamp without time zone NOT NULL,
+    work_units numeric(20,0) NOT NULL,
+    lines integer NOT NULL,
+    error bit(1) NOT NULL
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE platform_contrib (
+    project_id smallint NOT NULL,
+    date date NOT NULL,
+    cpu smallint NOT NULL,
+    os smallint NOT NULL,
+    ver smallint NOT NULL,
+    work_units numeric(20,0) NOT NULL
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE platform_contrib_last_update (
+    project_id smallint NOT NULL,
+    last_date date
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE platform_contrib_today (
+    project_id smallint NOT NULL,
+    cpu smallint NOT NULL,
+    os smallint NOT NULL,
+    ver smallint NOT NULL,
+    work_units numeric(20,0) NOT NULL
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE platform_summary (
+    project_id smallint NOT NULL,
+    cpu smallint NOT NULL,
+    os smallint NOT NULL,
+    ver smallint NOT NULL,
+    first_date date NOT NULL,
+    last_date date NOT NULL,
+    work_today numeric(38,0) NOT NULL,
+    work_total numeric(22,0) NOT NULL
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE project_status (
+    status character(1) NOT NULL,
+    description character varying(115) NOT NULL
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE project_statsrun (
+    project_id smallint NOT NULL,
+    last_log character(11) NOT NULL,
+    logs_for_day smallint NOT NULL,
+    work_for_day numeric(20,0) NOT NULL,
+    last_hourly_date date,
+    last_master_date date,
+    last_email_date date,
+    last_team_date date,
+    last_summary_date date
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE projects (
+    project_id smallint NOT NULL,
+    project_type character varying(10) NOT NULL,
+    name character varying(40) NOT NULL,
+    status character(1) NOT NULL,
+    start_date date,
+    end_date date,
+    due_date date,
+    prize numeric(38,2) NOT NULL,
+    description character varying(255) NOT NULL,
+    dist_unit_qty numeric(38,0) NOT NULL,
+    dist_unit_name character varying(20) NOT NULL,
+    work_unit_qty numeric(38,0) NOT NULL,
+    work_unit_disp_multiplier numeric(38,0) NOT NULL,
+    work_unit_disp_divisor numeric(38,0) NOT NULL,
+    work_unit_import_multiplier numeric(38,0) NOT NULL,
+    unscaled_work_unit_name character varying(20) NOT NULL,
+    scaled_work_unit_name character varying(20) NOT NULL,
+    logfile_prefix character varying(10) NOT NULL,
+    sponsor_url character varying(255) NOT NULL,
+    sponsor_name character varying(255) NOT NULL,
+    logo_url character varying(255) NOT NULL,
+    deprecated_fields character(1) NOT NULL,
+    work_unit_name character varying(20) NOT NULL,
+    dist_unit_scale numeric(38,0) NOT NULL,
+    work_unit_scale numeric(38,0) NOT NULL
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE stats_participant (
+    id numeric(10,0) NOT NULL,
+    email character varying(64) NOT NULL,
+    "password" character(8) NOT NULL,
+    listmode smallint NOT NULL,
+    nonprofit smallint NOT NULL,
+    team integer NOT NULL,
+    retire_to integer NOT NULL,
+    friend_a integer NOT NULL,
+    friend_b integer NOT NULL,
+    friend_c integer NOT NULL,
+    friend_d integer NOT NULL,
+    friend_e integer NOT NULL,
+    dem_yob integer NOT NULL,
+    dem_heard smallint NOT NULL,
+    dem_gender character(1) NOT NULL,
+    dem_motivation smallint NOT NULL,
+    dem_country character varying(8) NOT NULL,
+    contact_name character varying(50) NOT NULL,
+    contact_phone character varying(20) NOT NULL,
+    motto character varying(255) NOT NULL,
+    retire_date date
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE stats_participant_blocked (
+    id integer NOT NULL
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE stats_participant_friend (
+    id integer NOT NULL,
+    friend integer NOT NULL
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE stats_participant_listmode (
+    listmode smallint NOT NULL,
+    description character varying(100) NOT NULL
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE stats_team_blocked (
+    team_id integer NOT NULL
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE stats_country (
+    country character(64) NOT NULL,
+    code character(2) NOT NULL
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE stats_cpu (
+    cpu integer NOT NULL,
+    name character(32) NOT NULL,
+    image character(64),
+    category character(32)
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE stats_dem_heard (
+    heard smallint NOT NULL,
+    description character varying(100) NOT NULL
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE stats_dem_motivation (
+    motivation smallint NOT NULL,
+    description character varying(100) NOT NULL
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE stats_nonprofit (
+    nonprofit integer NOT NULL,
+    name character(64) NOT NULL,
+    url character(64) NOT NULL,
+    comments text NOT NULL
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE stats_os (
+    os integer NOT NULL,
+    name character(32) NOT NULL,
+    image character(64),
+    category character(32)
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE stats_team (
+    team numeric(10,0) NOT NULL,
+    listmode smallint NOT NULL,
+    "password" character(8),
+    name character(64) NOT NULL,
+    url character(128),
+    contactname character(64),
+    contactemail character(64),
+    logo character(128),
+    showmembers character(3),
+    showpassword character(16),
+    description text
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE team_joins (
+    id integer NOT NULL,
+    team_id integer NOT NULL,
+    join_date date NOT NULL,
+    last_date date,
+    leave_team_id integer NOT NULL
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE team_members (
+    project_id smallint NOT NULL,
+    id integer NOT NULL,
+    team_id integer NOT NULL,
+    first_date date NOT NULL,
+    last_date date NOT NULL,
+    work_today numeric(20,0) NOT NULL,
+    work_total numeric(20,0) NOT NULL,
+    day_rank integer NOT NULL,
+    day_rank_previous integer NOT NULL,
+    overall_rank integer NOT NULL,
+    overall_rank_previous integer NOT NULL
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE team_members_last_update (
+    project_id smallint NOT NULL,
+    last_date date
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE team_rank (
+    project_id smallint NOT NULL,
+    team_id integer NOT NULL,
+    first_date date NOT NULL,
+    last_date date NOT NULL,
+    work_today numeric(20,0) NOT NULL,
+    work_total numeric(20,0) NOT NULL,
+    day_rank integer NOT NULL,
+    day_rank_previous integer NOT NULL,
+    overall_rank integer NOT NULL,
+    overall_rank_previous integer NOT NULL,
+    members_today integer NOT NULL,
+    members_overall integer NOT NULL,
+    members_current integer NOT NULL
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE team_rank_last_update (
+    project_id smallint NOT NULL,
+    last_date date
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE import_bcp (
+    time_stamp date NOT NULL,
+    email character varying(64) NOT NULL,
+    project_id smallint NOT NULL,
+    work_units numeric(20,0) NOT NULL,
+    os integer NOT NULL,
+    cpu integer NOT NULL,
+    ver integer NOT NULL
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE email_rank_backup (
+    backup_date date NOT NULL,
+    project_id smallint NOT NULL,
+    id integer NOT NULL,
+    first_date date NOT NULL,
+    last_date date NOT NULL,
+    work_today numeric(20,0) NOT NULL,
+    work_total numeric(20,0) NOT NULL,
+    day_rank integer NOT NULL,
+    day_rank_previous integer NOT NULL,
+    overall_rank integer NOT NULL,
+    overall_rank_previous integer NOT NULL
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE team_members_backup (
+    backup_date date NOT NULL,
+    project_id smallint NOT NULL,
+    id integer NOT NULL,
+    team_id integer NOT NULL,
+    first_date date NOT NULL,
+    last_date date NOT NULL,
+    work_today numeric(20,0) NOT NULL,
+    work_total numeric(20,0) NOT NULL,
+    day_rank integer NOT NULL,
+    day_rank_previous integer NOT NULL,
+    overall_rank integer NOT NULL,
+    overall_rank_previous integer NOT NULL
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE team_rank_backup (
+    backup_date date NOT NULL,
+    project_id smallint NOT NULL,
+    team_id integer NOT NULL,
+    first_date date NOT NULL,
+    last_date date NOT NULL,
+    work_today numeric(20,0) NOT NULL,
+    work_total numeric(20,0) NOT NULL,
+    day_rank integer NOT NULL,
+    day_rank_previous integer NOT NULL,
+    overall_rank integer NOT NULL,
+    overall_rank_previous integer NOT NULL,
+    members_today integer NOT NULL,
+    members_overall integer NOT NULL,
+    members_current integer NOT NULL
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE csc_cache_em_rank (
+    idx numeric(10,0) NOT NULL,
+    id numeric(10,0),
+    email character varying(64),
+    first date,
+    last date,
+    blocks numeric(10,0),
+    days_working integer,
+    overall_rate numeric(14,4),
+    rank integer,
+    change integer,
+    listmode integer
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE csc_cache_em_yrank (
+    idx numeric(10,0) NOT NULL,
+    id numeric(10,0),
+    email character varying(64),
+    first date,
+    last date,
+    blocks numeric(10,0),
+    days_working integer,
+    overall_rate numeric(14,4),
+    rank integer,
+    change integer,
+    listmode integer
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE csc_cache_tm_members (
+    id numeric(10,0) NOT NULL,
+    team integer NOT NULL,
+    first date NOT NULL,
+    last date NOT NULL,
+    blocks numeric(10,0) NOT NULL
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE csc_cache_tm_rank (
+    idx numeric(10,0) NOT NULL,
+    team numeric(10,0),
+    name character varying(64),
+    first date,
+    last date,
+    blocks numeric(10,0),
+    days_working integer,
+    overall_rate numeric(14,4),
+    rank integer,
+    change integer,
+    listmode integer,
+    currentmembers integer,
+    activemembers integer,
+    totalmembers integer
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE csc_cache_tm_yrank (
+    idx numeric(10,0) NOT NULL,
+    team numeric(10,0),
+    name character varying(64),
+    first date,
+    last date,
+    blocks numeric(10,0),
+    days_working integer,
+    overall_rate numeric(14,4),
+    rank integer,
+    change integer,
+    listmode integer,
+    currentmembers integer,
+    activemembers integer,
+    totalmembers integer
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE csc_daytable_master (
+    "timestamp" timestamp without time zone NOT NULL,
+    email character(64),
+    size integer
+) WITHOUT OIDS;
+
+
+
+CREATE TABLE csc_daytable_platform (
+    "timestamp" timestamp without time zone NOT NULL,
+    cpu smallint,
+    os smallint,
+    ver smallint,
+    size integer
+) WITHOUT OIDS;

@@ -1,184 +1,322 @@
-create unique  index CSC_master__id_date on CSC_master (
- id
-, date
-)
-;
- 
-create index CSC_master__team_date on CSC_master(
- team
-, date
-)
-;
- 
-create  index CSC_platform__os_date on CSC_platform(
- os
-, date
-) 
-;
- 
-create index CSC_platform__cpu_date on csc_platform(
- cpu
-, date
-) 
-;
- 
-create index Email_Contrib_Today__TEAM_ID on Email_Contrib_Today (
- PROJECT_ID
-, TEAM_ID
-)
-;
- 
- 
-create index Email_Rank__DAY_RANK on Email_Rank (
- PROJECT_ID
-, DAY_RANK
-)
-;
- 
-create index Email_Rank__OVERALL_RANK on Email_Rank (
- PROJECT_ID
-, OVERALL_RANK
-)
-;
- 
- 
-create index Platform_Contrib__ProjectDate on Platform_Contrib (
- PROJECT_ID
-, DATE
-)
-;
- 
- 
-create index Projects__PROJECT_TYPE on Projects (
- PROJECT_TYPE
-)
-;
- 
+-- $Id: index.sql,v 1.2 2003/03/12 23:38:35 nerf Exp $
+-- All indices.  Also includes creating primary keys, as creating
+-- the primary key implies creating an index
 
-create index STATS_Participant__ParticipantTEAM on STATS_Participant (
- team
-)
-;
- 
-create unique index STATS_Participant__ID_LISTMODE on STATS_Participant (
- id
-, listmode
-)
-;
- 
-create unique index STATS_Participant__EMAILid on STATS_Participant (
- email
-, id
-)
-;
- 
-create unique index STATS_Participant__ParticipantRETIRE_ID on STATS_Participant (
- retire_to
-, id
-)
-;
- 
-create unique index STATS_Participant__ID_RETIRE_LISTMODE on STATS_Participant (
- id
-, retire_to
-, listmode
-)
-;
- 
-create index STATS_Participant__LISTMODE on STATS_Participant (
- listmode
-)
-;
- 
-create index STATS_Participant__DEM_HEARD on STATS_Participant (
- dem_heard
-)
-;
- 
-create index STATS_Participant__DEM_MOTIVATION on STATS_Participant (
- dem_motivation
-)
-;
- 
-create index STATS_Participant__DEM_COUNTRY on STATS_Participant (
- dem_country
-)
-;
- 
-create index STATS_Participant_Friend__Friend on STATS_Participant_Friend (
- friend
-)
-;
- 
-
-
- 
+CREATE UNIQUE INDEX csc_master__id_date ON csc_master USING btree (id, date);
 
 
 
-create unique index STATS_team__TEAM_LISTMODE on STATS_team (
- team
-, listmode
-)
-;
- 
+CREATE INDEX csc_master__team_date ON csc_master USING btree (team, date);
 
-create index Team_Joins__JOIN on Team_Joins (
- join_date
-)
-;
- 
-create index Team_Joins__JOIN_last on Team_Joins (
- join_date
-, last_date
-)
-;
- 
 
-create index Team_Joins__DAY_RANK on Team_Rank (
- DAY_RANK
-)
-;
- 
-create index Team_Joins__OVERALL_RANK on Team_Rank (
- OVERALL_RANK
-)
-;
- 
 
-create  index rank on csc_CACHE_em_RANK (
- rank
-)
-;
- 
-create unique index csc_CACHE_em_RANK__id on csc_CACHE_em_RANK (
- id
-)
-;
- 
-create  index csc_CACHE_em_YRANK__rank on csc_CACHE_em_YRANK (
- rank
-)
-;
- 
-create unique index csc_CACHE_em_YRANK__id on csc_CACHE_em_YRANK (
- id
-)
-;
- 
-create index csc_CACHE_tm_MEMBERS__team_blocks on csc_CACHE_tm_MEMBERS (
- team
-, blocks
-)
-;
- 
-create index csc_CACHE_tm_RANK__team on csc_CACHE_tm_RANK (
- Team
-)
-;
- 
-create index csc_CACHE_tm_YRANK__team on csc_CACHE_tm_YRANK (
- Team
-)
-;
- 
+CREATE INDEX csc_platform__os_date ON csc_platform USING btree (os, date);
+
+
+
+CREATE INDEX csc_platform__cpu_date ON csc_platform USING btree (cpu, date);
+
+
+
+CREATE INDEX email_contrib_today__team_id ON email_contrib_today USING btree (project_id, team_id);
+
+
+
+CREATE INDEX email_rank__day_rank ON email_rank USING btree (project_id, day_rank);
+
+
+
+CREATE INDEX email_rank__overall_rank ON email_rank USING btree (project_id, overall_rank);
+
+
+
+CREATE INDEX platform_contrib__projectdate ON platform_contrib USING btree (project_id, date);
+
+
+
+CREATE INDEX projects__project_type ON projects USING btree (project_type);
+
+
+
+CREATE INDEX stats_participant__participantteam ON stats_participant USING btree (team);
+
+
+
+CREATE UNIQUE INDEX stats_participant__id_listmode ON stats_participant USING btree (id, listmode);
+
+
+
+CREATE UNIQUE INDEX stats_participant__emailid ON stats_participant USING btree (email, id);
+
+
+
+CREATE UNIQUE INDEX stats_participant__participantretire_id ON stats_participant USING btree (retire_to, id);
+
+
+
+CREATE UNIQUE INDEX stats_participant__id_retire_listmode ON stats_participant USING btree (id, retire_to, listmode);
+
+
+
+CREATE INDEX stats_participant__listmode ON stats_participant USING btree (listmode);
+
+
+
+CREATE INDEX stats_participant__dem_heard ON stats_participant USING btree (dem_heard);
+
+
+
+CREATE INDEX stats_participant__dem_motivation ON stats_participant USING btree (dem_motivation);
+
+
+
+CREATE INDEX stats_participant__dem_country ON stats_participant USING btree (dem_country);
+
+
+
+CREATE INDEX stats_participant_friend__friend ON stats_participant_friend USING btree (friend);
+
+
+
+CREATE UNIQUE INDEX stats_team__team_listmode ON stats_team USING btree (team, listmode);
+
+
+
+CREATE INDEX team_joins__join ON team_joins USING btree (join_date);
+
+
+
+CREATE INDEX team_joins__join_last ON team_joins USING btree (join_date, last_date);
+
+
+
+CREATE INDEX team_joins__day_rank ON team_rank USING btree (day_rank);
+
+
+
+CREATE INDEX team_joins__overall_rank ON team_rank USING btree (overall_rank);
+
+
+
+CREATE INDEX rank ON csc_cache_em_rank USING btree (rank);
+
+
+
+CREATE UNIQUE INDEX csc_cache_em_rank__id ON csc_cache_em_rank USING btree (id);
+
+
+
+CREATE INDEX csc_cache_em_yrank__rank ON csc_cache_em_yrank USING btree (rank);
+
+
+
+CREATE UNIQUE INDEX csc_cache_em_yrank__id ON csc_cache_em_yrank USING btree (id);
+
+
+
+CREATE INDEX csc_cache_tm_members__team_blocks ON csc_cache_tm_members USING btree (team, blocks);
+
+
+
+CREATE INDEX csc_cache_tm_rank__team ON csc_cache_tm_rank USING btree (team);
+
+
+
+CREATE INDEX csc_cache_tm_yrank__team ON csc_cache_tm_yrank USING btree (team);
+
+
+
+ALTER TABLE ONLY csc_master
+    ADD CONSTRAINT csc_master_pkey PRIMARY KEY (id, date);
+
+
+
+ALTER TABLE ONLY csc_platform
+    ADD CONSTRAINT csc_platform_pkey PRIMARY KEY (cpu, os, ver, date);
+
+
+
+ALTER TABLE ONLY daily_summary
+    ADD CONSTRAINT daily_summary_pkey PRIMARY KEY (date, project_id);
+
+
+
+ALTER TABLE ONLY email_contrib
+    ADD CONSTRAINT email_contrib_pkey PRIMARY KEY (project_id, id, date);
+
+
+
+ALTER TABLE ONLY email_contrib_last_update
+    ADD CONSTRAINT email_contrib_last_update_pkey PRIMARY KEY (project_id);
+
+
+
+ALTER TABLE ONLY email_contrib_today
+    ADD CONSTRAINT email_contrib_today_pkey PRIMARY KEY (project_id, id);
+
+
+
+ALTER TABLE ONLY email_rank
+    ADD CONSTRAINT email_rank_pkey PRIMARY KEY (project_id, id);
+
+
+
+ALTER TABLE ONLY email_rank_last_update
+    ADD CONSTRAINT email_rank_last_update_pkey PRIMARY KEY (project_id);
+
+
+
+ALTER TABLE ONLY log_info
+    ADD CONSTRAINT log_info_pkey PRIMARY KEY (project_id, log_timestamp);
+
+
+
+ALTER TABLE ONLY platform_contrib
+    ADD CONSTRAINT platform_contrib_pkey PRIMARY KEY (project_id, cpu, os, ver, date);
+
+
+
+ALTER TABLE ONLY platform_contrib_last_update
+    ADD CONSTRAINT platform_contrib_last_update_pkey PRIMARY KEY (project_id);
+
+
+
+ALTER TABLE ONLY platform_summary
+    ADD CONSTRAINT platform_summary_pkey PRIMARY KEY (project_id, cpu, os, ver);
+
+
+
+ALTER TABLE ONLY project_status
+    ADD CONSTRAINT project_status_pkey PRIMARY KEY (status);
+
+
+
+ALTER TABLE ONLY project_statsrun
+    ADD CONSTRAINT project_statsrun_pkey PRIMARY KEY (project_id);
+
+
+
+ALTER TABLE ONLY projects
+    ADD CONSTRAINT projects_pkey PRIMARY KEY (project_id);
+
+
+
+ALTER TABLE ONLY projects
+    ADD CONSTRAINT projects__name UNIQUE (name);
+
+
+
+ALTER TABLE ONLY stats_participant
+    ADD CONSTRAINT stats_participant_pkey PRIMARY KEY (id);
+
+
+
+ALTER TABLE ONLY stats_participant
+    ADD CONSTRAINT stats_participant__email UNIQUE (email);
+
+
+
+ALTER TABLE ONLY stats_participant_blocked
+    ADD CONSTRAINT stats_participant_blocked_pkey PRIMARY KEY (id);
+
+
+
+ALTER TABLE ONLY stats_participant_friend
+    ADD CONSTRAINT stats_participant_friend_pkey PRIMARY KEY (id, friend);
+
+
+
+ALTER TABLE ONLY stats_participant_listmode
+    ADD CONSTRAINT stats_participant_listmode_pkey PRIMARY KEY (listmode);
+
+
+
+ALTER TABLE ONLY stats_participant_listmode
+    ADD CONSTRAINT stats_participant_listmode__description UNIQUE (description);
+
+
+
+ALTER TABLE ONLY stats_team_blocked
+    ADD CONSTRAINT stats_team_blocked_pkey PRIMARY KEY (team_id);
+
+
+
+ALTER TABLE ONLY stats_country
+    ADD CONSTRAINT stats_country_pkey PRIMARY KEY (code);
+
+
+
+ALTER TABLE ONLY stats_country
+    ADD CONSTRAINT stats_country__country UNIQUE (country);
+
+
+
+ALTER TABLE ONLY stats_cpu
+    ADD CONSTRAINT stats_cpu_pkey PRIMARY KEY (cpu);
+
+
+
+ALTER TABLE ONLY stats_dem_heard
+    ADD CONSTRAINT stats_dem_heard_pkey PRIMARY KEY (heard);
+
+
+
+ALTER TABLE ONLY stats_dem_heard
+    ADD CONSTRAINT stats_dem_heard__description UNIQUE (description);
+
+
+
+ALTER TABLE ONLY stats_dem_motivation
+    ADD CONSTRAINT stats_dem_motivation_pkey PRIMARY KEY (motivation);
+
+
+
+ALTER TABLE ONLY stats_dem_motivation
+    ADD CONSTRAINT stats_dem_motivation__description UNIQUE (description);
+
+
+
+ALTER TABLE ONLY stats_nonprofit
+    ADD CONSTRAINT stats_nonprofit_pkey PRIMARY KEY (nonprofit);
+
+
+
+ALTER TABLE ONLY stats_os
+    ADD CONSTRAINT stats_os_pkey PRIMARY KEY (os);
+
+
+
+ALTER TABLE ONLY stats_team
+    ADD CONSTRAINT stats_team_pkey PRIMARY KEY (team);
+
+
+
+ALTER TABLE ONLY stats_team
+    ADD CONSTRAINT stats_team__name UNIQUE (name);
+
+
+
+ALTER TABLE ONLY team_joins
+    ADD CONSTRAINT team_joins_pkey PRIMARY KEY (id, join_date, team_id);
+
+
+
+ALTER TABLE ONLY team_members
+    ADD CONSTRAINT team_members_pkey PRIMARY KEY (project_id, team_id, id);
+
+
+
+ALTER TABLE ONLY team_members_last_update
+    ADD CONSTRAINT team_members_last_update_pkey PRIMARY KEY (project_id);
+
+
+
+ALTER TABLE ONLY team_rank
+    ADD CONSTRAINT team_rank_pkey PRIMARY KEY (project_id, team_id);
+
+
+
+ALTER TABLE ONLY team_rank_last_update
+    ADD CONSTRAINT team_rank_last_update_pkey PRIMARY KEY (project_id);
+
+
