@@ -424,12 +424,3 @@ ALTER TABLE ONLY rrd
 ALTER TABLE ONLY bucket
     ADD CONSTRAINT rrd_bucket__rrd_id FOREIGN KEY (rrd_id) REFERENCES rrd(rrd_id);
 
-
---
--- TOC entry 6 (OID 588605681)
--- Name: bucket_bucket_id_seq; Type: SEQUENCE SET; Schema: rrd; Owner: decibel
---
-
-SELECT pg_catalog.setval('bucket_bucket_id_seq', 37977, true);
-
-
