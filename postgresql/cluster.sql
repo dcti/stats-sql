@@ -3,7 +3,6 @@
 CLUSTER pk_CSC_master ON CSC_master;
 CLUSTER osdate ON CSC_platform;
 CLUSTER pk_Daily_Summary ON Daily_Summary;
-CLUSTER pk_project_ID_date ON Email_Contrib;
 CLUSTER pk_Project_Last_Date ON Email_Contrib_Last_Update;
 CLUSTER pk_Email_Contrib_Today ON Email_Contrib_Today;
 CLUSTER pk_Email_Rank ON Email_Rank;
