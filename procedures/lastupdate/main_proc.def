@@ -23,39 +23,47 @@ begin
 	/* Error checking */
 
 	/* Make sure all the parameters were specified */
-	if ( (@section = null) or (@contest = null) or (@timeframe = null) )
+	if ( (@section = null) or (@contest = null) )
 	begin
 		raiserror 99999 "Not enough parameters"
 		print "usage:"
 		print "	lastupdate section, contest, timeframe"
 		print "where:"
-		print "	section is email or team (i.e. e or t)"
+		print "	section is email, team, platform, or master (e, t, p, or m)"
 		print "	contest is contest to check lastupdate on"
-		print "	timeframe is the lastupdateing to check (i.e. o for overall or y for yesterday)"
+		print "	timeframe is the lastupdateing to check (o for overall or y for yesterday)"
 		return -5
 	end
 
 	/* Process @section */
 	select @section = lower(@section)
-	if not @section in ("e", "t")
+	if not @section in ("e", "t", "p", "m")
 	begin
 		raiserror 99999 "Invalid section '%1!' specified, must be 'e' or 't'", @section
 		return -5
 	end
-	
-	/* Process @timeframe  */
-	select @timeframe = lower(@timeframe)
-	if not @timeframe in ("", "o", "y")
-	begin
-		raiserror 99999 "Invalid timeframe '%1!' specified, must be 'o' or 'y'", @timeframe
-		return -5
-	end
 
-	/* Build the procedure name */
-	select @procname = "p_lastupdate_" + @contest + "_" + @section + "_" + @timeframe 
+	if @section in ("p", "m")
+	begin
+		/* Build the procedure name */
+		select @procname = "p_lastupdate_" + @contest + "_" + @section
+	end
+	else
+	begin
+		/* Process @timeframe  */
+		select @timeframe = lower(@timeframe)
+		if not @timeframe in ("o", "y")
+		begin
+			raiserror 99999 "Invalid timeframe '%1!' specified, must be 'o' or 'y'", @timeframe
+			return -5
+		end
+	
+		/* Build the procedure name */
+		select @procname = "p_lastupdate_" + @contest + "_" + @section + "_" + @timeframe 
+	end
 	
 	/* See if the silly procedure exists */
-	if (object_id("@procname") is NULL)
+	if (object_id(@procname) is NULL)
 	begin
 		raiserror 99999 "Procedure '%1!' does not exist!", @procname
 		return -1

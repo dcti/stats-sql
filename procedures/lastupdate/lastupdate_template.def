@@ -3,7 +3,7 @@ go
 
 \set procedure=p_lastupdate_${1}
 
-\echo "Creating procedure $procedure, referencing table statproc.${2}"
+\echo "Creating procedure $procedure, referencing table ${2}, field ${3}"
 
 create procedure $procedure
 as
@@ -12,8 +12,8 @@ as
 	** be called from 'lastupdate'.
 	*/
 
-	select max(last) as lastupdate
-	from statproc.${2}
+	select max(${3}) as lastupdate
+	from ${2}
 	
 	return
 go

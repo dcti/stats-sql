@@ -22,6 +22,7 @@ as
 		return -5
 	end
 
+#	print "Participant info for id #%1!",@id
 	select * from STATS_Participant where id = @id
 	return
 
