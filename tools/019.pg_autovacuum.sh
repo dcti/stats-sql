@@ -1,8 +1,8 @@
 #!/bin/sh
 #
-# $Id: 019.pg_autovacuum.sh,v 1.2 2004/04/22 18:40:48 decibel Exp $
+# $Id: 019.pg_autovacuum.sh,v 1.3 2004/04/23 22:50:19 decibel Exp $
 
-CONFIG="-d 2"
+CONFIG=""
 LOGFILE=/var/log/pg_autovacuum.log
 
 PREFIX=/usr/local
