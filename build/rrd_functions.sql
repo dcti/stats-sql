@@ -5,14 +5,6 @@
 SET client_encoding = 'SQL_ASCII';
 SET check_function_bodies = false;
 
---
--- TOC entry 3 (OID 591228954)
--- Name: rrd; Type: SCHEMA; Schema: -; Owner: 
---
-
-CREATE OR REPLACE SCHEMA rrd AUTHORIZATION pgsql;
-
-
 SET SESSION AUTHORIZATION 'pgsql';
 
 SET search_path = rrd, pg_catalog;
