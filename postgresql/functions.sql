@@ -1,4 +1,4 @@
--- $Id: functions.sql,v 1.6 2003/04/25 19:36:23 decibel Exp $
+-- $Id: functions.sql,v 1.7 2003/06/13 01:30:43 decibel Exp $
 
 \set ON_ERROR_STOP 1
 
@@ -183,4 +183,15 @@ CREATE OR REPLACE FUNCTION iszero(numeric, numeric) RETURNS numeric
     SELECT CASE WHEN $1 = 0 THEN $2 ELSE $1 END
     ' LANGUAGE SQL
     IMMUTABLE
+;
+
+-- RAISE
+CREATE OR REPLACE FUNCTION raise_exception(char) RETURNS void
+    RETURNS NULL ON NULL INPUT
+    AS '
+    BEGIN
+        RAISE EXCEPTION ''%'', $1;
+        RETURN;
+    END;
+    ' LANGUAGE 'plpgsql'
 ;
