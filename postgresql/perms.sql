@@ -93,3 +93,6 @@
  grant Insert on STATS_Participant_Blocked to group processing;
  grant Delete on STATS_Participant_Blocked to group processing;
  grant select on stats_participant_listmode to public;
+ grant insert,select,delete on email_rank_backup to group processing;
+ grant insert,select,delete on team_rank_backup to group processing;
+ grant insert,select,delete on team_members_backup to group processing;
