@@ -1,4 +1,5 @@
-	create table STATS_os
+	-- $Id: STATS_os.def,v 1.2 2000/03/06 07:37:28 decibel Exp $
+	create table ${table}
 	(
 		os			int		not NULL,
 		name			char(32)	not NULL,
