@@ -1,4 +1,4 @@
--- $Id: tables.sql,v 1.5 2003/04/05 00:14:13 decibel Exp $
+-- $Id: tables.sql,v 1.6 2003/04/05 00:30:04 decibel Exp $
 -- Create all table, but without indexes or primary keys
 
 CREATE TABLE csc_dailies (
@@ -211,7 +211,7 @@ CREATE TABLE projects (
 CREATE TABLE stats_participant (
     id int NOT NULL,
     email character varying(64) NOT NULL,
-    "password" character(8) NOT NULL,
+    "password" character(8) NOT NULL DEFAULT '',
     listmode smallint NOT NULL,
     nonprofit smallint NOT NULL,
     team integer NOT NULL,
