@@ -1,4 +1,4 @@
--- $Id: template2.def,v 1.4 2002/01/01 20:24:11 decibel Exp $
+-- $Id: template2.def,v 1.5 2002/01/01 21:32:18 decibel Exp $
 
 use ${1}
 go
@@ -20,7 +20,8 @@ as
 	select max(${4}) as lastupdate
 	from ${3}
 	where PROJECT_ID = @project_id
-	
+		and ${4} > dateadd(day, -30, getdate())
+
 	return
 go
 
