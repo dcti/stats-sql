@@ -1,6 +1,6 @@
 #!/usr/bin/sqsh -i
 #
-# $Id: email_rank.sql,v 1.1 2000/09/26 04:17:14 decibel Exp $
+# $Id: email_rank.sql,v 1.2 2000/10/08 07:21:55 decibel Exp $
 #
 # Repopulates Email_Rank for a project.
 # Notes:
@@ -26,17 +26,31 @@ insert into Email_Rank (PROJECT_ID, ID, FIRST_DATE, LAST_DATE, WORK_TODAY, WORK_
 		@max_rank, @max_rank, @max_rank, @max_rank
 	from WorkSummary_${1}
 	group by id
+go
 
 print "Updating records with today's info"
+print "  create temp table"
 declare @stats_date smalldatetime
 select @stats_date = LAST_STATS_DATE
         from Projects
         where PROJECT_ID = ${1}
+select ID, WORK_UNITS
+	into #WorkToday
+	from Email_Contrib
+	where PROJECT_ID = ${1}
+		and DATE = @stats_date
+go
+
+print "  update temp table for retires"
+update #WorkToday
+	set ID = sp.RETIRE_TO
+	from Stats_Participant sp
+	where sp.ID = #WorkToday.ID
+		and sp.RETIRE_TO > 0
+create clustered index ID on #WorkToday(ID) with fillfactor=100
+go
+
 update Email_Rank
-	set WORK_TODAY = ec.WORK_UNITS
-	from Email_Contrib ec
-	where ec.ID = Email_Rank.ID
-		and Email_Rank.PROJECT_ID = ${1}
-		and ec.PROJECT_ID = ${1}
-		and ec.DATE = @stats_date
+	set WORK_TODAY = isnull( (select sum(WORK_UNITS) from #WorkToday where ID = Email_Rank.ID), 0)
+	where Email_Rank.PROJECT_ID = ${1}
 go
