@@ -1,6 +1,6 @@
 #!/usr/bin/sqsh -i
 #
-# $Id: work_summary.sql,v 1.7 2000/11/29 07:51:41 decibel Exp $
+# $Id: work_summary.sql,v 1.8 2000/11/29 08:34:47 decibel Exp $
 #
 # Creates a summary table containing all work for a project
 #
@@ -28,7 +28,7 @@ create table #WorkSummary (
 )
 go
 insert into #WorkSummary (PROJECT_ID, ID, TEAM_ID, FIRST_DATE, LAST_DATE, WORK_TOTAL, WORK_TODAY)
-	select PROJECT_ID, ID, TEAM_ID, min(DATE), max(DATE), sum(WORK_UNITS), 0
+	select ${1}, ID, TEAM_ID, min(DATE), max(DATE), sum(WORK_UNITS), 0
 	from Email_Contrib
 	where PROJECT_ID = ${1}
 	group by ID, TEAM_ID
