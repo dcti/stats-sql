@@ -1,4 +1,5 @@
--- $Id: dbcc.sql,v 1.1 2000/08/02 18:38:55 decibel Exp $
+#!/usr/bin/sqsh -i
+-- $Id: dbcc.sql,v 1.2 2000/08/02 18:40:41 decibel Exp $
 -- Run several dbcc checks in a single file, to make logging easy.
 --
 -- Accepts:
