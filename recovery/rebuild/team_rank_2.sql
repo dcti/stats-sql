@@ -1,6 +1,6 @@
 #!/usr/local/bin/sqsh -i
 #
-# $Id: team_rank_2.sql,v 1.2 2002/10/23 03:03:26 decibel Exp $
+# $Id: team_rank_2.sql,v 1.3 2002/10/23 03:05:40 decibel Exp $
 #
 # Repopulates Team_Members for a project.
 #
@@ -11,6 +11,7 @@ set flushmessage on
 use stats
 go
 
+print "::Updating Team_Rank - Pass 2"
 print "Creating summary table"
 go
 

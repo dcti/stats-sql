@@ -1,6 +1,6 @@
 #!/usr/local/bin/sqsh -i
 #
-# $Id: team_members.sql,v 1.9 2002/04/14 04:56:51 decibel Exp $
+# $Id: team_members.sql,v 1.10 2002/10/23 03:05:40 decibel Exp $
 #
 # Repopulates Team_Members for a project.
 # Notes:
@@ -14,6 +14,7 @@ set flushmessage on
 use stats
 go
 
+print "::Updating Team_Members"
 print "Deleting old data"
 delete Team_Members
 where PROJECT_ID = ${1}
