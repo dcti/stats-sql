@@ -1,6 +1,6 @@
 #!/usr/bin/sqsh -i
 #
-# $Id: team_members.sql,v 1.4 2000/10/21 22:54:31 decibel Exp $
+# $Id: team_members.sql,v 1.5 2000/10/29 06:27:58 decibel Exp $
 #
 # Repopulates Team_Members for a project.
 # Notes:
@@ -24,6 +24,6 @@ insert into Team_Members (PROJECT_ID, ID, TEAM_ID, FIRST_DATE, LAST_DATE, WORK_T
 		sum(ws.WORK_TODAY), sum(ws.WORK_TOTAL), 0, 0, 0, 0
 	from WorkSummary_${1} ws, STATS_Team st
 	where st.team = ws.TEAM_ID
-		and st.LISTMODE <= 9
+		and st.LISTMODE < 10
 	group by TEAM_ID, ID
 go

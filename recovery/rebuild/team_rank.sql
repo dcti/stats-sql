@@ -1,6 +1,6 @@
 #!/usr/bin/sqsh -i
 #
-# $Id: team_rank.sql,v 1.2 2000/09/27 19:21:05 decibel Exp $
+# $Id: team_rank.sql,v 1.3 2000/10/29 06:27:58 decibel Exp $
 #
 # Repopulates Team_Members for a project.
 # Notes:
@@ -33,6 +33,7 @@ insert into Team_Rank (PROJECT_ID, TEAM_ID, FIRST_DATE, LAST_DATE, WORK_TODAY, W
 		@max_rank, @max_rank, @max_rank, @max_rank,
 		count(*), sum(sign(WORK_TODAY)), 0
 	from Team_Members tm
+	where tm.PROJECT_ID = ${1}
 	group by TEAM_ID
 
 print "Counting current team membership"
