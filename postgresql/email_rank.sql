@@ -1,4 +1,4 @@
--- $Id: email_rank.sql,v 1.2 2003/04/14 20:34:53 decibel Exp $
+-- $Id: email_rank.sql,v 1.3 2003/04/14 20:57:20 decibel Exp $
 
 --\set ON_ERROR_STOP 1
 
@@ -15,8 +15,7 @@ COPY Email_Rank (PROJECT_ID, ID, FIRST_DATE, LAST_DATE, WORK_TODAY, WORK_TOTAL, 
 CREATE INDEX email_rank__day_rank ON email_rank USING btree (project_id, day_rank);
 CREATE INDEX email_rank__overall_rank ON email_rank USING btree (project_id, overall_rank);
 
-CLUSTER Email_Rank_pkey ON Email_Rank;
-
 ALTER TABLE ONLY email_rank
     ADD CONSTRAINT email_rank_pkey PRIMARY KEY (project_id, id);
 
+CLUSTER Email_Rank_pkey ON Email_Rank;
