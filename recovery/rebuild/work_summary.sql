@@ -1,83 +1,73 @@
-#!/usr/local/bin/sqsh -i
-#
-# $Id: work_summary.sql,v 1.18 2002/10/07 06:52:36 decibel Exp $
-#
-# Creates a summary table containing all work for a project
-#
+/*
+ $Id: work_summary.sql,v 1.18.2.1 2003/04/27 12:26:59 decibel Exp $
 
-set flushmessage on
-use stats
-go
+ Creates a summary table containing all work for a project
 
-print ""
-print "Note:"
-print "Make sure that WorkSummary_${1} does not exist!!!"
-print ""
+       ProjectID
+*/
 
-print "First pass summary"
+\echo 
+\echo Note:
+\echo Make sure that WorkSummary_:ProjectID does not exist!!!
+\echo 
+
+\echo First pass summary
 -- Include PROJECT_ID here so that it can be used in the join in the next query. If we don't, the next
--- query will treat PROJECT_ID = ${1} as an SARG and everything else as a JOIN, which means we can't
+-- query will treat PROJECT_ID = :ProjectID AS an SARG AND everything else AS a JOIN, which means we can't
 -- fully utilize our index.
-create table #WorkSummary (
-	PROJECT_ID tinyint,
-	ID int,
-	TEAM_ID int,
-	FIRST_DATE smalldatetime,
-	LAST_DATE smalldatetime,
-	WORK_TOTAL numeric(20,0),
-	WORK_TODAY numeric(20,0),
-	WORK_YESTERDAY numeric(20,0)
-)
-go
-insert into #WorkSummary (PROJECT_ID, ID, TEAM_ID, FIRST_DATE, LAST_DATE, WORK_TOTAL, WORK_TODAY, WORK_YESTERDAY)
-	select ${1}, ID, TEAM_ID, min(DATE), max(DATE), sum(WORK_UNITS), 0, 0
-	from Email_Contrib
-	where PROJECT_ID = ${1}
-	group by PROJECT_ID, ID, TEAM_ID
-go
+SELECT id, team_id, date AS first_date, date AS last_date,
+        work_units AS work_total, work_units AS work_today, work_units AS work_yesterday
+    INTO TEMP worksummary
+    FROM email_contrib
+    WHERE 1=0
+;
+BEGIN;
+    SET LOCAL enable_seqscan = off;
+    INSERT INTO worksummary (id, team_id, first_date, last_date, work_total, work_today, work_yesterday)
+        SELECT id, team_id, min(date), max(date), sum(work_units), 0, 0
+        FROM email_contrib
+        WHERE project_id = :ProjectID
+        GROUP BY id, team_id
+    ;
+COMMIT;
+ANALYZE worksummary;
 
-print "Update for work today"
-declare @last smalldatetime
-declare @yest smalldatetime
-select @last=max(LAST_DATE)
-	from #WorkSummary
-select @yest = dateadd(day, -1, @last)
-update #WorkSummary
-	set WORK_TODAY = ec.WORK_UNITS
-	from Email_Contrib ec
-	where ec.PROJECT_ID = #WorkSummary.PROJECT_ID
-		and ec.ID = #WorkSummary.ID
-		and ec.TEAM_ID = #WorkSummary.TEAM_ID
-		and ec.DATE = @last
-update #WorkSummary
-	set WORK_YESTERDAY = ec.WORK_UNITS
-	from Email_Contrib ec
-	where ec.PROJECT_ID = #WorkSummary.PROJECT_ID
-		and ec.ID = #WorkSummary.ID
-		and ec.TEAM_ID = #WorkSummary.TEAM_ID
-		and ec.DATE = @yest
-go
+\echo Update for work today
+UPDATE worksummary
+    SET work_today = ec.work_units
+    FROM email_contrib ec
+    WHERE ec.project_id = :ProjectID
+        AND ec.id = worksummary.id
+        AND ec.team_id = worksummary.team_id
+        AND ec.date = (SELECT max(last_date) FROM worksummary)
+;
+UPDATE worksummary
+    SET work_yesterday = ec.work_units
+    FROM email_contrib ec
+    WHERE ec.project_id = :ProjectID
+        AND ec.id = worksummary.id
+        AND ec.team_id = worksummary.team_id
+        AND ec.date = (SELECT max(last_date) - interval '1 day' FROM worksummary)
+;
 
-print "Update for retire_to"
-declare @last smalldatetime
-select @last=max(LAST_DATE)
-	from #WorkSummary
+\echo Update for retire_to
+UPDATE worksummary
+    SET id = sp.retire_to
+    FROM stats_participant sp
+    WHERE sp.id = worksummary.id
+        AND sp.retire_to > 0
+        AND (sp.retire_date <= (SELECT max(last_date) FROM worksummary)
+            OR sp.retire_date IS NULL)
+;
 
-update #WorkSummary
-	set ID = sp.RETIRE_TO
-	from Stats_Participant sp
-	where sp.ID = #WorkSummary.ID
-		and sp.RETIRE_TO > 0
-		and (sp.RETIRE_DATE <= @last or sp.RETIRE_DATE is NULL)
-go
+\echo second pass summary
+SELECT ws.id, ws.team_id, min(first_date) AS first_date, max(last_date) AS last_date,
+        sum(work_total) AS work_total, sum(work_today) AS work_today, sum(work_yesterday) AS work_yesterday
+    INTO worksummary_:ProjectID
+    FROM worksummary ws
+    WHERE ws.id NOT IN (SELECT id FROM stats_participant_blocked)
+    GROUP BY ws.id, ws.team_id
+;
 
-print "Second pass summary"
-select ws.ID, ws.TEAM_ID, min(FIRST_DATE) as FIRST_DATE, max(LAST_DATE) as LAST_DATE,
-		sum(WORK_TOTAL) as WORK_TOTAL, sum(WORK_TODAY) as WORK_TODAY, sum(WORK_YESTERDAY) as WORK_YESTERDAY
-	into WorkSummary_${1}
-	from #WorkSummary ws
-	where ws.ID not in (select ID from STATS_Participant_Blocked)
-	group by ws.ID, ws.TEAM_ID
-
-drop table #WorkSummary
-go
+drop table worksummary;
+ANALYZE VERBOSE worksummary_:ProjectID;

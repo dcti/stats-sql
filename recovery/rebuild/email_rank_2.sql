@@ -1,50 +1,35 @@
-#!/usr/local/bin/sqsh -i
+/*
+# $Id: email_rank_2.sql,v 1.5.2.1 2003/04/27 12:26:59 decibel Exp $
 #
-# $Id: email_rank_2.sql,v 1.5 2002/10/07 06:53:36 decibel Exp $
-#
-# Phase 1 of repopulating Email_Rank for a project. After this script, you should
+# Phase 1 of repopulating Email_Rank fOR a project. After this script, you should
 # re-rank, then run email_rank_2.sql.
 # Notes:
-#	The script does *not* re-rank.
-#	It assumes that the summary table has been created using make_summary.sql
+#    The script does *not* re-rank.
+#    It assumes that the summary table has been created using make_summary.sql
 #
 # Arguments:
-#       PROJECT_ID
+#       ProjectID
+*/
 
-use stats
-set flushmessage on
-go
-
-create table #EmailSum (
-	ID		int		not null,
-	WORK_TODAY	numeric(20,0)	not null
-)
-go
-
---dbcc traceon(3604,302,310)
---set statistics io on
---set statistics time on
---set showplan on
-
-print "Creating summary table"
-insert into #EmailSum select ID, sum(WORK_TODAY) as WORK_TODAY
-	from WorkSummary_${1}
-	group by id
-go
+\echo Creating summary table
+SELECT id, sum(work_today) AS work_today
+    INTO TEMP emailsum 
+    FROM worksummary_:ProjectID
+    GROUP BY id
+;
 
 -- It's worth creating the index...
-create unique clustered index pk on #EmailSum(ID)
-go
+CREATE UNIQUE INDEX pk ON emailsum(id)
+;
 
-print "Updating Email_Rank"
-update Email_Rank set DAY_RANK_PREVIOUS = DAY_RANK,
-		OVERALL_RANK_PREVIOUS = OVERALL_RANK,
-		WORK_TODAY = s.WORK_TODAY,
-		WORK_TOTAL = WORK_TOTAL + s.WORK_TODAY
-	from #EmailSum s
-	where Email_Rank.PROJECT_ID = ${1}
-		and Email_Rank.ID = s.ID
-go
+\echo Updating Email_Rank
+UPDATE email_rank SET day_rank_previous = day_rank,
+        overall_rank_previous = overall_rank,
+        work_today = s.work_today,
+        work_total = work_total + s.work_today
+    FROM emailsum s
+    WHERE email_rank.project_id = :ProjectID
+        AND email_rank.id = s.id
+;
 
-print "All done. Run the email ranking script one last time."
-go
+\echo All done. Run the email ranking script one last time.
