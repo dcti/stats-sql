@@ -1,15 +1,14 @@
-/*
-	Procedure: rank
-*/
+use stats
+go
 
 create procedure rank
-(	@section varchar(1) = null	/* What section to look at (i.e. e for email, t for team) */
-	@contest varchar(10) = null	/* Contest that we want the ranking on */
-	@timeframe varchar(1) = null	/* Timeframe we want to look at (overall v. yesterday) */
+(	@section varchar(1) = null,	/* What section to look at (i.e. e for email, t for team) */
+	@contest varchar(10) = null,	/* Contest that we want the ranking on */
+	@timeframe varchar(1) = null,	/* Timeframe we want to look at (overall v. yesterday) */
 	@id numeric(7,0) = 0		/* Participant ID to look up */
 )
 as
-	
+begin
 	declare @tablename	char(20)	/* Name of the table to look in */
 	declare @rank		int(4)		/* Rank of participant */
 
@@ -49,10 +48,10 @@ as
 		select @timeframe = ""
 
 	/* Build the table name */
-	select @tablename = @contest + "_CACHE_" + @section + "_" + @timeframe + "RANK"
+	select @tablename = "statproc." + @contest + "_CACHE_" + @section + "_" + @timeframe + "RANK"
 	
 	/* See if the silly table exists */
-	if object_id(@tablename) is NULL)
+	if (object_id(@tablename) is NULL)
 	begin
 		print "The table '%1!' does not exist!",@tablename
 		return(-1)
@@ -63,4 +62,6 @@ as
 	from @tablename
 	where id = @id
 
-	return @rank
+	return(@rank)
+end
+go
