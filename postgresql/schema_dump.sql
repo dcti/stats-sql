@@ -1,34 +1,85 @@
--- $Id: schema_dump.sql,v 1.5 2003/04/14 14:04:37 decibel Exp $
--- dump of stats database via pg_dump -s
--- using this as template for table and index creation (table.sql and index.sql)
+--
+-- PostgreSQL database dump
+--
 
-\set ON_ERROR_STOP 1
+SET SESSION AUTHORIZATION 'pgsql';
+
+SET search_path = public, pg_catalog;
+
+--
+-- TOC entry 192 (OID 59259816)
+-- Name: plpgsql_call_handler (); Type: FUNCTION; Schema: public; Owner: pgsql
+--
+
+CREATE FUNCTION plpgsql_call_handler () RETURNS language_handler
+    AS '$libdir/plpgsql', 'plpgsql_call_handler'
+    LANGUAGE c;
+
+
+--
+-- TOC entry 186 (OID 59259817)
+-- Name: plpgsql; Type: PROCEDURAL LANGUAGE; Schema: public; Owner: 
+--
+
+CREATE TRUSTED PROCEDURAL LANGUAGE plpgsql HANDLER plpgsql_call_handler;
+
+
+--
+-- TOC entry 2 (OID 699664222)
+-- Name: csc_dailies; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE csc_dailies (
     date date NOT NULL,
-    blocks int NOT NULL,
+    blocks integer NOT NULL,
     participants integer NOT NULL,
     top_oparticipant integer NOT NULL,
-    top_opblocks int NOT NULL,
+    top_opblocks integer NOT NULL,
     top_yparticipant integer NOT NULL,
-    top_ypblocks int NOT NULL,
+    top_ypblocks integer NOT NULL,
     teams integer NOT NULL,
     top_oteam integer NOT NULL,
-    top_otblocks int NOT NULL,
+    top_otblocks integer NOT NULL,
     top_yteam integer NOT NULL,
-    top_ytblocks int NOT NULL
+    top_ytblocks integer NOT NULL
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 3 (OID 699664222)
+-- Name: csc_dailies; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE csc_dailies FROM PUBLIC;
+GRANT SELECT ON TABLE csc_dailies TO PUBLIC;
+
+
+--
+-- TOC entry 4 (OID 699664224)
+-- Name: csc_master; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE csc_master (
-    id int NOT NULL,
-    team integer NOT NULL,
+    id integer NOT NULL,
+    team integer DEFAULT 0 NOT NULL,
     date date NOT NULL,
     blocks numeric(7,0) NOT NULL
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 5 (OID 699664224)
+-- Name: csc_master; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE csc_master FROM PUBLIC;
+GRANT SELECT ON TABLE csc_master TO PUBLIC;
+
+
+--
+-- TOC entry 6 (OID 699664227)
+-- Name: csc_platform; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE csc_platform (
     cpu integer NOT NULL,
@@ -39,126 +90,296 @@ CREATE TABLE csc_platform (
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 7 (OID 699664227)
+-- Name: csc_platform; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE csc_platform FROM PUBLIC;
+GRANT SELECT ON TABLE csc_platform TO PUBLIC;
+
+
+--
+-- TOC entry 8 (OID 699664229)
+-- Name: daily_summary; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE daily_summary (
     date date NOT NULL,
-    project_id smallint NOT NULL,
-    work_units numeric(20,0) NOT NULL,
+    project_id integer NOT NULL,
     participants integer NOT NULL,
     participants_new integer NOT NULL,
     top_oparticipant integer NOT NULL,
-    top_opwork numeric(20,0) NOT NULL,
     top_yparticipant integer NOT NULL,
-    top_ypwork numeric(20,0) NOT NULL,
     teams integer NOT NULL,
     teams_new integer NOT NULL,
     top_oteam integer NOT NULL,
-    top_otwork numeric(20,0) NOT NULL,
     top_yteam integer NOT NULL,
-    top_ytwork numeric(20,0) NOT NULL
+    work_units bigint NOT NULL,
+    top_opwork bigint NOT NULL,
+    top_otwork bigint NOT NULL,
+    top_ypwork bigint NOT NULL,
+    top_ytwork bigint NOT NULL
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 9 (OID 699664229)
+-- Name: daily_summary; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE daily_summary FROM PUBLIC;
+GRANT SELECT ON TABLE daily_summary TO PUBLIC;
+GRANT INSERT,UPDATE ON TABLE daily_summary TO GROUP processing;
+
+
+--
+-- TOC entry 10 (OID 699664231)
+-- Name: email_contrib; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE email_contrib (
+    project_id integer NOT NULL,
     id integer NOT NULL,
-    team_id integer NOT NULL,
     date date NOT NULL,
-    project_id smallint NOT NULL,
-    work_units numeric(20,0) NOT NULL
+    team_id integer NOT NULL,
+    work_units bigint NOT NULL
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 11 (OID 699664231)
+-- Name: email_contrib; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE email_contrib FROM PUBLIC;
+GRANT SELECT ON TABLE email_contrib TO PUBLIC;
+GRANT INSERT,UPDATE ON TABLE email_contrib TO GROUP processing;
+
+
+--
+-- TOC entry 12 (OID 699664233)
+-- Name: email_contrib_last_update; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE email_contrib_last_update (
-    project_id smallint NOT NULL,
+    project_id integer NOT NULL,
     last_date date
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 13 (OID 699664233)
+-- Name: email_contrib_last_update; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE email_contrib_last_update FROM PUBLIC;
+GRANT SELECT ON TABLE email_contrib_last_update TO PUBLIC;
+GRANT INSERT,UPDATE ON TABLE email_contrib_last_update TO GROUP processing;
+
+
+--
+-- TOC entry 14 (OID 699664235)
+-- Name: email_contrib_today; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE email_contrib_today (
-    project_id smallint NOT NULL,
+    project_id integer NOT NULL,
     id integer NOT NULL,
     team_id integer NOT NULL,
-    work_units numeric(20,0) NOT NULL,
-    credit_id integer NOT NULL
+    credit_id integer NOT NULL,
+    work_units bigint NOT NULL
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 15 (OID 699664235)
+-- Name: email_contrib_today; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE email_contrib_today FROM PUBLIC;
+GRANT SELECT ON TABLE email_contrib_today TO PUBLIC;
+GRANT INSERT,UPDATE,DELETE ON TABLE email_contrib_today TO GROUP processing;
+GRANT INSERT,UPDATE,DELETE ON TABLE email_contrib_today TO GROUP wheel;
+
+
+--
+-- TOC entry 16 (OID 699664237)
+-- Name: email_rank; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE email_rank (
-    project_id smallint NOT NULL,
+    project_id integer NOT NULL,
     id integer NOT NULL,
     first_date date NOT NULL,
     last_date date NOT NULL,
-    work_today numeric(20,0) NOT NULL,
-    work_total numeric(20,0) NOT NULL,
-    day_rank integer NOT NULL,
-    day_rank_previous integer NOT NULL,
-    overall_rank integer NOT NULL,
-    overall_rank_previous integer NOT NULL
+    day_rank integer DEFAULT 0 NOT NULL,
+    day_rank_previous integer DEFAULT 0 NOT NULL,
+    overall_rank integer DEFAULT 0 NOT NULL,
+    overall_rank_previous integer DEFAULT 0 NOT NULL,
+    work_today bigint DEFAULT 0 NOT NULL,
+    work_total bigint DEFAULT 0 NOT NULL
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 17 (OID 699664237)
+-- Name: email_rank; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE email_rank FROM PUBLIC;
+GRANT SELECT ON TABLE email_rank TO PUBLIC;
+GRANT INSERT,UPDATE,DELETE ON TABLE email_rank TO GROUP processing;
+GRANT INSERT,UPDATE,DELETE ON TABLE email_rank TO GROUP wheel;
+
+
+--
+-- TOC entry 18 (OID 699664245)
+-- Name: email_rank_last_update; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE email_rank_last_update (
-    project_id smallint NOT NULL,
+    project_id integer NOT NULL,
     last_date date
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 19 (OID 699664245)
+-- Name: email_rank_last_update; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE email_rank_last_update FROM PUBLIC;
+GRANT SELECT ON TABLE email_rank_last_update TO PUBLIC;
+GRANT INSERT,UPDATE ON TABLE email_rank_last_update TO GROUP processing;
+
+
+--
+-- TOC entry 20 (OID 699664247)
+-- Name: log_info; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE log_info (
-    project_id smallint NOT NULL,
-    log_timestamp timestamp without time zone NOT NULL,
-    work_units numeric(20,0) NOT NULL,
+    error bit(1) NOT NULL,
+    project_id integer NOT NULL,
     lines integer NOT NULL,
-    error bit(1) NOT NULL
+    log_timestamp timestamp without time zone NOT NULL,
+    work_units bigint NOT NULL
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 21 (OID 699664247)
+-- Name: log_info; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE log_info FROM PUBLIC;
+GRANT SELECT ON TABLE log_info TO PUBLIC;
+GRANT INSERT ON TABLE log_info TO GROUP processing;
+
+
+--
+-- TOC entry 22 (OID 699664249)
+-- Name: platform_contrib; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE platform_contrib (
-    project_id smallint NOT NULL,
-    date date NOT NULL,
     cpu smallint NOT NULL,
     os smallint NOT NULL,
     ver smallint NOT NULL,
-    work_units numeric(20,0) NOT NULL
+    project_id integer NOT NULL,
+    date date NOT NULL,
+    work_units bigint NOT NULL
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 23 (OID 699664249)
+-- Name: platform_contrib; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE platform_contrib FROM PUBLIC;
+GRANT SELECT ON TABLE platform_contrib TO PUBLIC;
+GRANT INSERT ON TABLE platform_contrib TO GROUP processing;
+
+
+--
+-- TOC entry 24 (OID 699664251)
+-- Name: platform_contrib_last_update; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE platform_contrib_last_update (
-    project_id smallint NOT NULL,
+    project_id integer NOT NULL,
     last_date date
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 25 (OID 699664251)
+-- Name: platform_contrib_last_update; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE platform_contrib_last_update FROM PUBLIC;
+GRANT SELECT ON TABLE platform_contrib_last_update TO PUBLIC;
+GRANT INSERT,UPDATE ON TABLE platform_contrib_last_update TO GROUP processing;
+
+
+--
+-- TOC entry 26 (OID 699664253)
+-- Name: platform_contrib_today; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE platform_contrib_today (
-    project_id smallint NOT NULL,
     cpu smallint NOT NULL,
     os smallint NOT NULL,
     ver smallint NOT NULL,
-    work_units numeric(20,0) NOT NULL
+    project_id integer NOT NULL,
+    work_units bigint NOT NULL
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 27 (OID 699664253)
+-- Name: platform_contrib_today; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE platform_contrib_today FROM PUBLIC;
+GRANT SELECT ON TABLE platform_contrib_today TO PUBLIC;
+GRANT INSERT,UPDATE,DELETE ON TABLE platform_contrib_today TO GROUP processing;
+GRANT INSERT,UPDATE,DELETE ON TABLE platform_contrib_today TO GROUP wheel;
+
+
+--
+-- TOC entry 28 (OID 699664255)
+-- Name: platform_summary; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE platform_summary (
-    project_id smallint NOT NULL,
     cpu smallint NOT NULL,
     os smallint NOT NULL,
     ver smallint NOT NULL,
+    project_id integer NOT NULL,
     first_date date NOT NULL,
     last_date date NOT NULL,
-    work_today numeric(38,0) NOT NULL,
-    work_total numeric(22,0) NOT NULL
+    work_today bigint NOT NULL,
+    work_total numeric(24,0) NOT NULL
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 29 (OID 699664255)
+-- Name: platform_summary; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE platform_summary FROM PUBLIC;
+GRANT SELECT ON TABLE platform_summary TO PUBLIC;
+GRANT INSERT,UPDATE,DELETE ON TABLE platform_summary TO GROUP processing;
+
+
+--
+-- TOC entry 30 (OID 699664257)
+-- Name: project_status; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE project_status (
     status character(1) NOT NULL,
@@ -166,30 +387,54 @@ CREATE TABLE project_status (
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 31 (OID 699664257)
+-- Name: project_status; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE project_status FROM PUBLIC;
+GRANT SELECT ON TABLE project_status TO PUBLIC;
+
+
+--
+-- TOC entry 32 (OID 699664259)
+-- Name: project_statsrun; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE project_statsrun (
-    project_id smallint NOT NULL,
-    last_log character(11) NOT NULL,
-    logs_for_day smallint NOT NULL,
-    work_for_day numeric(20,0) NOT NULL,
-    last_hourly_date date,
-    last_master_date date,
-    last_email_date date,
-    last_team_date date,
-    last_summary_date date
+    project_id integer NOT NULL,
+    last_log character(11) DEFAULT '' NOT NULL,
+    logs_for_day smallint DEFAULT 0 NOT NULL,
+    work_for_day bigint DEFAULT 0 NOT NULL,
+    last_date date
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 33 (OID 699664259)
+-- Name: project_statsrun; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE project_statsrun FROM PUBLIC;
+GRANT INSERT,SELECT,UPDATE ON TABLE project_statsrun TO GROUP processing;
+GRANT SELECT ON TABLE project_statsrun TO GROUP backup;
+GRANT INSERT,SELECT,UPDATE ON TABLE project_statsrun TO GROUP wheel;
+
+
+--
+-- TOC entry 34 (OID 699664264)
+-- Name: projects; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE projects (
-    project_id smallint NOT NULL,
-    project_type character varying(10) NOT NULL,
-    name character varying(40) NOT NULL,
     status character(1) NOT NULL,
+    project_id integer NOT NULL,
     start_date date,
     end_date date,
     due_date date,
-    prize numeric(38,2) NOT NULL,
+    project_type character varying(10) NOT NULL,
+    name character varying(40) NOT NULL,
+    prize numeric(16,2) NOT NULL,
     description character varying(255) NOT NULL,
     dist_unit_qty numeric(38,0) NOT NULL,
     dist_unit_name character varying(20) NOT NULL,
@@ -202,46 +447,43 @@ CREATE TABLE projects (
     logfile_prefix character varying(10) NOT NULL,
     sponsor_url character varying(255) NOT NULL,
     sponsor_name character varying(255) NOT NULL,
-    logo_url character varying(255) NOT NULL,
-    deprecated_fields character(1) NOT NULL,
-    work_unit_name character varying(20) NOT NULL,
-    dist_unit_scale numeric(38,0) NOT NULL,
-    work_unit_scale numeric(38,0) NOT NULL
+    logo_url character varying(255) NOT NULL
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 35 (OID 699664264)
+-- Name: projects; Type: ACL; Schema: public; Owner: pgsql
+--
 
-CREATE TABLE stats_participant (
-    id int NOT NULL,
-    email character varying(64) NOT NULL,
-    "password" character(8) NOT NULL DEFAULT '',
-    listmode smallint NOT NULL,
-    nonprofit smallint NOT NULL,
-    team integer NOT NULL,
-    retire_to integer NOT NULL,
-    friend_a integer NOT NULL,
-    friend_b integer NOT NULL,
-    friend_c integer NOT NULL,
-    friend_d integer NOT NULL,
-    friend_e integer NOT NULL,
-    dem_yob integer NOT NULL,
-    dem_heard smallint NOT NULL,
-    dem_gender character(1) NOT NULL,
-    dem_motivation smallint NOT NULL,
-    dem_country character varying(8) NOT NULL,
-    contact_name character varying(50) NOT NULL,
-    contact_phone character varying(20) NOT NULL,
-    motto character varying(255) NOT NULL,
-    retire_date date
-) WITHOUT OIDS;
+REVOKE ALL ON TABLE projects FROM PUBLIC;
+GRANT SELECT ON TABLE projects TO PUBLIC;
 
 
+--
+-- TOC entry 36 (OID 699664266)
+-- Name: stats_participant_blocked; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE stats_participant_blocked (
     id integer NOT NULL
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 37 (OID 699664266)
+-- Name: stats_participant_blocked; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE stats_participant_blocked FROM PUBLIC;
+GRANT SELECT ON TABLE stats_participant_blocked TO PUBLIC;
+GRANT INSERT,DELETE ON TABLE stats_participant_blocked TO GROUP processing;
+
+
+--
+-- TOC entry 38 (OID 699664268)
+-- Name: stats_participant_friend; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE stats_participant_friend (
     id integer NOT NULL,
@@ -249,6 +491,20 @@ CREATE TABLE stats_participant_friend (
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 39 (OID 699664268)
+-- Name: stats_participant_friend; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE stats_participant_friend FROM PUBLIC;
+GRANT SELECT ON TABLE stats_participant_friend TO PUBLIC;
+GRANT INSERT,DELETE ON TABLE stats_participant_friend TO GROUP www;
+
+
+--
+-- TOC entry 40 (OID 699664270)
+-- Name: stats_participant_listmode; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE stats_participant_listmode (
     listmode smallint NOT NULL,
@@ -256,28 +512,81 @@ CREATE TABLE stats_participant_listmode (
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 41 (OID 699664270)
+-- Name: stats_participant_listmode; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE stats_participant_listmode FROM PUBLIC;
+GRANT SELECT ON TABLE stats_participant_listmode TO PUBLIC;
+
+
+--
+-- TOC entry 42 (OID 699664272)
+-- Name: stats_team_blocked; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE stats_team_blocked (
     team_id integer NOT NULL
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 43 (OID 699664272)
+-- Name: stats_team_blocked; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE stats_team_blocked FROM PUBLIC;
+GRANT SELECT ON TABLE stats_team_blocked TO PUBLIC;
+GRANT INSERT,DELETE ON TABLE stats_team_blocked TO GROUP processing;
+
+
+--
+-- TOC entry 44 (OID 699664274)
+-- Name: stats_country; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE stats_country (
-    country character(64) NOT NULL,
-    code character(2) NOT NULL
+    code character(2) NOT NULL,
+    country character varying(64) NOT NULL
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 45 (OID 699664274)
+-- Name: stats_country; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE stats_country FROM PUBLIC;
+GRANT SELECT ON TABLE stats_country TO PUBLIC;
+
+
+--
+-- TOC entry 46 (OID 699664276)
+-- Name: stats_cpu; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE stats_cpu (
     cpu integer NOT NULL,
-    name character(32) NOT NULL,
-    image character(64),
-    category character(32)
+    name character varying(32) NOT NULL,
+    image character varying(64),
+    category character varying(32)
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 47 (OID 699664276)
+-- Name: stats_cpu; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE stats_cpu FROM PUBLIC;
+GRANT SELECT ON TABLE stats_cpu TO PUBLIC;
+
+
+--
+-- TOC entry 48 (OID 699664278)
+-- Name: stats_dem_heard; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE stats_dem_heard (
     heard smallint NOT NULL,
@@ -285,6 +594,19 @@ CREATE TABLE stats_dem_heard (
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 49 (OID 699664278)
+-- Name: stats_dem_heard; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE stats_dem_heard FROM PUBLIC;
+GRANT SELECT ON TABLE stats_dem_heard TO GROUP backup;
+
+
+--
+-- TOC entry 50 (OID 699664280)
+-- Name: stats_dem_motivation; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE stats_dem_motivation (
     motivation smallint NOT NULL,
@@ -292,170 +614,325 @@ CREATE TABLE stats_dem_motivation (
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 51 (OID 699664280)
+-- Name: stats_dem_motivation; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE stats_dem_motivation FROM PUBLIC;
+GRANT SELECT ON TABLE stats_dem_motivation TO GROUP backup;
+
+
+--
+-- TOC entry 52 (OID 699664282)
+-- Name: stats_nonprofit; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE stats_nonprofit (
     nonprofit integer NOT NULL,
-    name character(64) NOT NULL,
-    url character(64) NOT NULL,
+    name character varying(64) NOT NULL,
+    url character varying(64) NOT NULL,
     comments text NOT NULL
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 53 (OID 699664282)
+-- Name: stats_nonprofit; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE stats_nonprofit FROM PUBLIC;
+GRANT SELECT ON TABLE stats_nonprofit TO PUBLIC;
+
+
+--
+-- TOC entry 54 (OID 699664287)
+-- Name: stats_os; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE stats_os (
     os integer NOT NULL,
-    name character(32) NOT NULL,
-    image character(64),
-    category character(32)
+    name character varying(32) NOT NULL,
+    image character varying(64),
+    category character varying(32)
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 55 (OID 699664287)
+-- Name: stats_os; Type: ACL; Schema: public; Owner: pgsql
+--
 
-CREATE TABLE stats_team (
-    team int NOT NULL,
-    listmode smallint NOT NULL,
-    "password" character(8),
-    name character(64) NOT NULL,
-    url character(128),
-    contactname character(64),
-    contactemail character(64),
-    logo character(128),
-    showmembers character(3),
-    showpassword character(16),
-    description text
-) WITHOUT OIDS;
+REVOKE ALL ON TABLE stats_os FROM PUBLIC;
+GRANT SELECT ON TABLE stats_os TO PUBLIC;
 
 
+--
+-- TOC entry 56 (OID 699664289)
+-- Name: team_joins; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE team_joins (
     id integer NOT NULL,
     team_id integer NOT NULL,
     join_date date NOT NULL,
     last_date date,
-    leave_team_id integer NOT NULL
+    leave_team_id integer DEFAULT 0 NOT NULL
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 57 (OID 699664289)
+-- Name: team_joins; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE team_joins FROM PUBLIC;
+GRANT SELECT ON TABLE team_joins TO PUBLIC;
+GRANT INSERT,UPDATE,DELETE ON TABLE team_joins TO GROUP www;
+
+
+--
+-- TOC entry 58 (OID 699664292)
+-- Name: team_members; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE team_members (
-    project_id smallint NOT NULL,
+    project_id integer NOT NULL,
     id integer NOT NULL,
     team_id integer NOT NULL,
     first_date date NOT NULL,
     last_date date NOT NULL,
-    work_today numeric(20,0) NOT NULL,
-    work_total numeric(20,0) NOT NULL,
-    day_rank integer NOT NULL,
-    day_rank_previous integer NOT NULL,
-    overall_rank integer NOT NULL,
-    overall_rank_previous integer NOT NULL
+    day_rank integer DEFAULT 0 NOT NULL,
+    day_rank_previous integer DEFAULT 0 NOT NULL,
+    overall_rank integer DEFAULT 0 NOT NULL,
+    overall_rank_previous integer DEFAULT 0 NOT NULL,
+    work_today bigint DEFAULT 0 NOT NULL,
+    work_total bigint DEFAULT 0 NOT NULL
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 59 (OID 699664292)
+-- Name: team_members; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE team_members FROM PUBLIC;
+GRANT SELECT ON TABLE team_members TO PUBLIC;
+GRANT INSERT,UPDATE,DELETE ON TABLE team_members TO GROUP processing;
+GRANT INSERT,UPDATE,DELETE ON TABLE team_members TO GROUP wheel;
+
+
+--
+-- TOC entry 60 (OID 699664300)
+-- Name: team_members_last_update; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE team_members_last_update (
-    project_id smallint NOT NULL,
+    project_id integer NOT NULL,
     last_date date
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 61 (OID 699664300)
+-- Name: team_members_last_update; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE team_members_last_update FROM PUBLIC;
+GRANT SELECT ON TABLE team_members_last_update TO PUBLIC;
+GRANT INSERT,UPDATE ON TABLE team_members_last_update TO GROUP processing;
+
+
+--
+-- TOC entry 62 (OID 699664302)
+-- Name: team_rank; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE team_rank (
-    project_id smallint NOT NULL,
+    project_id integer NOT NULL,
     team_id integer NOT NULL,
     first_date date NOT NULL,
     last_date date NOT NULL,
-    work_today numeric(20,0) NOT NULL,
-    work_total numeric(20,0) NOT NULL,
-    day_rank integer NOT NULL,
-    day_rank_previous integer NOT NULL,
-    overall_rank integer NOT NULL,
-    overall_rank_previous integer NOT NULL,
-    members_today integer NOT NULL,
-    members_overall integer NOT NULL,
-    members_current integer NOT NULL
+    day_rank integer DEFAULT 0 NOT NULL,
+    day_rank_previous integer DEFAULT 0 NOT NULL,
+    overall_rank integer DEFAULT 0 NOT NULL,
+    overall_rank_previous integer DEFAULT 0 NOT NULL,
+    members_today integer DEFAULT 0 NOT NULL,
+    members_overall integer DEFAULT 0 NOT NULL,
+    members_current integer DEFAULT 0 NOT NULL,
+    work_today bigint DEFAULT 0 NOT NULL,
+    work_total bigint DEFAULT 0 NOT NULL
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 63 (OID 699664302)
+-- Name: team_rank; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE team_rank FROM PUBLIC;
+GRANT SELECT ON TABLE team_rank TO PUBLIC;
+GRANT INSERT,UPDATE,DELETE ON TABLE team_rank TO GROUP processing;
+GRANT INSERT,UPDATE,DELETE ON TABLE team_rank TO GROUP wheel;
+
+
+--
+-- TOC entry 64 (OID 699664313)
+-- Name: team_rank_last_update; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE team_rank_last_update (
-    project_id smallint NOT NULL,
+    project_id integer NOT NULL,
     last_date date
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 65 (OID 699664313)
+-- Name: team_rank_last_update; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE team_rank_last_update FROM PUBLIC;
+GRANT SELECT ON TABLE team_rank_last_update TO PUBLIC;
+GRANT INSERT,UPDATE ON TABLE team_rank_last_update TO GROUP processing;
+
+
+SET SESSION AUTHORIZATION 'statproc';
+
+--
+-- TOC entry 66 (OID 699664315)
+-- Name: import_bcp; Type: TABLE; Schema: public; Owner: statproc
+--
 
 CREATE TABLE import_bcp (
     time_stamp date NOT NULL,
     email character varying(64) NOT NULL,
-    project_id smallint NOT NULL,
-    work_units numeric(20,0) NOT NULL,
+    project_id integer NOT NULL,
+    work_units bigint NOT NULL,
     os integer NOT NULL,
     cpu integer NOT NULL,
     ver integer NOT NULL
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 67 (OID 699664315)
+-- Name: import_bcp; Type: ACL; Schema: public; Owner: statproc
+--
+
+REVOKE ALL ON TABLE import_bcp FROM PUBLIC;
+GRANT ALL ON TABLE import_bcp TO pgsql;
+GRANT INSERT,SELECT,UPDATE,DELETE ON TABLE import_bcp TO GROUP processing;
+GRANT SELECT ON TABLE import_bcp TO GROUP backup;
+GRANT SELECT ON TABLE import_bcp TO GROUP wheel;
+REVOKE ALL ON TABLE import_bcp FROM statproc;
+
+
+SET SESSION AUTHORIZATION 'pgsql';
+
+--
+-- TOC entry 68 (OID 699664317)
+-- Name: email_rank_backup; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE email_rank_backup (
     backup_date date NOT NULL,
-    project_id smallint NOT NULL,
+    project_id integer NOT NULL,
     id integer NOT NULL,
     first_date date NOT NULL,
     last_date date NOT NULL,
-    work_today numeric(20,0) NOT NULL,
-    work_total numeric(20,0) NOT NULL,
     day_rank integer NOT NULL,
     day_rank_previous integer NOT NULL,
     overall_rank integer NOT NULL,
-    overall_rank_previous integer NOT NULL
+    overall_rank_previous integer NOT NULL,
+    work_today bigint NOT NULL,
+    work_total bigint NOT NULL
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 69 (OID 699664317)
+-- Name: email_rank_backup; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE email_rank_backup FROM PUBLIC;
+GRANT INSERT,SELECT,DELETE ON TABLE email_rank_backup TO GROUP processing;
+
+
+--
+-- TOC entry 70 (OID 699664319)
+-- Name: team_members_backup; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE team_members_backup (
     backup_date date NOT NULL,
-    project_id smallint NOT NULL,
+    project_id integer NOT NULL,
     id integer NOT NULL,
     team_id integer NOT NULL,
     first_date date NOT NULL,
     last_date date NOT NULL,
-    work_today numeric(20,0) NOT NULL,
-    work_total numeric(20,0) NOT NULL,
     day_rank integer NOT NULL,
     day_rank_previous integer NOT NULL,
     overall_rank integer NOT NULL,
-    overall_rank_previous integer NOT NULL
+    overall_rank_previous integer NOT NULL,
+    work_today bigint NOT NULL,
+    work_total bigint NOT NULL
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 71 (OID 699664319)
+-- Name: team_members_backup; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE team_members_backup FROM PUBLIC;
+GRANT INSERT,SELECT,DELETE ON TABLE team_members_backup TO GROUP processing;
+
+
+--
+-- TOC entry 72 (OID 699664321)
+-- Name: team_rank_backup; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE team_rank_backup (
     backup_date date NOT NULL,
-    project_id smallint NOT NULL,
+    project_id integer NOT NULL,
     team_id integer NOT NULL,
     first_date date NOT NULL,
     last_date date NOT NULL,
-    work_today numeric(20,0) NOT NULL,
-    work_total numeric(20,0) NOT NULL,
     day_rank integer NOT NULL,
     day_rank_previous integer NOT NULL,
     overall_rank integer NOT NULL,
     overall_rank_previous integer NOT NULL,
     members_today integer NOT NULL,
     members_overall integer NOT NULL,
-    members_current integer NOT NULL
+    members_current integer NOT NULL,
+    work_today bigint NOT NULL,
+    work_total bigint NOT NULL
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 73 (OID 699664321)
+-- Name: team_rank_backup; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE team_rank_backup FROM PUBLIC;
+GRANT INSERT,SELECT,DELETE ON TABLE team_rank_backup TO GROUP processing;
+
+
+--
+-- TOC entry 74 (OID 699664323)
+-- Name: csc_cache_em_rank; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE csc_cache_em_rank (
-    idx int NOT NULL,
-    id int,
+    idx integer NOT NULL,
+    id integer,
     email character varying(64),
     first date,
     last date,
-    blocks int,
+    blocks integer,
     days_working integer,
     overall_rate numeric(14,4),
     rank integer,
@@ -464,14 +941,27 @@ CREATE TABLE csc_cache_em_rank (
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 75 (OID 699664323)
+-- Name: csc_cache_em_rank; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE csc_cache_em_rank FROM PUBLIC;
+GRANT SELECT ON TABLE csc_cache_em_rank TO PUBLIC;
+
+
+--
+-- TOC entry 76 (OID 699664325)
+-- Name: csc_cache_em_yrank; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE csc_cache_em_yrank (
-    idx int NOT NULL,
-    id int,
+    idx integer NOT NULL,
+    id integer,
     email character varying(64),
     first date,
     last date,
-    blocks int,
+    blocks integer,
     days_working integer,
     overall_rate numeric(14,4),
     rank integer,
@@ -480,24 +970,50 @@ CREATE TABLE csc_cache_em_yrank (
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 77 (OID 699664325)
+-- Name: csc_cache_em_yrank; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE csc_cache_em_yrank FROM PUBLIC;
+GRANT SELECT ON TABLE csc_cache_em_yrank TO PUBLIC;
+
+
+--
+-- TOC entry 78 (OID 699664327)
+-- Name: csc_cache_tm_members; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE csc_cache_tm_members (
-    id int NOT NULL,
+    id integer NOT NULL,
     team integer NOT NULL,
     first date NOT NULL,
     last date NOT NULL,
-    blocks int NOT NULL
+    blocks integer NOT NULL
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 79 (OID 699664327)
+-- Name: csc_cache_tm_members; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE csc_cache_tm_members FROM PUBLIC;
+GRANT SELECT ON TABLE csc_cache_tm_members TO PUBLIC;
+
+
+--
+-- TOC entry 80 (OID 699664329)
+-- Name: csc_cache_tm_rank; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE csc_cache_tm_rank (
-    idx int NOT NULL,
-    team int,
+    idx integer NOT NULL,
+    team integer,
     name character varying(64),
     first date,
     last date,
-    blocks int,
+    blocks integer,
     days_working integer,
     overall_rate numeric(14,4),
     rank integer,
@@ -509,14 +1025,27 @@ CREATE TABLE csc_cache_tm_rank (
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 81 (OID 699664329)
+-- Name: csc_cache_tm_rank; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE csc_cache_tm_rank FROM PUBLIC;
+GRANT SELECT ON TABLE csc_cache_tm_rank TO PUBLIC;
+
+
+--
+-- TOC entry 82 (OID 699664331)
+-- Name: csc_cache_tm_yrank; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE csc_cache_tm_yrank (
-    idx int NOT NULL,
-    team int,
+    idx integer NOT NULL,
+    team integer,
     name character varying(64),
     first date,
     last date,
-    blocks int,
+    blocks integer,
     days_working integer,
     overall_rate numeric(14,4),
     rank integer,
@@ -528,14 +1057,40 @@ CREATE TABLE csc_cache_tm_yrank (
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 83 (OID 699664331)
+-- Name: csc_cache_tm_yrank; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE csc_cache_tm_yrank FROM PUBLIC;
+GRANT SELECT ON TABLE csc_cache_tm_yrank TO PUBLIC;
+
+
+--
+-- TOC entry 84 (OID 699664333)
+-- Name: csc_daytable_master; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE csc_daytable_master (
     "timestamp" timestamp without time zone NOT NULL,
-    email character(64),
+    email character varying(64),
     size integer
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 85 (OID 699664333)
+-- Name: csc_daytable_master; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE csc_daytable_master FROM PUBLIC;
+GRANT SELECT ON TABLE csc_daytable_master TO PUBLIC;
+
+
+--
+-- TOC entry 86 (OID 699664335)
+-- Name: csc_daytable_platform; Type: TABLE; Schema: public; Owner: pgsql
+--
 
 CREATE TABLE csc_daytable_platform (
     "timestamp" timestamp without time zone NOT NULL,
@@ -546,368 +1101,1528 @@ CREATE TABLE csc_daytable_platform (
 ) WITHOUT OIDS;
 
 
+--
+-- TOC entry 87 (OID 699664335)
+-- Name: csc_daytable_platform; Type: ACL; Schema: public; Owner: pgsql
+--
 
-CREATE UNIQUE INDEX csc_master__id_date ON csc_master USING btree (id, date);
-
-
-
-CREATE INDEX csc_master__team_date ON csc_master USING btree (team, date);
-
-
-
-CREATE INDEX csc_platform__os_date ON csc_platform USING btree (os, date);
+REVOKE ALL ON TABLE csc_daytable_platform FROM PUBLIC;
+GRANT SELECT ON TABLE csc_daytable_platform TO PUBLIC;
 
 
+--
+-- TOC entry 187 (OID 699664337)
+-- Name: stats_get_max_rank_participant (); Type: FUNCTION; Schema: public; Owner: pgsql
+--
 
-CREATE INDEX csc_platform__cpu_date ON csc_platform USING btree (cpu, date);
+CREATE FUNCTION stats_get_max_rank_participant () RETURNS integer
+    AS '
+    DECLARE
+        max_rank int;
+    BEGIN
+        SELECT max(id) INTO max_rank
+            FROM stats_participant
+            WHERE retire_to = 0 OR retire_to IS NULL
+        ;
+
+        RETURN max_rank;
+    END;
+    '
+    LANGUAGE plpgsql STABLE;
 
 
+--
+-- TOC entry 188 (OID 699664338)
+-- Name: stats_get_max_rank_team (); Type: FUNCTION; Schema: public; Owner: pgsql
+--
 
-CREATE INDEX email_contrib_today__team_id ON email_contrib_today USING btree (project_id, team_id);
+CREATE FUNCTION stats_get_max_rank_team () RETURNS integer
+    AS '
+    DECLARE
+        max_rank int;
+    BEGIN
+        SELECT count(*) INTO max_rank
+            FROM stats_team
+        ;
+
+        RETURN max_rank;
+    END;
+    '
+    LANGUAGE plpgsql STABLE;
 
 
+--
+-- TOC entry 189 (OID 699664339)
+-- Name: stats_get_last_update (integer, character); Type: FUNCTION; Schema: public; Owner: pgsql
+--
+
+CREATE FUNCTION stats_get_last_update (integer, character) RETURNS date
+    AS '
+    DECLARE
+        function_name CONSTANT varchar(50) := ''stats_get_last_update'';
+        function_args CONSTANT varchar(50) := ''(project_id, table_code)'';
+
+        project_id ALIAS FOR $1;
+        table_code ALIAS FOR $2;
+
+        last_update date;
+        REC_update RECORD;
+
+        table_name varchar(50);
+        statement varchar(500);
+    BEGIN
+        IF project_id IS NULL THEN
+            RAISE EXCEPTION ''NULL project_id passed to %%'', function_name, function_args;
+        END IF;
+
+        table_name :=
+            CASE
+                WHEN table_code = ''s'' THEN ''project_statsrun''
+                WHEN table_code = ''e'' THEN ''email_rank_last_update''
+                WHEN table_code = ''t'' THEN ''team_rank_last_update''
+                WHEN table_code = ''m'' THEN ''team_members_last_update''
+                WHEN table_code = ''ec'' THEN ''email_contrib_last_update''
+                WHEN table_code = ''pc'' THEN ''platform_contrib_last_update''
+                ELSE NULL
+            END
+        ;
+        
+        IF table_name IS NULL THEN
+            RAISE EXCEPTION ''Invalid table code (%) passed to %%'', table_code, function_name, function_args;
+        END IF;
+
+        statement := ''SELECT last_date FROM '' || table_name ||
+                        '' WHERE project_id = '' || project_id
+        ;
+
+        FOR REC_update IN EXECUTE statement LOOP
+            last_update := REC_update.last_date;
+        END LOOP;
+
+        RETURN last_update;
+    END;
+    '
+    LANGUAGE plpgsql STABLE;
+
+
+--
+-- TOC entry 190 (OID 699664340)
+-- Name: stats_set_last_update (integer, character, date); Type: FUNCTION; Schema: public; Owner: pgsql
+--
+
+CREATE FUNCTION stats_set_last_update (integer, character, date) RETURNS void
+    AS '
+    DECLARE
+        function_name CONSTANT varchar(50) := ''stats_set_last_update'';
+        function_args CONSTANT varchar(50) := ''(project_id, table_code, date)'';
+
+        project_id ALIAS FOR $1;
+        table_code ALIAS FOR $2;
+        update_date ALIAS FOR $3;
+
+        update_date_string varchar(20);
+        table_name varchar(50);
+        statement varchar(500);
+    BEGIN
+        IF project_id IS NULL THEN
+            RAISE EXCEPTION ''NULL project_id passed to %%'', function_name, function_args;
+        END IF;
+
+        table_name :=
+            CASE
+                WHEN table_code = ''e'' THEN ''email_rank_last_update''
+                WHEN table_code = ''t'' THEN ''team_rank_last_update''
+                WHEN table_code = ''m'' THEN ''team_members_last_update''
+                WHEN table_code = ''ec'' THEN ''email_contrib_last_update''
+                WHEN table_code = ''pc'' THEN ''platform_contrib_last_update''
+                ELSE NULL
+            END;
+        
+        IF table_name IS NULL THEN
+            RAISE EXCEPTION ''Invalid table code (%) passed to %%'', table_code, function_name, function_args;
+        END IF;
+
+        IF update_date IS NULL THEN
+            update_date_string := ''NULL'';
+        ELSE
+            update_date_string := '''''''' || update_date || ''''''::date'';
+        END IF;
+
+    -- First, insert if we need to
+        statement := ''INSERT INTO '' || quote_ident(table_name)
+                            || ''(project_id) SELECT '' || project_id
+                            || '' WHERE NOT EXISTS (SELECT 1 FROM ''
+                            || quote_ident(table_name)
+                            || '' WHERE project_id = '' || project_id || '')''
+        ;
+
+        EXECUTE statement;
+
+    -- Now do the update
+        statement := ''UPDATE '' || quote_ident(table_name) || '' SET last_date = ''
+                        || coalesce(quote_literal(update_date), ''NULL'')
+                        || '' WHERE project_id = '' || project_id
+        ;
+
+        EXECUTE statement;
+
+        RETURN;
+    END;
+    '
+    LANGUAGE plpgsql;
+
+
+--
+-- TOC entry 193 (OID 699664341)
+-- Name: min (timestamp without time zone, timestamp without time zone); Type: FUNCTION; Schema: public; Owner: pgsql
+--
+
+CREATE FUNCTION min (timestamp without time zone, timestamp without time zone) RETURNS timestamp without time zone
+    AS '
+    SELECT CASE WHEN $1 < $2 THEN $1 ELSE $2 END
+    '
+    LANGUAGE sql IMMUTABLE STRICT;
+
+
+--
+-- TOC entry 194 (OID 699664342)
+-- Name: min (numeric, numeric); Type: FUNCTION; Schema: public; Owner: pgsql
+--
+
+CREATE FUNCTION min (numeric, numeric) RETURNS numeric
+    AS '
+    SELECT CASE WHEN $1 < $2 THEN $1 ELSE $2 END
+    '
+    LANGUAGE sql IMMUTABLE STRICT;
+
+
+--
+-- TOC entry 195 (OID 699664343)
+-- Name: max (timestamp without time zone, timestamp without time zone); Type: FUNCTION; Schema: public; Owner: pgsql
+--
+
+CREATE FUNCTION max (timestamp without time zone, timestamp without time zone) RETURNS timestamp without time zone
+    AS '
+    SELECT CASE WHEN $1 > $2 THEN $1 ELSE $2 END
+    '
+    LANGUAGE sql IMMUTABLE STRICT;
+
+
+--
+-- TOC entry 196 (OID 699664344)
+-- Name: max (numeric, numeric); Type: FUNCTION; Schema: public; Owner: pgsql
+--
+
+CREATE FUNCTION max (numeric, numeric) RETURNS numeric
+    AS '
+    SELECT CASE WHEN $1 > $2 THEN $1 ELSE $2 END
+    '
+    LANGUAGE sql IMMUTABLE STRICT;
+
+
+--
+-- TOC entry 197 (OID 699664345)
+-- Name: iszero (numeric, numeric); Type: FUNCTION; Schema: public; Owner: pgsql
+--
+
+CREATE FUNCTION iszero (numeric, numeric) RETURNS numeric
+    AS '
+    SELECT CASE WHEN $1 = 0 THEN $2 ELSE $1 END
+    '
+    LANGUAGE sql IMMUTABLE STRICT;
+
+
+--
+-- TOC entry 199 (OID 699664346)
+-- Name: raise_exception (character); Type: FUNCTION; Schema: public; Owner: pgsql
+--
+
+CREATE FUNCTION raise_exception (character) RETURNS void
+    AS '
+    BEGIN
+        RAISE EXCEPTION ''%'', $1;
+        RETURN;
+    END;
+    '
+    LANGUAGE plpgsql STRICT;
+
+
+SET SESSION AUTHORIZATION 'decibel';
+
+--
+-- TOC entry 88 (OID 699664347)
+-- Name: jcn_sp_load; Type: TABLE; Schema: public; Owner: decibel
+--
+
+CREATE TABLE jcn_sp_load (
+    id integer NOT NULL,
+    listmode smallint NOT NULL,
+    nonprofit smallint NOT NULL,
+    retire_to integer NOT NULL,
+    retire_date date,
+    created timestamp without time zone,
+    team integer NOT NULL,
+    friend_a integer NOT NULL,
+    friend_b integer NOT NULL,
+    friend_c integer NOT NULL,
+    friend_d integer NOT NULL,
+    friend_e integer NOT NULL,
+    dem_yob integer NOT NULL,
+    dem_heard smallint NOT NULL,
+    dem_motivation smallint NOT NULL,
+    dem_gender character(1) NOT NULL,
+    email character varying(64) NOT NULL,
+    "password" character(8) DEFAULT '' NOT NULL,
+    dem_country character varying(8) NOT NULL,
+    contact_name character varying(50) NOT NULL,
+    contact_phone character varying(20) NOT NULL,
+    motto character varying(255) NOT NULL
+) WITHOUT OIDS;
+
+
+--
+-- TOC entry 89 (OID 699664352)
+-- Name: jcn_st_load; Type: TABLE; Schema: public; Owner: decibel
+--
+
+CREATE TABLE jcn_st_load (
+    team serial NOT NULL,
+    listmode smallint NOT NULL,
+    "password" character(8),
+    created timestamp without time zone,
+    name character varying(64) NOT NULL,
+    url character varying(128),
+    contactname character varying(64),
+    contactemail character varying(64),
+    logo character varying(128),
+    showmembers character varying(3),
+    showpassword character varying(16),
+    description text
+) WITHOUT OIDS;
+
+
+--
+-- TOC entry 90 (OID 699664358)
+-- Name: jcn_tj_load; Type: TABLE; Schema: public; Owner: decibel
+--
+
+CREATE TABLE jcn_tj_load (
+    id integer NOT NULL,
+    team_id integer NOT NULL,
+    join_date date NOT NULL,
+    last_date date,
+    leave_team_id integer NOT NULL
+) WITHOUT OIDS;
+
+
+--
+-- TOC entry 91 (OID 699664375)
+-- Name: jcn_st_old; Type: TABLE; Schema: public; Owner: decibel
+--
+
+CREATE TABLE jcn_st_old (
+    team integer,
+    listmode smallint,
+    "password" character(8),
+    created date,
+    name character varying(64),
+    url character varying(128),
+    contactname character varying(64),
+    contactemail character varying(64),
+    logo character varying(128),
+    showmembers character varying(3),
+    showpassword character varying(16),
+    description text
+) WITHOUT OIDS;
+
+
+--
+-- TOC entry 92 (OID 699664389)
+-- Name: jcn_sp_created; Type: TABLE; Schema: public; Owner: decibel
+--
+
+CREATE TABLE jcn_sp_created (
+    id integer,
+    created timestamp without time zone
+) WITHOUT OIDS;
+
+
+--
+-- TOC entry 93 (OID 699664391)
+-- Name: jcn_st_created; Type: TABLE; Schema: public; Owner: decibel
+--
+
+CREATE TABLE jcn_st_created (
+    team integer,
+    created timestamp without time zone
+) WITHOUT OIDS;
+
+
+--
+-- TOC entry 94 (OID 699664393)
+-- Name: p_id; Type: TABLE; Schema: public; Owner: decibel
+--
+
+CREATE TABLE p_id (
+    id integer NOT NULL
+);
+
+
+--
+-- TOC entry 95 (OID 699664395)
+-- Name: t_id; Type: TABLE; Schema: public; Owner: decibel
+--
+
+CREATE TABLE t_id (
+    id integer NOT NULL
+);
+
+
+--
+-- TOC entry 96 (OID 699664397)
+-- Name: jcn_tj_backup; Type: TABLE; Schema: public; Owner: decibel
+--
+
+CREATE TABLE jcn_tj_backup (
+    id integer,
+    team_id integer,
+    join_date date,
+    last_date date,
+    leave_team_id integer
+) WITHOUT OIDS;
+
+
+--
+-- TOC entry 97 (OID 699664399)
+-- Name: jcn_changed_p; Type: TABLE; Schema: public; Owner: decibel
+--
+
+CREATE TABLE jcn_changed_p (
+    id integer
+) WITHOUT OIDS;
+
+
+--
+-- TOC entry 98 (OID 699664401)
+-- Name: jcn_sp_backup; Type: TABLE; Schema: public; Owner: decibel
+--
+
+CREATE TABLE jcn_sp_backup (
+    id integer,
+    listmode smallint,
+    nonprofit smallint,
+    retire_to integer,
+    retire_date date,
+    created timestamp without time zone,
+    dem_yob integer,
+    dem_heard smallint,
+    dem_motivation smallint,
+    dem_gender character(1),
+    email character varying(64),
+    "password" character(8),
+    dem_country character varying(8),
+    contact_name character varying(50),
+    contact_phone character varying(20),
+    motto character varying(255)
+) WITHOUT OIDS;
+
+
+--
+-- TOC entry 99 (OID 700092012)
+-- Name: jcn_sp_backup2; Type: TABLE; Schema: public; Owner: decibel
+--
+
+CREATE TABLE jcn_sp_backup2 (
+    id integer,
+    listmode smallint,
+    nonprofit smallint,
+    retire_to integer,
+    retire_date date,
+    created timestamp without time zone,
+    dem_yob integer,
+    dem_heard smallint,
+    dem_motivation smallint,
+    dem_gender character(1),
+    email character varying(64),
+    "password" character(8),
+    dem_country character varying(8),
+    contact_name character varying(50),
+    contact_phone character varying(20),
+    motto character varying(255)
+);
+
+
+--
+-- TOC entry 100 (OID 700501093)
+-- Name: jcn_st_backup; Type: TABLE; Schema: public; Owner: decibel
+--
+
+CREATE TABLE jcn_st_backup (
+    team integer,
+    listmode smallint,
+    "password" character(8),
+    created timestamp without time zone,
+    name character varying(64),
+    url character varying(128),
+    contactname character varying(64),
+    contactemail character varying(64),
+    logo character varying(128),
+    showmembers character varying(3),
+    showpassword character varying(16),
+    description text
+);
+
+
+--
+-- TOC entry 101 (OID 700520129)
+-- Name: jcn_st_backup2; Type: TABLE; Schema: public; Owner: decibel
+--
+
+CREATE TABLE jcn_st_backup2 (
+    team integer,
+    listmode smallint,
+    "password" character(8),
+    created timestamp without time zone,
+    name character varying(64),
+    url character varying(128),
+    contactname character varying(64),
+    contactemail character varying(64),
+    logo character varying(128),
+    showmembers character varying(3),
+    showpassword character varying(16),
+    description text
+);
+
+
+SET SESSION AUTHORIZATION 'pgsql';
+
+--
+-- TOC entry 102 (OID 700539258)
+-- Name: stats_team; Type: TABLE; Schema: public; Owner: pgsql
+--
+
+CREATE TABLE stats_team (
+    team serial NOT NULL,
+    listmode smallint DEFAULT 0 NOT NULL,
+    "password" character(8),
+    created timestamp without time zone,
+    name character varying(64) NOT NULL,
+    url character varying(128),
+    contactname character varying(64),
+    contactemail character varying(64),
+    logo character varying(128),
+    showmembers character varying(3),
+    showpassword character varying(16),
+    description text,
+    CONSTRAINT "$1" CHECK ((btrim((name)::text) <> ''::text))
+) WITHOUT OIDS;
+
+
+--
+-- TOC entry 103 (OID 700539258)
+-- Name: stats_team; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE stats_team FROM PUBLIC;
+GRANT SELECT ON TABLE stats_team TO PUBLIC;
+GRANT INSERT,UPDATE ON TABLE stats_team TO GROUP www;
+GRANT UPDATE ON TABLE stats_team TO GROUP wheel;
+GRANT UPDATE ON TABLE stats_team TO GROUP helpdesk;
+GRANT UPDATE ON TABLE stats_team TO GROUP coder;
+
+
+--
+-- TOC entry 108 (OID 700539258)
+-- Name: stats_team_team_seq; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE stats_team_team_seq FROM PUBLIC;
+GRANT SELECT ON TABLE stats_team_team_seq TO PUBLIC;
+GRANT INSERT,UPDATE ON TABLE stats_team_team_seq TO GROUP www;
+
+
+SET SESSION AUTHORIZATION 'decibel';
+
+--
+-- TOC entry 198 (OID 702324088)
+-- Name: isempty (character varying, character varying); Type: FUNCTION; Schema: public; Owner: decibel
+--
+
+CREATE FUNCTION isempty (character varying, character varying) RETURNS character varying
+    AS '
+    SELECT CASE WHEN $1 = '''' THEN $2 ELSE $1 END
+    '
+    LANGUAGE sql IMMUTABLE STRICT;
+
+
+--
+-- TOC entry 200 (OID 702324098)
+-- Name: stats_participant_display_name (smallint, integer, character varying, character varying); Type: FUNCTION; Schema: public; Owner: decibel
+--
+
+CREATE FUNCTION stats_participant_display_name (smallint, integer, character varying, character varying) RETURNS character varying
+    AS '
+    SELECT CASE $1
+                WHEN 0 THEN $3
+                WHEN 8 THEN $3
+                WHEN 9 THEN $3
+                WHEN 1 THEN ''Participant #'' || trim(to_char($2,''9,999,999,999''))
+                WHEN 2 THEN isempty(coalesce(trim($4),''''), ''Participant #'' || trim(to_char($2,''9,999,999,999'')))
+                ELSE ''Listmode ('' || cast($1 AS varchar) || '') error for ID '' || $2
+            END
+    '
+    LANGUAGE sql IMMUTABLE;
+
+
+--
+-- TOC entry 201 (OID 702324124)
+-- Name: stats_participant_display_name_l (smallint, integer, character varying, character varying); Type: FUNCTION; Schema: public; Owner: decibel
+--
+
+CREATE FUNCTION stats_participant_display_name_l (smallint, integer, character varying, character varying) RETURNS character varying
+    AS '
+    SELECT lower(stats_participant_display_name($1, $2, $3, $4))
+    '
+    LANGUAGE sql IMMUTABLE;
+
+
+SET SESSION AUTHORIZATION 'pgsql';
+
+--
+-- TOC entry 104 (OID 702324150)
+-- Name: stats_participant; Type: TABLE; Schema: public; Owner: pgsql
+--
+
+CREATE TABLE stats_participant (
+    id integer NOT NULL,
+    listmode smallint DEFAULT 0 NOT NULL,
+    nonprofit smallint DEFAULT 0 NOT NULL,
+    retire_to integer DEFAULT 0 NOT NULL,
+    retire_date date,
+    created timestamp without time zone,
+    dem_yob integer DEFAULT 0 NOT NULL,
+    dem_heard smallint DEFAULT 0 NOT NULL,
+    dem_motivation smallint DEFAULT 0 NOT NULL,
+    dem_gender character(1),
+    email character varying(64) DEFAULT '' NOT NULL,
+    "password" character(8) DEFAULT '' NOT NULL,
+    contact_name character varying(50) DEFAULT '' NOT NULL,
+    contact_phone character varying(20) DEFAULT '' NOT NULL,
+    motto character varying(255) DEFAULT '' NOT NULL,
+    dem_country character(2)
+) WITHOUT OIDS;
+
+
+--
+-- TOC entry 105 (OID 702324150)
+-- Name: stats_participant; Type: ACL; Schema: public; Owner: pgsql
+--
+
+REVOKE ALL ON TABLE stats_participant FROM PUBLIC;
+GRANT SELECT ON TABLE stats_participant TO PUBLIC;
+GRANT INSERT ON TABLE stats_participant TO GROUP processing;
+GRANT UPDATE ON TABLE stats_participant TO GROUP www;
+GRANT UPDATE ON TABLE stats_participant TO GROUP wheel;
+GRANT UPDATE ON TABLE stats_participant TO GROUP helpdesk;
+GRANT UPDATE ON TABLE stats_participant TO GROUP coder;
+
+
+SET SESSION AUTHORIZATION 'thejet';
+
+--
+-- TOC entry 204 (OID 825192714)
+-- Name: p_teamjoin (integer, integer); Type: FUNCTION; Schema: public; Owner: thejet
+--
+
+CREATE FUNCTION p_teamjoin (integer, integer) RETURNS void
+    AS '
+    DECLARE
+        today date := CURRENT_DATE;
+        yesterday date := CURRENT_DATE -1; 
+
+        participant_id ALIAS FOR $1;
+        new_team_id ALIAS FOR $2;
+    BEGIN
+	/* Error checking */
+	IF participant_id = 0 THEN
+            RAISE EXCEPTION ''0 is an invalid participant id'';
+        END IF;
+
+	IF new_team_id IS NULL THEN
+            RAISE EXCEPTION ''No team specified'';
+	END IF;
+
+	IF new_team_id != 0 THEN
+            IF NOT EXISTS(SELECT * FROM stats_team WHERE team = new_team_id) THEN
+                RAISE EXCEPTION ''Invalid Team Specified'';
+            END IF;
+        END IF;
+
+	/* If the participant already has a record for today, nuke it */
+	DELETE FROM team_joins
+            WHERE id = participant_id 
+	        AND join_date = today;
+
+	/* If the person was on the same team yesterday, update that record
+		instead of adding a new one */
+        IF EXISTS(SELECT team_id INTO tempvar FROM team_joins WHERE id = participant_id
+                AND (last_date IS NULL OR last_date = yesterday) AND team_id = new_team_id) THEN
+            UPDATE team_joins
+                SET last_date = NULL,
+                    leave_team_id = 0
+                WHERE id = participant_id
+                    AND ( last_date IS NULL OR last_date = yesterday );
+        ELSE	
+            /* Update the entry for the previous team, if there is one */
+            UPDATE team_joins
+                SET last_date = yesterday,
+                    leave_team_id = new_team_id
+                WHERE id = participant_id
+                    AND ( last_date IS NULL OR last_date = yesterday );
+		/* note that there should always be 1 or 0 records where LAST_DATE = null
+		   for a given participant */
+	
+            /* Insert a new record, unless we''re joining ''team 0'' */
+            IF new_team_id != 0 THEN
+                    INSERT INTO team_joins (id, team_id, join_date)
+                        VALUES (participant_id, new_team_id, today);
+            END IF;
+	END IF;
+
+        RETURN;
+    END;
+    '
+    LANGUAGE plpgsql;
+
+
+--
+-- TOC entry 205 (OID 825192714)
+-- Name: p_teamjoin (integer, integer); Type: ACL; Schema: public; Owner: thejet
+--
+
+REVOKE ALL ON FUNCTION p_teamjoin (integer, integer) FROM PUBLIC;
+GRANT ALL ON FUNCTION p_teamjoin (integer, integer) TO PUBLIC;
+
+
+--
+-- TOC entry 202 (OID 825395232)
+-- Name: p_pretire (integer, integer); Type: FUNCTION; Schema: public; Owner: thejet
+--
+
+CREATE FUNCTION p_pretire (integer, integer) RETURNS record
+    AS '
+    DECLARE
+        participant_id ALIAS FOR $1;
+        new_participant_id ALIAS FOR $2;
+      
+        i integer;
+        rv integer := 0;
+        retires integer;
+        srcemail varchar(64);
+        destemail varchar(64);
+        destteam integer;
+    BEGIN
+	/*
+	**	Call using "SELECT p_pretire($id, $destid);"
+	**	Return data is ReturnValue, RetiresFound, SourceEmail, DestEmail
+	*/
+        SELECT COUNT(*) INTO i
+            FROM stats_participant
+            WHERE retire_to IN (participant_id, new_participant_id);
+        IF i > 10 THEN
+            /* @rv = 1 */
+            RAISE EXCEPTION ''You may only retire 10 accounts into any one account.
+'';
+        END IF;
+
+	SELECT email INTO srcemail
+            FROM stats_participant
+            WHERE id = participant_id;
+        IF NOT FOUND THEN
+            /* @rv = 2 */
+            RAISE EXCEPTION ''Invalid source participant id.
+'';
+        END IF;
+
+        /** REMOVED Password check, done in PHP (@rv = 4) **/
+
+	SELECT email INTO destemail
+            FROM stats_participant
+            WHERE id = new_participant_id;
+        IF NOT FOUND THEN
+            /* @rv = 3 */
+            RAISE EXCEPTION ''Invalid destination participant id.
+'';
+        END IF;
+
+        /** Collapsed this into one SQL statement, rather than two **/
+        UPDATE stats_participant
+            SET retire_to = new_participant_id,
+                retire_date = CASE WHEN retire_to = 0 THEN CURRENT_DATE ELSE retire_date END
+            WHERE id = participant_id OR retire_to = participant_id;
+
+        /** Shouldn''t this be returning the total number of retires to the new participant id? **/
+	SELECT COUNT(*) INTO retires
+            FROM stats_participant
+            WHERE retire_to = new_participant_id AND id <> new_participant_id;
+            /** OLD WHERE clause
+		where retire_to = @id
+			and id <> @id **/
+
+	SELECT rv AS ''ReturnValue'', retires AS ''RetiresFound'', srcemail AS ''SourceEmail'', destemail AS ''DestEmail''
+
+    END;
+    '
+    LANGUAGE plpgsql;
+
+
+--
+-- TOC entry 203 (OID 825395232)
+-- Name: p_pretire (integer, integer); Type: ACL; Schema: public; Owner: thejet
+--
+
+REVOKE ALL ON FUNCTION p_pretire (integer, integer) FROM PUBLIC;
+GRANT ALL ON FUNCTION p_pretire (integer, integer) TO PUBLIC;
+
+
+--
+-- TOC entry 191 (OID 825472967)
+-- Name: p_testexists (integer); Type: FUNCTION; Schema: public; Owner: thejet
+--
+
+CREATE FUNCTION p_testexists (integer) RETURNS integer
+    AS '
+    DECLARE
+        part_id ALIAS FOR $1;
+    BEGIN
+      IF EXISTS(SELECT * FROM stats_participant WHERE id = part_id) THEN
+        RETURN 1;
+      ELSE
+        RETURN 0;
+      END IF;
+    END;
+    '
+    LANGUAGE plpgsql STABLE;
+
+
+SET SESSION AUTHORIZATION 'decibel';
+
+--
+-- TOC entry 106 (OID 826625856)
+-- Name: worksummary_205; Type: TABLE; Schema: public; Owner: decibel
+--
+
+CREATE TABLE worksummary_205 (
+    id integer,
+    team_id integer,
+    first_date date,
+    last_date date,
+    work_total numeric,
+    work_today numeric,
+    work_yesterday numeric
+);
+
+
+--
+-- TOC entry 107 (OID 831866759)
+-- Name: jcn_dead_teams; Type: TABLE; Schema: public; Owner: decibel
+--
+
+CREATE TABLE jcn_dead_teams (
+    team integer
+);
+
+
+SET SESSION AUTHORIZATION 'pgsql';
+
+--
+-- TOC entry 120 (OID 700091896)
+-- Name: email_rank__day_rank; Type: INDEX; Schema: public; Owner: pgsql
+--
 
 CREATE INDEX email_rank__day_rank ON email_rank USING btree (project_id, day_rank);
 
 
+--
+-- TOC entry 121 (OID 700091897)
+-- Name: email_rank__overall_rank; Type: INDEX; Schema: public; Owner: pgsql
+--
 
 CREATE INDEX email_rank__overall_rank ON email_rank USING btree (project_id, overall_rank);
 
 
+--
+-- TOC entry 109 (OID 700091898)
+-- Name: csc_master__id_date; Type: INDEX; Schema: public; Owner: pgsql
+--
 
-CREATE INDEX platform_contrib__projectdate ON platform_contrib USING btree (project_id, date);
+CREATE UNIQUE INDEX csc_master__id_date ON csc_master USING btree (id, date);
 
 
+--
+-- TOC entry 110 (OID 700091899)
+-- Name: csc_master__team_date; Type: INDEX; Schema: public; Owner: pgsql
+--
+
+CREATE INDEX csc_master__team_date ON csc_master USING btree (team, date);
+
+
+--
+-- TOC entry 113 (OID 700091900)
+-- Name: csc_platform__os_date; Type: INDEX; Schema: public; Owner: pgsql
+--
+
+CREATE INDEX csc_platform__os_date ON csc_platform USING btree (os, date);
+
+
+--
+-- TOC entry 112 (OID 700091901)
+-- Name: csc_platform__cpu_date; Type: INDEX; Schema: public; Owner: pgsql
+--
+
+CREATE INDEX csc_platform__cpu_date ON csc_platform USING btree (cpu, date);
+
+
+--
+-- TOC entry 118 (OID 700091902)
+-- Name: email_contrib_today__team_id; Type: INDEX; Schema: public; Owner: pgsql
+--
+
+CREATE INDEX email_contrib_today__team_id ON email_contrib_today USING btree (project_id, team_id);
+
+
+--
+-- TOC entry 132 (OID 700091903)
+-- Name: projects__project_type; Type: INDEX; Schema: public; Owner: pgsql
+--
 
 CREATE INDEX projects__project_type ON projects USING btree (project_type);
 
 
+--
+-- TOC entry 125 (OID 700091904)
+-- Name: platform_contrib__projectdate; Type: INDEX; Schema: public; Owner: pgsql
+--
 
-CREATE INDEX stats_participant__participantteam ON stats_participant USING btree (team);
-
-
-
-CREATE UNIQUE INDEX stats_participant__id_listmode ON stats_participant USING btree (id, listmode);
-
-
-
-CREATE UNIQUE INDEX stats_participant__emailid ON stats_participant USING btree (email, id);
+CREATE INDEX platform_contrib__projectdate ON platform_contrib USING btree (project_id, date);
 
 
-
-CREATE UNIQUE INDEX stats_participant__participantretire_id ON stats_participant USING btree (retire_to, id);
-
-
-
-CREATE UNIQUE INDEX stats_participant__id_retire_listmode ON stats_participant USING btree (id, retire_to, listmode);
-
-
-
-CREATE INDEX stats_participant__listmode ON stats_participant USING btree (listmode);
-
-
-
-CREATE INDEX stats_participant__dem_heard ON stats_participant USING btree (dem_heard);
-
-
-
-CREATE INDEX stats_participant__dem_motivation ON stats_participant USING btree (dem_motivation);
-
-
-
-CREATE INDEX stats_participant__dem_country ON stats_participant USING btree (dem_country);
-
-
+--
+-- TOC entry 135 (OID 700091905)
+-- Name: stats_participant_friend__friend; Type: INDEX; Schema: public; Owner: pgsql
+--
 
 CREATE INDEX stats_participant_friend__friend ON stats_participant_friend USING btree (friend);
 
 
-
-CREATE UNIQUE INDEX stats_team__team_listmode ON stats_team USING btree (team, listmode);
-
-
+--
+-- TOC entry 149 (OID 700091906)
+-- Name: team_joins__join; Type: INDEX; Schema: public; Owner: pgsql
+--
 
 CREATE INDEX team_joins__join ON team_joins USING btree (join_date);
 
 
+--
+-- TOC entry 150 (OID 700091907)
+-- Name: team_joins__join_last; Type: INDEX; Schema: public; Owner: pgsql
+--
 
 CREATE INDEX team_joins__join_last ON team_joins USING btree (join_date, last_date);
 
 
+--
+-- TOC entry 155 (OID 700091908)
+-- Name: team_joins__day_rank; Type: INDEX; Schema: public; Owner: pgsql
+--
 
 CREATE INDEX team_joins__day_rank ON team_rank USING btree (day_rank);
 
 
+--
+-- TOC entry 156 (OID 700091909)
+-- Name: team_joins__overall_rank; Type: INDEX; Schema: public; Owner: pgsql
+--
 
 CREATE INDEX team_joins__overall_rank ON team_rank USING btree (overall_rank);
 
 
+--
+-- TOC entry 160 (OID 700091910)
+-- Name: rank; Type: INDEX; Schema: public; Owner: pgsql
+--
 
 CREATE INDEX rank ON csc_cache_em_rank USING btree (rank);
 
 
+--
+-- TOC entry 159 (OID 700091911)
+-- Name: csc_cache_em_rank__id; Type: INDEX; Schema: public; Owner: pgsql
+--
 
 CREATE UNIQUE INDEX csc_cache_em_rank__id ON csc_cache_em_rank USING btree (id);
 
 
+--
+-- TOC entry 162 (OID 700091912)
+-- Name: csc_cache_em_yrank__rank; Type: INDEX; Schema: public; Owner: pgsql
+--
 
 CREATE INDEX csc_cache_em_yrank__rank ON csc_cache_em_yrank USING btree (rank);
 
 
+--
+-- TOC entry 161 (OID 700091913)
+-- Name: csc_cache_em_yrank__id; Type: INDEX; Schema: public; Owner: pgsql
+--
 
 CREATE UNIQUE INDEX csc_cache_em_yrank__id ON csc_cache_em_yrank USING btree (id);
 
 
+--
+-- TOC entry 163 (OID 700091914)
+-- Name: csc_cache_tm_members__team_blocks; Type: INDEX; Schema: public; Owner: pgsql
+--
 
 CREATE INDEX csc_cache_tm_members__team_blocks ON csc_cache_tm_members USING btree (team, blocks);
 
 
+--
+-- TOC entry 164 (OID 700091915)
+-- Name: csc_cache_tm_rank__team; Type: INDEX; Schema: public; Owner: pgsql
+--
 
 CREATE INDEX csc_cache_tm_rank__team ON csc_cache_tm_rank USING btree (team);
 
 
+--
+-- TOC entry 165 (OID 700091916)
+-- Name: csc_cache_tm_yrank__team; Type: INDEX; Schema: public; Owner: pgsql
+--
 
 CREATE INDEX csc_cache_tm_yrank__team ON csc_cache_tm_yrank USING btree (team);
 
 
+SET SESSION AUTHORIZATION 'decibel';
 
-ALTER TABLE ONLY csc_master
-    ADD CONSTRAINT csc_master_pkey PRIMARY KEY (id, date);
+--
+-- TOC entry 168 (OID 700091926)
+-- Name: jcn_sp_created_id; Type: INDEX; Schema: public; Owner: decibel
+--
 
-
-
-ALTER TABLE ONLY csc_platform
-    ADD CONSTRAINT csc_platform_pkey PRIMARY KEY (cpu, os, ver, date);
-
-
-
-ALTER TABLE ONLY daily_summary
-    ADD CONSTRAINT daily_summary_pkey PRIMARY KEY (date, project_id);
+CREATE UNIQUE INDEX jcn_sp_created_id ON jcn_sp_created USING btree (id);
 
 
+--
+-- TOC entry 169 (OID 700091927)
+-- Name: jcn_st_created_id; Type: INDEX; Schema: public; Owner: decibel
+--
 
-ALTER TABLE ONLY email_contrib
-    ADD CONSTRAINT email_contrib_pkey PRIMARY KEY (project_id, id, date);
-
-
-
-ALTER TABLE ONLY email_contrib_last_update
-    ADD CONSTRAINT email_contrib_last_update_pkey PRIMARY KEY (project_id);
+CREATE UNIQUE INDEX jcn_st_created_id ON jcn_st_created USING btree (team);
 
 
+--
+-- TOC entry 167 (OID 700091928)
+-- Name: jcn_tj_load_pk; Type: INDEX; Schema: public; Owner: decibel
+--
 
-ALTER TABLE ONLY email_contrib_today
-    ADD CONSTRAINT email_contrib_today_pkey PRIMARY KEY (project_id, id);
+CREATE UNIQUE INDEX jcn_tj_load_pk ON jcn_tj_load USING btree (id, join_date, team_id);
 
 
+--
+-- TOC entry 166 (OID 700091929)
+-- Name: jcn_sp_load_pk; Type: INDEX; Schema: public; Owner: decibel
+--
+
+CREATE UNIQUE INDEX jcn_sp_load_pk ON jcn_sp_load USING btree (id);
+
+
+SET SESSION AUTHORIZATION 'pgsql';
+
+--
+-- TOC entry 172 (OID 700539276)
+-- Name: stats_team__team_listmode; Type: INDEX; Schema: public; Owner: pgsql
+--
+
+CREATE UNIQUE INDEX stats_team__team_listmode ON stats_team USING btree (team, listmode);
+
+
+--
+-- TOC entry 179 (OID 702324164)
+-- Name: stats_participant__id_listmode; Type: INDEX; Schema: public; Owner: pgsql
+--
+
+CREATE UNIQUE INDEX stats_participant__id_listmode ON stats_participant USING btree (id, listmode);
+
+
+--
+-- TOC entry 178 (OID 702324165)
+-- Name: stats_participant__emailid; Type: INDEX; Schema: public; Owner: pgsql
+--
+
+CREATE UNIQUE INDEX stats_participant__emailid ON stats_participant USING btree (email, id);
+
+
+--
+-- TOC entry 183 (OID 702324166)
+-- Name: stats_participant__participantretire_id; Type: INDEX; Schema: public; Owner: pgsql
+--
+
+CREATE UNIQUE INDEX stats_participant__participantretire_id ON stats_participant USING btree (retire_to, id);
+
+
+--
+-- TOC entry 180 (OID 702324167)
+-- Name: stats_participant__id_retire_listmode; Type: INDEX; Schema: public; Owner: pgsql
+--
+
+CREATE UNIQUE INDEX stats_participant__id_retire_listmode ON stats_participant USING btree (id, retire_to, listmode);
+
+
+--
+-- TOC entry 182 (OID 702324168)
+-- Name: stats_participant__listmode; Type: INDEX; Schema: public; Owner: pgsql
+--
+
+CREATE INDEX stats_participant__listmode ON stats_participant USING btree (listmode);
+
+
+--
+-- TOC entry 175 (OID 702324169)
+-- Name: stats_participant__dem_heard; Type: INDEX; Schema: public; Owner: pgsql
+--
+
+CREATE INDEX stats_participant__dem_heard ON stats_participant USING btree (dem_heard);
+
+
+--
+-- TOC entry 176 (OID 702324170)
+-- Name: stats_participant__dem_motivation; Type: INDEX; Schema: public; Owner: pgsql
+--
+
+CREATE INDEX stats_participant__dem_motivation ON stats_participant USING btree (dem_motivation);
+
+
+--
+-- TOC entry 174 (OID 702324171)
+-- Name: stats_participant__dem_country; Type: INDEX; Schema: public; Owner: pgsql
+--
+
+CREATE INDEX stats_participant__dem_country ON stats_participant USING btree (dem_country);
+
+
+--
+-- TOC entry 184 (OID 702324172)
+-- Name: stats_participant__search; Type: INDEX; Schema: public; Owner: pgsql
+--
+
+CREATE INDEX stats_participant__search ON stats_participant USING btree (stats_participant_display_name_l(listmode, id, email, contact_name));
+
+
+--
+-- TOC entry 181 (OID 702324173)
+-- Name: stats_participant__lemail; Type: INDEX; Schema: public; Owner: pgsql
+--
+
+CREATE UNIQUE INDEX stats_participant__lemail ON stats_participant USING btree (lower(email));
+
+
+--
+-- TOC entry 151 (OID 831861330)
+-- Name: team_joins__team_id; Type: INDEX; Schema: public; Owner: pgsql
+--
+
+CREATE INDEX team_joins__team_id ON team_joins USING btree (team_id);
+
+
+--
+-- TOC entry 122 (OID 700091930)
+-- Name: email_rank_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
 
 ALTER TABLE ONLY email_rank
     ADD CONSTRAINT email_rank_pkey PRIMARY KEY (project_id, id);
 
 
-
-ALTER TABLE ONLY email_rank_last_update
-    ADD CONSTRAINT email_rank_last_update_pkey PRIMARY KEY (project_id);
-
-
-
-ALTER TABLE ONLY log_info
-    ADD CONSTRAINT log_info_pkey PRIMARY KEY (project_id, log_timestamp);
-
-
+--
+-- TOC entry 126 (OID 700091932)
+-- Name: platform_contrib_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
 
 ALTER TABLE ONLY platform_contrib
     ADD CONSTRAINT platform_contrib_pkey PRIMARY KEY (project_id, cpu, os, ver, date);
 
 
+--
+-- TOC entry 111 (OID 700091934)
+-- Name: csc_master_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
+
+ALTER TABLE ONLY csc_master
+    ADD CONSTRAINT csc_master_pkey PRIMARY KEY (id, date);
+
+
+--
+-- TOC entry 114 (OID 700091936)
+-- Name: csc_platform_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
+
+ALTER TABLE ONLY csc_platform
+    ADD CONSTRAINT csc_platform_pkey PRIMARY KEY (cpu, os, ver, date);
+
+
+--
+-- TOC entry 115 (OID 700091938)
+-- Name: daily_summary_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
+
+ALTER TABLE ONLY daily_summary
+    ADD CONSTRAINT daily_summary_pkey PRIMARY KEY (date, project_id);
+
+
+--
+-- TOC entry 117 (OID 700091940)
+-- Name: email_contrib_last_update_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
+
+ALTER TABLE ONLY email_contrib_last_update
+    ADD CONSTRAINT email_contrib_last_update_pkey PRIMARY KEY (project_id);
+
+
+--
+-- TOC entry 119 (OID 700091942)
+-- Name: email_contrib_today_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
+
+ALTER TABLE ONLY email_contrib_today
+    ADD CONSTRAINT email_contrib_today_pkey PRIMARY KEY (project_id, id);
+
+
+--
+-- TOC entry 123 (OID 700091944)
+-- Name: email_rank_last_update_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
+
+ALTER TABLE ONLY email_rank_last_update
+    ADD CONSTRAINT email_rank_last_update_pkey PRIMARY KEY (project_id);
+
+
+--
+-- TOC entry 124 (OID 700091946)
+-- Name: log_info_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
+
+ALTER TABLE ONLY log_info
+    ADD CONSTRAINT log_info_pkey PRIMARY KEY (project_id, log_timestamp);
+
+
+--
+-- TOC entry 127 (OID 700091948)
+-- Name: platform_contrib_last_update_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
 
 ALTER TABLE ONLY platform_contrib_last_update
     ADD CONSTRAINT platform_contrib_last_update_pkey PRIMARY KEY (project_id);
 
 
+--
+-- TOC entry 128 (OID 700091950)
+-- Name: platform_summary_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
 
 ALTER TABLE ONLY platform_summary
     ADD CONSTRAINT platform_summary_pkey PRIMARY KEY (project_id, cpu, os, ver);
 
 
+--
+-- TOC entry 129 (OID 700091952)
+-- Name: project_status_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
 
 ALTER TABLE ONLY project_status
     ADD CONSTRAINT project_status_pkey PRIMARY KEY (status);
 
 
+--
+-- TOC entry 130 (OID 700091954)
+-- Name: project_statsrun_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
 
 ALTER TABLE ONLY project_statsrun
     ADD CONSTRAINT project_statsrun_pkey PRIMARY KEY (project_id);
 
 
+--
+-- TOC entry 133 (OID 700091956)
+-- Name: projects_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
 
 ALTER TABLE ONLY projects
     ADD CONSTRAINT projects_pkey PRIMARY KEY (project_id);
 
 
+--
+-- TOC entry 131 (OID 700091958)
+-- Name: projects__name; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
 
 ALTER TABLE ONLY projects
     ADD CONSTRAINT projects__name UNIQUE (name);
 
 
-
-ALTER TABLE ONLY stats_participant
-    ADD CONSTRAINT stats_participant_pkey PRIMARY KEY (id);
-
-
-
-ALTER TABLE ONLY stats_participant
-    ADD CONSTRAINT stats_participant__email UNIQUE (email);
-
-
+--
+-- TOC entry 134 (OID 700091960)
+-- Name: stats_participant_blocked_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
 
 ALTER TABLE ONLY stats_participant_blocked
     ADD CONSTRAINT stats_participant_blocked_pkey PRIMARY KEY (id);
 
 
+--
+-- TOC entry 136 (OID 700091962)
+-- Name: stats_participant_friend_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
 
 ALTER TABLE ONLY stats_participant_friend
     ADD CONSTRAINT stats_participant_friend_pkey PRIMARY KEY (id, friend);
 
 
+--
+-- TOC entry 138 (OID 700091964)
+-- Name: stats_participant_listmode_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
 
 ALTER TABLE ONLY stats_participant_listmode
     ADD CONSTRAINT stats_participant_listmode_pkey PRIMARY KEY (listmode);
 
 
+--
+-- TOC entry 137 (OID 700091966)
+-- Name: stats_participant_listmode__description; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
 
 ALTER TABLE ONLY stats_participant_listmode
     ADD CONSTRAINT stats_participant_listmode__description UNIQUE (description);
 
 
+--
+-- TOC entry 139 (OID 700091968)
+-- Name: stats_team_blocked_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
 
 ALTER TABLE ONLY stats_team_blocked
     ADD CONSTRAINT stats_team_blocked_pkey PRIMARY KEY (team_id);
 
 
+--
+-- TOC entry 141 (OID 700091970)
+-- Name: stats_country_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
 
 ALTER TABLE ONLY stats_country
     ADD CONSTRAINT stats_country_pkey PRIMARY KEY (code);
 
 
+--
+-- TOC entry 140 (OID 700091972)
+-- Name: stats_country__country; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
 
 ALTER TABLE ONLY stats_country
     ADD CONSTRAINT stats_country__country UNIQUE (country);
 
 
+--
+-- TOC entry 142 (OID 700091974)
+-- Name: stats_cpu_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
 
 ALTER TABLE ONLY stats_cpu
     ADD CONSTRAINT stats_cpu_pkey PRIMARY KEY (cpu);
 
 
+--
+-- TOC entry 144 (OID 700091976)
+-- Name: stats_dem_heard_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
 
 ALTER TABLE ONLY stats_dem_heard
     ADD CONSTRAINT stats_dem_heard_pkey PRIMARY KEY (heard);
 
 
+--
+-- TOC entry 143 (OID 700091978)
+-- Name: stats_dem_heard__description; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
 
 ALTER TABLE ONLY stats_dem_heard
     ADD CONSTRAINT stats_dem_heard__description UNIQUE (description);
 
 
+--
+-- TOC entry 146 (OID 700091980)
+-- Name: stats_dem_motivation_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
 
 ALTER TABLE ONLY stats_dem_motivation
     ADD CONSTRAINT stats_dem_motivation_pkey PRIMARY KEY (motivation);
 
 
+--
+-- TOC entry 145 (OID 700091982)
+-- Name: stats_dem_motivation__description; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
 
 ALTER TABLE ONLY stats_dem_motivation
     ADD CONSTRAINT stats_dem_motivation__description UNIQUE (description);
 
 
+--
+-- TOC entry 147 (OID 700091984)
+-- Name: stats_nonprofit_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
 
 ALTER TABLE ONLY stats_nonprofit
     ADD CONSTRAINT stats_nonprofit_pkey PRIMARY KEY (nonprofit);
 
 
+--
+-- TOC entry 148 (OID 700091986)
+-- Name: stats_os_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
 
 ALTER TABLE ONLY stats_os
     ADD CONSTRAINT stats_os_pkey PRIMARY KEY (os);
 
 
-
-ALTER TABLE ONLY stats_team
-    ADD CONSTRAINT stats_team_pkey PRIMARY KEY (team);
-
-
-
-ALTER TABLE ONLY stats_team
-    ADD CONSTRAINT stats_team__name UNIQUE (name);
-
-
+--
+-- TOC entry 152 (OID 700091988)
+-- Name: team_joins_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
 
 ALTER TABLE ONLY team_joins
     ADD CONSTRAINT team_joins_pkey PRIMARY KEY (id, join_date, team_id);
 
 
+--
+-- TOC entry 153 (OID 700091990)
+-- Name: team_members_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
 
 ALTER TABLE ONLY team_members
     ADD CONSTRAINT team_members_pkey PRIMARY KEY (project_id, team_id, id);
 
 
+--
+-- TOC entry 154 (OID 700091992)
+-- Name: team_members_last_update_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
 
 ALTER TABLE ONLY team_members_last_update
     ADD CONSTRAINT team_members_last_update_pkey PRIMARY KEY (project_id);
 
 
+--
+-- TOC entry 157 (OID 700091994)
+-- Name: team_rank_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
 
 ALTER TABLE ONLY team_rank
     ADD CONSTRAINT team_rank_pkey PRIMARY KEY (project_id, team_id);
 
 
+--
+-- TOC entry 158 (OID 700091996)
+-- Name: team_rank_last_update_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
 
 ALTER TABLE ONLY team_rank_last_update
     ADD CONSTRAINT team_rank_last_update_pkey PRIMARY KEY (project_id);
 
 
- alter table CSC_master alter column team set default 0                                              ;
- alter table Email_Rank alter column WORK_TODAY set default 0                                        ;
- alter table Email_Rank alter column WORK_TOTAL set default 0                                        ;
- alter table Email_Rank alter column DAY_RANK set default 0                                          ;
- alter table Email_Rank alter column DAY_RANK_PREVIOUS set default 0                                 ;
- alter table Email_Rank alter column OVERALL_RANK set default 0                                      ;
- alter table Email_Rank alter column OVERALL_RANK_PREVIOUS set default 0                             ;
- alter table Project_statsrun alter column LOGS_FOR_DAY set default 0                                ;
- alter table Project_statsrun alter column WORK_FOR_DAY set default 0                                ;
- alter table Team_Joins alter column leave_team_id set default 0                                     ;
- alter table STATS_Participant alter column listmode set default 0                                   ;
- alter table STATS_Participant alter column nonprofit set default 0                                  ;
- alter table STATS_Participant alter column team set default 0                                       ;
- alter table STATS_Participant alter column retire_to set default 0                                  ;
- alter table STATS_Participant alter column friend_a set default 0                                   ;
- alter table STATS_Participant alter column friend_b set default 0                                   ;
- alter table STATS_Participant alter column friend_c set default 0                                   ;
- alter table STATS_Participant alter column friend_d set default 0                                   ;
- alter table STATS_Participant alter column friend_e set default 0                                   ;
- alter table STATS_Participant alter column dem_yob set default 0                                    ;
- alter table STATS_Participant alter column dem_heard set default 0                                  ;
- alter table STATS_Participant alter column dem_motivation set default 0                             ;
- alter table Team_Members alter column WORK_TODAY set default 0                                      ;
- alter table Team_Members alter column WORK_TOTAL set default 0                                      ;
- alter table Team_Members alter column DAY_RANK set default 0                                        ;
- alter table Team_Members alter column DAY_RANK_PREVIOUS set default 0                               ;
- alter table Team_Members alter column OVERALL_RANK set default 0                                    ;
- alter table Team_Members alter column OVERALL_RANK_PREVIOUS set default 0                           ;
- alter table Team_Rank alter column WORK_TODAY set default 0                                         ;
- alter table Team_Rank alter column WORK_TOTAL set default 0                                         ;
- alter table Team_Rank alter column DAY_RANK set default 0                                           ;
- alter table Team_Rank alter column DAY_RANK_PREVIOUS set default 0                                  ;
- alter table Team_Rank alter column OVERALL_RANK set default 0                                       ;
- alter table Team_Rank alter column OVERALL_RANK_PREVIOUS set default 0                              ;
- alter table Team_Rank alter column MEMBERS_TODAY set default 0                                      ;
- alter table Team_Rank alter column MEMBERS_OVERALL set default 0                                    ;
- alter table Team_Rank alter column MEMBERS_CURRENT set default 0                                    ;
- alter table STATS_team alter column listmode set default 0                                          ;
- alter table Project_statsrun alter column LAST_LOG set default ''                                    ;
- alter table STATS_Participant alter column email set default ''                                      ;
- alter table STATS_Participant alter column password set default ''                                   ;
- alter table STATS_Participant alter column dem_gender set default ''                                 ;
- alter table STATS_Participant alter column dem_country set default ''                                ;
- alter table STATS_Participant alter column contact_name set default ''                               ;
- alter table STATS_Participant alter column contact_phone set default ''                              ;
- alter table STATS_Participant alter column motto set default ''                                      ;
+--
+-- TOC entry 116 (OID 700091998)
+-- Name: email_contrib_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
+
+ALTER TABLE ONLY email_contrib
+    ADD CONSTRAINT email_contrib_pkey PRIMARY KEY (project_id, id, date);
+
+
+SET SESSION AUTHORIZATION 'decibel';
+
+--
+-- TOC entry 170 (OID 700092008)
+-- Name: p_id_pkey; Type: CONSTRAINT; Schema: public; Owner: decibel
+--
+
+ALTER TABLE ONLY p_id
+    ADD CONSTRAINT p_id_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 171 (OID 700092010)
+-- Name: t_id_pkey; Type: CONSTRAINT; Schema: public; Owner: decibel
+--
+
+ALTER TABLE ONLY t_id
+    ADD CONSTRAINT t_id_pkey PRIMARY KEY (id);
+
+
+SET SESSION AUTHORIZATION 'pgsql';
+
+--
+-- TOC entry 185 (OID 702324174)
+-- Name: stats_participant_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
+
+ALTER TABLE ONLY stats_participant
+    ADD CONSTRAINT stats_participant_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 177 (OID 702324176)
+-- Name: stats_participant__email; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
+
+ALTER TABLE ONLY stats_participant
+    ADD CONSTRAINT stats_participant__email UNIQUE (email);
+
+
+--
+-- TOC entry 208 (OID 702324178)
+-- Name: fk_stats_participant__country; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
+
+ALTER TABLE ONLY stats_participant
+    ADD CONSTRAINT fk_stats_participant__country FOREIGN KEY (dem_country) REFERENCES stats_country(code) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+
+--
+-- TOC entry 207 (OID 702324218)
+-- Name: fk_team_joins__participant_id; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
+
+ALTER TABLE ONLY team_joins
+    ADD CONSTRAINT fk_team_joins__participant_id FOREIGN KEY (id) REFERENCES stats_participant(id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+
+--
+-- TOC entry 173 (OID 703804848)
+-- Name: stats_team_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
+
+ALTER TABLE ONLY stats_team
+    ADD CONSTRAINT stats_team_pkey PRIMARY KEY (team);
+
+
+--
+-- TOC entry 206 (OID 703804850)
+-- Name: fk_team_joins_teamid; Type: CONSTRAINT; Schema: public; Owner: pgsql
+--
+
+ALTER TABLE ONLY team_joins
+    ADD CONSTRAINT fk_team_joins_teamid FOREIGN KEY (team_id) REFERENCES stats_team(team) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+
