@@ -1,9 +1,11 @@
-use stats
+-- $Id: lastupdate_template.def,v 1.3 2000/03/17 04:55:58 decibel Exp $
+
+use ${1}
 go
 
-\set procedure=p_lastupdate_${1}
+\set procedure=p_lastupdate_${2}
 
-\echo "Creating procedure $procedure, referencing table ${2}, field ${3}"
+\echo "Creating procedure $procedure, referencing table ${3}, field ${4}"
 
 create procedure $procedure
 as
@@ -12,8 +14,8 @@ as
 	** be called from 'lastupdate'.
 	*/
 
-	select max(${3}) as lastupdate
-	from ${2}
+	select max(${4}) as lastupdate
+	from ${3}
 	
 	return
 go

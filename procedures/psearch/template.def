@@ -1,7 +1,17 @@
-use stats
-go
+-- $Id: template.def,v 1.4 2000/03/17 04:55:59 decibel Exp $
 
-\set procedure=p_psearch_${1}
+\set procedure=p_psearch_${2}
+
+if ( "${1}" = "" )
+begin
+	print "Database not specified! Using 'stats' as default!"
+	use stats
+end
+else
+begin
+	use ${1}
+end
+go
 
 \echo "Creating table #psearch"
 create table #psearch
@@ -23,7 +33,7 @@ begin
 	select p.id, p.listmode, p.contact_name, p.email, convert(varchar, r.first, 100) as 'first',
 			convert(varchar, r.last, 100) as 'last', r.blocks, r.days_working, r.overall_rate,
 			r.rank, r.change
-                from STATS_Participant p, statproc.${1}_CACHE_em_RANK r, #psearch ps
+                from STATS_Participant p, statproc.${2}_CACHE_em_RANK r, #psearch ps
                 where p.id = r.id
                 	and p.id = ps.id
                 	and r.id = ps.id

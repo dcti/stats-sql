@@ -1,9 +1,17 @@
-# $Id: main.def,v 1.5 2000/01/27 09:13:03 decibel Exp $
-
-use stats
-go
+-- $Id: main.def,v 1.6 2000/03/17 04:55:59 decibel Exp $
 
 \set procedure=p_psearch
+
+if ( "${1}" = "" )
+begin
+	print "Database not specified! Using 'stats' as default!"
+	use stats
+end
+else
+begin
+	use ${1}
+end
+go
 
 if (object_id("$procedure") is not NULL)
 begin

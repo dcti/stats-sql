@@ -1,10 +1,22 @@
-use stats
+-- $Id: rank.def,v 1.6 2000/03/17 04:55:58 decibel Exp $
+
+\set procedure=p_rank
+
+if ( "${1}" = "" )
+begin
+	print "Database not specified! Using 'stats' as default!"
+	use stats
+end
+else
+begin
+	use ${1}
+end
 go
 
-drop procedure p_rank
+drop procedure $procedure
 go
 
-create procedure p_rank
+create procedure $procedure
 (	@section char(1) = null,	/* What section to look at (i.e. e for email, t for team) */
 	@contest varchar(10) = null,	/* Contest that we want the ranking on */
 	@timeframe char(1) = null,	/* Timeframe we want to look at (overall v. yesterday) */
@@ -48,7 +60,7 @@ begin
 	end
 
 	/* Build the procedure name */
-	select @procname = "p_rank_" + @contest + "_" + @section + "_" + @timeframe + "_rank"
+	select @procname = "$procedure_" + @contest + "_" + @section + "_" + @timeframe + "_rank"
 	
 	/* See if the silly procedure exists */
 	if (object_id(@procname) is NULL)
@@ -62,6 +74,6 @@ begin
 end
 go
 
-grant execute on p_rank to public
+grant execute on $procedure to public
 go
 

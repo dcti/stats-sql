@@ -1,9 +1,18 @@
-# $Id: escape_wildcards.def,v 1.5 2000/01/27 09:14:58 decibel Exp $
-
-use stats
-go
+-- $Id: escape_wildcards.def,v 1.6 2000/03/17 04:55:58 decibel Exp $
 
 \set procedure=p_escape_wildcards
+
+if ( "${1}" = "" )
+begin
+	print "Database not specified! Using 'stats' as default!"
+	use stats
+end
+else
+begin
+	use ${1}
+end
+go
+
 if object_id("$procedure") is not NULL
 begin
 	print 'Deleting procedure %1!', $procedure

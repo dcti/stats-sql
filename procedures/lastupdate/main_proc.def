@@ -1,7 +1,9 @@
-use stats
-go
+-- $Id: main_proc.def,v 1.3 2000/03/17 04:55:58 decibel Exp $
 
 \set procedure=p_lastupdate
+
+use ${1}
+go
 
 if (object_id("$procedure") is not null)
 begin
