@@ -1,0 +1,27 @@
+-- $Id: template.def,v 1.1 2002/12/16 19:51:27 decibel Exp $
+
+use ${1}
+go
+
+\set procedure=p_set_lastupdate_${2}
+
+\echo "Creating procedure $procedure, referencing table ${3}"
+
+create procedure $procedure (
+	@project_id tinyint = 0
+    , @new_date smalldatetime = NULL
+)
+as
+    insert into ${3} (PROJECT_ID, LAST_DATE)
+        select @project_id, @new_date
+        where not exists (select * from ${3} where PROJECT_ID = @project_id)
+
+    update ${3}
+        set LAST_DATE = @new_date
+        where PROJECT_ID = @project_id
+
+	return
+go
+
+grant execute on $procedure to public
+go
