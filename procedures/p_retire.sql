@@ -1,4 +1,4 @@
--- $Id: p_retire.sql,v 1.6 2003/12/31 16:26:55 decibel Exp $
+-- $Id: p_retire.sql,v 1.7 2004/03/09 18:36:01 decibel Exp $
 
 /*
  Participant Retire
@@ -40,8 +40,8 @@ AS '
             SELECT COUNT(*) INTO i
                 FROM stats_participant
                 WHERE retire_to IN (participant_id, new_participant_id);
-            IF i > 10 THEN
-                RAISE EXCEPTION ''You may only retire 10 accounts into any one account.'';
+            IF i > 12 THEN
+                RAISE EXCEPTION ''You may only retire 12 accounts into any one account.'';
             END IF;
         END IF;
 
@@ -88,7 +88,7 @@ VOLATILE
 CREATE OR REPLACE FUNCTION p_retire(integer, integer) RETURNS int
 AS '
     BEGIN
-    RETURN p_pretire($1, $2, false);
+    RETURN p_retire($1, $2, false);
     END;
 ' LANGUAGE 'plpgsql'
 VOLATILE
