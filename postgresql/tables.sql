@@ -16,10 +16,11 @@ create table CSC_dailies
 WITHOUT OIDS;
 create table CSC_master
 (
-	id			numeric(7,0)	primary key,
+	id			numeric(7,0)	not null,
 	team			int		not NULL,
 	date			date	not NULL,
-	blocks			numeric(7,0)	not NULL
+	blocks			numeric(7,0)	not NULL,
+    primary key(id,date)
 )
 WITHOUT OIDS;
 create table CSC_platform
@@ -141,10 +142,10 @@ create table Platform_Summary
 	CPU			smallint	not NULL,
 	OS			smallint	not NULL,
 	VER			smallint	not NULL,
-	FIRST_DATE		date	NULL,
-	LAST_DATE		date	NULL,
-	WORK_TODAY		numeric(38,0)	NULL,
-	WORK_TOTAL		numeric(22,0)	NULL,
+	FIRST_DATE		date	not NULL,
+	LAST_DATE		date	not NULL,
+	WORK_TODAY		numeric(38,0)	not NULL,
+	WORK_TOTAL		numeric(22,0)	not NULL,
     primary key(project_id,cpu,os,ver)
 )
 WITHOUT OIDS;
