@@ -40,7 +40,7 @@ while (my @a = $s->fetchrow) {
     $counter++;
 
     if($counter % 100 == 0) {
-        print "\r$counter";
+        print STDERR "\r$counter";
     }
 }
 
