@@ -1,0 +1,53 @@
+-- $Id: Project.def,v 1.1 2000/04/29 15:42:26 decibel Exp $
+
+\set procedure=p_Project
+
+-- a blank 'use' aborts the next transaction, so do this in two steps
+if ( "${1}" = "" )
+begin
+	print "Database not specified! Using 'stats' as default!"
+	use stats
+end
+go
+if ( "${1}" != "" )
+begin
+	use ${1}
+end
+go
+
+drop procedure $procedure
+go
+
+create procedure $procedure
+(	@id tinyint = 0			/* What project ID to return */
+)
+as
+begin
+
+	/* Error checking */
+
+	/* Make sure all the parameters were specified */
+	if (@id = 0 )
+	begin
+		raiserror 99999 "Not enough parameters"
+		print "usage:"
+		print "	%1! id", $procedure
+		print "where:"
+		print "	id is the project to return info on"
+		return -5
+	end
+
+	/* Do the lookup */
+	select * from Projects where PROJECT_ID = @id
+
+	if @@rowcount = 0
+	begin
+		raiserror 99999 "No information for project #%1! found.", @id
+		return -100
+	end
+end
+go
+
+grant execute on $procedure to public
+go
+
