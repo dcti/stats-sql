@@ -15,8 +15,15 @@ alter table Log_Info
 		)
 go
 
-create unique clustered index project_logtime
-	on Log_Info(PROJECT_ID, LOG_TIMESTAMP)
+alter table Log_Info
+	add constraint project_id
+	foreign key(PROJECT_ID)
+		references Projects(PROJECT_ID)
+go
+
+alter table Log_Info
+	add constraint project_logtime
+	primary key clustered(PROJECT_ID, LOG_TIMESTAMP)
 go
 
 grant select on log_info to public
