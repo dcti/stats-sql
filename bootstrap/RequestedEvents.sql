@@ -25,3 +25,4 @@ create table RequestedEvents
 	NEW_VALUE	int		not NULL
 )
 go
+	

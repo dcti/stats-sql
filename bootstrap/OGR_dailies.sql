@@ -1,5 +1,5 @@
 /*
-# $Id: OGR_dailies.sql,v 1.5 2000/06/05 20:42:45 bwilson Exp $
+# $Id: OGR_dailies.sql,v 1.6 2000/06/26 16:44:57 bwilson Exp $
 #
 # This table holds summary statistics for each day of each project.
 #
@@ -35,7 +35,7 @@ create table Daily_Summary
 	TOP_OTEAM		int		not NULL,
 	TOP_OTWORK		numeric(20,0)	not NULL,
 	TOP_YTEAM		int		not NULL,
-	TOP_YTEAMWORK		numeric(20,0)	not NULL
+	TOP_YTWORK		numeric(20,0)	not NULL
 )
 go
 
@@ -44,7 +44,7 @@ go
 insert Daily_Summary (DATE, PROJECT_ID, WORK_UNITS,
 		PARTICIPANTS, TOP_OPARTICIPANT, TOP_OPWORK, TOP_YPARTICIPANT, TOP_YPWORK,
 		TEAMS, TOP_OTEAM, TOP_OTWORK, TOP_YTEAM, TOP_YTWORK)
-	select DATE, PROJECT_ID, sum(WORK_UNITS), 
+	select DATE, PROJECT_ID, sum(WORK_UNITS),
 		count(distinct ID), 0, 0, 0, 0,
   		0, 0, 0 ,0, 0
 	from Email_Contrib
@@ -72,4 +72,3 @@ grant insert on Daily_Summary to statproc
 grant select on Daily_Summary to public
 go
 
-. 
