@@ -1,0 +1,70 @@
+-- $Id: teamjoin.def,v 1.1 2000/08/17 01:12:57 decibel Exp $
+
+\set procedure=p_teamjoin
+
+if ( "${1}" = "" )
+begin
+	print "Database not specified! Using 'stats' as default!"
+	use stats
+end
+else
+begin
+	use ${1}
+end
+go
+
+if (object_id("$procedure") is not null)
+begin
+        print "Dropping procedure $procedure"
+        drop procedure $procedure
+end
+go
+
+\echo "Creating procedure $procedure"
+create procedure $procedure
+(
+	@id int = 0		/* Participant ID */
+	@team int = null	/* Team to join */
+)
+as
+	/* Error checking */
+	if @id = 0
+	begin
+		raiserror 99999 "participant ID not specified"
+		return -5
+	end
+
+	if @team = null
+	begin
+		raiserror 99999 "team ID not specified"
+		return -5
+	end
+
+	/* Update the entry for the previous team, if there is one */
+	update jcn_Team_Joins2
+		set LEAVE_DATE = getdate(),
+		set LEAVE_TEAM_ID = @team
+	where ID = @id
+		and LEAVE_DATE = null
+	-- note that there should always be 1 or 0 records where LEAVE_DATE = null
+	-- for a given participant
+
+	/* Insert a new record, unless we're joining 'team 0' */
+	if @team != 0
+	begin
+		insert jcn_Team_Joins2 (ID, TEAM_ID, JOIN_DATE)
+		values (@id, @team, getdate())
+	end
+
+	/* Update Stats_Participant (redundant info; should eventually go away) */
+	update Stats_Participant
+		set team = @team
+	where ID = @id
+
+	return
+
+go
+
+grant execute on p_participant_all to public
+go
+
