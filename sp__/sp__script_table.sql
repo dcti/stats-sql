@@ -11,7 +11,7 @@ end
 go
 create procedure $procedure
 (
-	@name sysname(30)
+	@name varchar(60)
 )
 as
 begin

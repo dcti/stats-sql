@@ -1,0 +1,131 @@
+
+create procedure sp__keycols
+			   @table_name		varchar(32),
+			   @key_name		varchar(32),
+			   @table_owner 	varchar(32) = null,
+			   @table_qualifier varchar(32) = null 
+as
+declare @msg varchar(255)
+declare @keycnt smallint
+declare @indexid smallint
+declare @i int
+declare @id int
+declare @uid smallint
+select @id = NULL
+
+
+	set nocount on
+
+	if (@@trancount = 0)
+	begin
+		set chained off
+	end
+	else
+	begin	
+		/* if inside a transaction */
+		/* catalog procedure sp_pkeys can not be run in a transaction.*/
+		exec sp_getmessage 18040, @msg output
+		raiserror 18040 @msg, "sp_pkeys"
+		return (1)
+	end
+
+	set transaction isolation level 1
+
+	if @table_qualifier is not null
+	begin
+		if db_name() != @table_qualifier
+		begin	
+			/* if qualifier doesn't match current database */
+			/* "table qualifier must be name of current database"*/
+			exec sp_getmessage 18039, @msg output
+			print @msg 
+			return (1)
+		end
+	end
+
+	if @table_owner is null
+	begin
+		select @id = id , @uid = uid
+		from sysobjects 
+		where name = @table_name
+			and uid = user_id()
+		if (@id is null)
+		begin
+			select @id = id ,@uid = uid
+			from sysobjects 
+			where name = @table_name
+			and uid = 1
+		end
+	end
+	else
+	begin
+		select @id = id , @uid = uid
+		from sysobjects 
+		where name = @table_name and uid = user_id(@table_owner)
+	end
+	
+	if (@id is null)
+	begin	
+		/* 17461, "Object does not exist in this database." */
+		exec sp_getmessage 17461, @msg output
+		print @msg 
+		return (1)
+	end
+
+	create table #pkeys(
+			 table_qualifier varchar(32),
+			 table_owner     varchar(32),
+			 table_name      varchar(32),
+			 key_name        varchar(60),
+			 column_name     varchar(32),
+			 key_seq	 smallint)
+
+
+/*
+**  now we search for primary key (only declarative) constraints
+**  There is only one primary key per table.
+*/
+
+	declare cur cursor for select keycnt, indid, name
+	from   sysindexes
+	where  id = @id and name = @key_name
+	and indid > 0 /* make sure it is an index */
+	/* and status2 & 2 = 2 make sure it is a declarative constr */
+	/* and (status & 2048 = 2048 OR status & 2 = 2)  make sure it is a primary key */
+	open cur
+        fetch cur into @keycnt , @indexid, @key_name
+	while(@@sqlstatus < 2)
+	begin
+ 
+
+/*
+**  For non-clustered indexes, keycnt as returned from sysindexes is one
+**  greater than the actual key count. So we need to reduce it by one to
+**  get the actual number of keys.
+*/
+
+	if (@indexid >= 2)
+	begin
+		select @keycnt = @keycnt - 1
+	end
+
+	select @i = 1
+
+	while @i <= @keycnt
+	begin
+		insert into #pkeys values
+		(db_name(), user_name(@uid), @table_name, @key_name,
+			index_col(@table_name, @indexid, @i, @uid), @i)
+		select @i = @i + 1
+	end
+
+	fetch cur into @keycnt , @indexid, @key_name
+	end /* CURSOR */
+
+	select  table_name,rtrim(key_name),rtrim(column_name), key_seq
+	from #pkeys
+	order by   table_name,key_seq
+	
+	return (0)
+ 
+/* ### DEFNCOPY: END OF DEFINITION */

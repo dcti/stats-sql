@@ -1,0 +1,35 @@
+ CREATE PROC sp__uptime                                          
+AS                                                              
+BEGIN                                                           
+	/*                                                          
+	** sp__uptime                                               
+	** ----------                                               
+	**                                                          
+	** Version    :  v%I% (Same as %M% version)                 
+	** Archived as:  dba:/u/sybase/SCCS/s.sybdbas.pl            
+	** Uptime for the SQLSvr.                                   
+	**                                                          
+	** Author:  FJ Lundy, Hiway Technologies, 7/98              
+	*/                                                          
+	                                                            
+	/*                                                          
+	** Vars                                                     
+	*/                                                          
+	DECLARE @hrs_uptime  int                                   
+	DECLARE @days_uptime int                                   
+	                                                            
+	/*                                                          
+	** Calc                                                     
+	*/                                                          
+	SELECT  @hrs_uptime = datediff(hour, crdate, getdate())    
+	FROM    master..sysdatabases                                
+	WHERE   name = 'tempdb'                                     
+	                                                            
+	SELECT  @days_uptime = floor(@hrs_uptime / 24)            
+	SELECT  @hrs_uptime  = @hrs_uptime - (@days_uptime * 24) 
+	SELECT  convert(varchar, @days_uptime) + ' days ' +        
+	        convert(varchar, @hrs_uptime)  + ' hours'          
+	        'uptime'                                            
+END                                                             
+ 
+/* ### DEFNCOPY: END OF DEFINITION */

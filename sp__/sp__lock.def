@@ -1,0 +1,61 @@
+CREATE PROC sp__lock                                                 
+(	@tp_lock  char(1) = null                                        
+)                                                                    
+AS                                                                   
+BEGIN                                                                
+	/*                                                               
+	** sp__lock                                                      
+	** --------                                                      
+	**                                                               
+	** Version    :  v1.12 (Same as sybdba.pl version)                      
+	** Archived as:  dba:/u/sybase/SCCS/s.sybdbas.pl                 
+	** Show locks on the SQLSvr.                                     
+	**                                                               
+	** Author:  FJ Lundy, Hiway Technologies, 7/98                   
+	*/                                                               
+	                                                                 
+	/*                                                               
+	** Vars                                                          
+	*/                                                               
+	/*                                                               
+	** if (@tp_lock = 'e')                                          
+	**	select @tp_lock = 'Ex_%'                                    
+	** else                                                          
+	** 	if (@tp_lock = 's')                                         
+	** 		select @tp_lock = 'Sh_%'                                
+	** 	else                                                         
+	** 		select @tp_lock = '%'                                   
+	*/                                                               
+	                                                                 
+	/*                                                               
+	** Main                                                          
+	*/                                                               
+	SELECT                                                           
+		  convert(char(3),  l.spid)             'spid'               
+		, convert(char(7),  db_name(l.dbid))    'dbname'             
+		, convert(char(10), suser_name(p.suid)) 'login'              
+		, convert(char(15), p.program_name)     'progname'           
+		, convert(char(15), object_name(l.id))  'table'              
+		, convert(char(8),  l.page)             'page'               
+		, convert(char(10), v.name)             'locktype'           
+	FROM                                                             
+		  master..syslocks     l                                     
+		, master..sysprocesses p                                     
+		, master..spt_values   v                                     
+	WHERE                                                            
+		    l.spid *= p.spid   /* Join: syslocks <-> sysprocesses */ 
+		and l.type  = v.number /* Join: syslocks <-> spt_values   */ 
+		and v.type  = 'L'      /* Translate values for locks */      
+		and l.spid != @@spid /* Do not rpt ourself */              
+	/*	and v.name like '@tp_lock'	*/                               
+	ORDER BY                                                         
+		  'dbname'                                                   
+		, 'table'                                                    
+		, l.spid                                                     
+		, l.page                                                     
+		, 'locktype'                                                 
+		                                                             
+	RETURN(0)	                                                     
+END                                                                  
+ 
+/* ### DEFNCOPY: END OF DEFINITION */

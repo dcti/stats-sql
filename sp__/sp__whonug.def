@@ -1,0 +1,63 @@
+CREATE PROC sp__whonug
+AS                                                            
+BEGIN                                                         
+	/*                                                        
+	** sp__who                                                
+	** -------                                                
+	**                                                        
+	** Version    :  v%I% (Same as %M% version)               
+	** Archived as:  dba:/u/sybase/SCCS/s.sybdbas.pl          
+	** sp_who replacement.                                    
+	**                                                        
+	** Author:  FJ Lundy, Hiway Technologies, 5/98            
+	*/                                                        
+	                                                          
+	/*                                                        
+	** Process List                                           
+	*/                                                        
+	SELECT                                                    
+		convert(char(3),  spid)             'pid',            
+		convert(char(3),  blocked)          'blk',            
+		convert(char(8),  db_name(dbid))    'db',             
+		convert(char(16), suser_name(suid)) 'login',          
+		convert(char(32), hostname)         'hostname',       
+		convert(char(24), program_name)     'progname',       
+		convert(char(1),  enginenum)        'eng',            
+		convert(char(13), cmd)              'cmd',            
+		convert(char(5),  cpu)              'cpu',            
+		convert(char(7),  physical_io)      'io'              
+	FROM                                                      
+		master..sysprocesses                                  
+	WHERE                                                     
+		(spid not between 2 and 6)                            
+	ORDER BY                                                  
+		blocked,                                              
+		spid                                                  
+	                                                          
+	/*                                                        
+	** Open Transactions                                      
+	*/                                                        
+	IF EXISTS (SELECT * FROM master..syslogshold)             
+	BEGIN                                                     
+		SET nocount on                                        
+		SELECT 'The open transactions:'                       
+		SET nocount off                                       
+		SELECT                                                
+			convert(char(3),  h.spid)             'pid',      
+			convert(char(16), suser_name(p.suid)) 'login',    
+			convert(char(32), p.hostname)         'hostname', 
+			convert(char(24), p.program_name)     'progname', 
+			convert(char(8),  p.hostprocess)      'host_pid', 
+			convert(char(8),  db_name(p.dbid))    'db',       
+			convert(char(8),  h.name)             'xact',     
+			convert(char(20), h.starttime)        'starttime' 
+		FROM                                                  
+			master..syslogshold  h,                           
+			master..sysprocesses p                            
+		WHERE                                                 
+			(p.spid  = h.spid) AND                            
+			(h.spid != 0)                                     
+	END	/* end- ifelse */                                     
+END                                                           
+ 
+/* ### DEFNCOPY: END OF DEFINITION */
