@@ -1,6 +1,6 @@
 #!/usr/local/bin/sqsh -i
 
-\set procedure=sp__objspace2
+\set procedure=sp__objspace
 use sybsystemprocs
 go
 
@@ -15,7 +15,7 @@ create procedure $procedure
 (	@objname varchar(92) = null  /* the object we want size on */
 )
 as
-	-- $Id: sp__objspace.def,v 1.4 2002/06/10 05:26:13 decibel Exp $
+	-- $Id: sp__objspace.def,v 1.5 2002/06/10 23:09:19 decibel Exp $
 	/*
 	** Procname:  sp__objspace.sql
 	** Purpose :  Expanced version of sp_spaceused
