@@ -5,7 +5,6 @@
 SET client_encoding = 'SQL_ASCII';
 SET check_function_bodies = false;
 
-SET SESSION AUTHORIZATION 'decibel';
 
 SET search_path = rrd, pg_catalog;
 
@@ -29,10 +28,9 @@ DROP SCHEMA rrd;
 -- Name: rrd; Type: SCHEMA; Schema: -; Owner: 
 --
 
-CREATE SCHEMA rrd AUTHORIZATION decibel;
+CREATE SCHEMA rrd AUTHORIZATION pgsql;
 
 
-SET SESSION AUTHORIZATION 'decibel';
 
 --
 -- TOC entry 11 (OID 588605676)
