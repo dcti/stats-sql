@@ -1,4 +1,4 @@
--- $Id: tables.sql,v 1.7 2003/04/08 15:47:06 decibel Exp $
+-- $Id: tables.sql,v 1.8 2003/04/08 19:14:34 decibel Exp $
 -- Create all table, but without indexes or primary keys
 
 CREATE TABLE csc_dailies (
@@ -537,3 +537,49 @@ CREATE TABLE csc_daytable_platform (
     ver smallint,
     size integer
 ) WITHOUT OIDS;
+ alter table CSC_master alter column team set default 0                                              ;
+ alter table Email_Rank alter column WORK_TODAY set default 0                                        ;
+ alter table Email_Rank alter column WORK_TOTAL set default 0                                        ;
+ alter table Email_Rank alter column DAY_RANK set default 0                                          ;
+ alter table Email_Rank alter column DAY_RANK_PREVIOUS set default 0                                 ;
+ alter table Email_Rank alter column OVERALL_RANK set default 0                                      ;
+ alter table Email_Rank alter column OVERALL_RANK_PREVIOUS set default 0                             ;
+ alter table Project_statsrun alter column LOGS_FOR_DAY set default 0                                ;
+ alter table Project_statsrun alter column WORK_FOR_DAY set default 0                                ;
+ alter table Team_Joins alter column leave_team_id set default 0                                     ;
+ alter table STATS_Participant alter column listmode set default 0                                   ;
+ alter table STATS_Participant alter column nonprofit set default 0                                  ;
+ alter table STATS_Participant alter column team set default 0                                       ;
+ alter table STATS_Participant alter column retire_to set default 0                                  ;
+ alter table STATS_Participant alter column friend_a set default 0                                   ;
+ alter table STATS_Participant alter column friend_b set default 0                                   ;
+ alter table STATS_Participant alter column friend_c set default 0                                   ;
+ alter table STATS_Participant alter column friend_d set default 0                                   ;
+ alter table STATS_Participant alter column friend_e set default 0                                   ;
+ alter table STATS_Participant alter column dem_yob set default 0                                    ;
+ alter table STATS_Participant alter column dem_heard set default 0                                  ;
+ alter table STATS_Participant alter column dem_motivation set default 0                             ;
+ alter table Team_Members alter column WORK_TODAY set default 0                                      ;
+ alter table Team_Members alter column WORK_TOTAL set default 0                                      ;
+ alter table Team_Members alter column DAY_RANK set default 0                                        ;
+ alter table Team_Members alter column DAY_RANK_PREVIOUS set default 0                               ;
+ alter table Team_Members alter column OVERALL_RANK set default 0                                    ;
+ alter table Team_Members alter column OVERALL_RANK_PREVIOUS set default 0                           ;
+ alter table Team_Rank alter column WORK_TODAY set default 0                                         ;
+ alter table Team_Rank alter column WORK_TOTAL set default 0                                         ;
+ alter table Team_Rank alter column DAY_RANK set default 0                                           ;
+ alter table Team_Rank alter column DAY_RANK_PREVIOUS set default 0                                  ;
+ alter table Team_Rank alter column OVERALL_RANK set default 0                                       ;
+ alter table Team_Rank alter column OVERALL_RANK_PREVIOUS set default 0                              ;
+ alter table Team_Rank alter column MEMBERS_TODAY set default 0                                      ;
+ alter table Team_Rank alter column MEMBERS_OVERALL set default 0                                    ;
+ alter table Team_Rank alter column MEMBERS_CURRENT set default 0                                    ;
+ alter table STATS_team alter column listmode set default 0                                          ;
+ alter table Project_statsrun alter column LAST_LOG set default ''                                    ;
+ alter table STATS_Participant alter column email set default ''                                      ;
+ alter table STATS_Participant alter column password set default ''                                   ;
+ alter table STATS_Participant alter column dem_gender set default ''                                 ;
+ alter table STATS_Participant alter column dem_country set default ''                                ;
+ alter table STATS_Participant alter column contact_name set default ''                               ;
+ alter table STATS_Participant alter column contact_phone set default ''                              ;
+ alter table STATS_Participant alter column motto set default ''                                      ;
