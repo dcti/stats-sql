@@ -1,10 +1,23 @@
+#!/usr/local/bin/sqsh -i
 
-create procedure sp__keycols
+\set procedure=sp__keycols
+use sybsystemprocs
+go
+
+print "Creating procedure $procedure"
+go
+if object_id("$procedure") is not NULL
+begin
+	drop procedure $procedure
+end
+go
+create procedure $procedure
 			   @table_name		varchar(32),
 			   @key_name		varchar(32),
 			   @table_owner 	varchar(32) = null,
 			   @table_qualifier varchar(32) = null 
 as
+-- $Id: sp__keycols.def,v 1.2 2001/12/21 21:17:45 decibel Exp $
 declare @msg varchar(255)
 declare @keycnt smallint
 declare @indexid smallint
@@ -128,4 +141,7 @@ select @id = NULL
 	
 	return (0)
  
-/* ### DEFNCOPY: END OF DEFINITION */
+go
+
+grant execute on $procedure to public
+go

@@ -1,5 +1,7 @@
+#!/usr/local/bin/sqsh -i
+
 \set procedure=sp__script_table
-use stats
+use sybsystemprocs
 go
 
 print "Creating procedure $procedure"
@@ -15,6 +17,7 @@ create procedure $procedure
 )
 as
 begin
+	-- $Id: sp__script_table.sql,v 1.6 2001/12/21 21:17:45 decibel Exp $
 	set nocount on
 
 	declare @msg varchar(250)
@@ -113,8 +116,5 @@ begin
 end
 go
 
-grant execute on $procedure to wheel
-go
-
-grant execute on $procedure to backup
+grant execute on $procedure to public
 go

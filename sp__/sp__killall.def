@@ -1,10 +1,22 @@
+#!/usr/local/bin/sqsh -i
 
-create proc sp__killall
+\set procedure=sp__killall
+use sybsystemprocs
+go
+
+print "Creating procedure $procedure"
+go
+if object_id("$procedure") is not NULL
+begin
+	drop procedure $procedure
+end
+go
+create procedure $procedure
 (	@target  varchar(30) = null
 )
 as
 begin
-
+	-- $Id: sp__killall.def,v 1.2 2001/12/21 21:17:45 decibel Exp $
 	/*
 	** sp__killall
 	** -----------
@@ -46,5 +58,7 @@ begin
 	return(0)
 
 end
- 
-/* ### DEFNCOPY: END OF DEFINITION */
+go
+
+grant execute on $procedure to public
+go

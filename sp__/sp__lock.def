@@ -1,8 +1,22 @@
-CREATE PROC sp__lock                                                 
+#!/usr/local/bin/sqsh -i
+
+\set procedure=sp__lock
+use sybsystemprocs
+go
+
+print "Creating procedure $procedure"
+go
+if object_id("$procedure") is not NULL
+begin
+	drop procedure $procedure
+end
+go
+create procedure $procedure
 (	@tp_lock  char(1) = null                                        
 )                                                                    
 AS                                                                   
 BEGIN                                                                
+	-- $Id: sp__lock.def,v 1.2 2001/12/21 21:17:45 decibel Exp $
 	/*                                                               
 	** sp__lock                                                      
 	** --------                                                      
@@ -57,5 +71,7 @@ BEGIN
 		                                                             
 	RETURN(0)	                                                     
 END                                                                  
- 
-/* ### DEFNCOPY: END OF DEFINITION */
+go
+
+grant execute on $procedure to public
+go

@@ -1,11 +1,22 @@
-drop procedure sp__rowcount
+#!/usr/local/bin/sqsh -i
+
+\set procedure=sp__rowcount
+use sybsystemprocs
 go
 
-create procedure sp__rowcount
+print "Creating procedure $procedure"
+go
+if object_id("$procedure") is not NULL
+begin
+	drop procedure $procedure
+end
+go
+create procedure $procedure
 (	@table varchar(92)		/* Table to report on */
 )
 as
 begin
+	-- $Id: sp__rowcount.def,v 1.2 2001/12/21 21:17:45 decibel Exp $
 	declare @count		int		/* Row count to return */
 
 	/* See if the object exists */
@@ -21,4 +32,7 @@ begin
 
 	return @count
 end
+go
+
+grant execute on $procedure to public
 go

@@ -1,6 +1,20 @@
- CREATE PROC sp__uptime                                          
-AS                                                              
+#!/usr/local/bin/sqsh -i
+
+\set procedure=sp__uptime
+use sybsystemprocs
+go
+
+print "Creating procedure $procedure"
+go
+if object_id("$procedure") is not NULL
+begin
+	drop procedure $procedure
+end
+go
+create procedure $procedure
+AS
 BEGIN                                                           
+	-- $Id: sp__uptime.def,v 1.2 2001/12/21 21:17:45 decibel Exp $
 	/*                                                          
 	** sp__uptime                                               
 	** ----------                                               
@@ -32,4 +46,7 @@ BEGIN
 	        'uptime'                                            
 END                                                             
  
-/* ### DEFNCOPY: END OF DEFINITION */
+go
+
+grant execute on $procedure to public
+go

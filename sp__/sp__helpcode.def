@@ -1,6 +1,20 @@
- create procedure sp__helpcode
+#!/usr/local/bin/sqsh -i
+
+\set procedure=sp__helpcode
+use sybsystemprocs
+go
+
+print "Creating procedure $procedure"
+go
+if object_id("$procedure") is not NULL
+begin
+	drop procedure $procedure
+end
+go
+create procedure $procedure
 @objname varchar(92)
 as
+-- $Id: sp__helpcode.def,v 1.2 2001/12/21 21:17:45 decibel Exp $
 declare @text_count int,
         @text       varchar(255),
         @line       varchar(255),
@@ -55,7 +69,7 @@ begin
                 select  @line = @text        
 end
 set rowcount 0
-print "go"
-                                                        
- 
-/* ### DEFNCOPY: END OF DEFINITION */
+go
+
+grant execute on $procedure to public
+go
