@@ -1,4 +1,4 @@
--- $Id: cleanup.sql,v 1.1 2003/04/08 15:48:32 decibel Exp $
+-- $Id: cleanup.sql,v 1.2 2003/04/09 15:55:41 decibel Exp $
 alter table stats_participant drop column team;
 
-vacuum full analyze verbose stats;
+vacuum full analyze verbose;
