@@ -1,4 +1,4 @@
-# $Id: reidentity_participant.sql,v 1.1 1999/07/28 19:21:50 nugget Exp $
+# $Id: reidentity_participant.sql,v 1.2 2000/01/27 09:11:55 decibel Exp $
 
 # If all goes well, this is a hands-off recovery routine to repair the
 # runaway identity value problem wxperienced during server abend.
@@ -12,29 +12,49 @@ use stats
 go
 
 create table STATS_participantnew
-( id        numeric (10,0) IDENTITY NOT NULL,
-  email     char (64) NOT NULL,
-  password  char (8) NULL ,
-  listmode  smallint default 0,
-  nonprofit int default 0,
-  team      int default 0,
-  retire_to int default 0,
-  friend_a  int default 0,
-  friend_b  int default 0,
-  friend_c  int default 0,
-  friend_d  int default 0,
-  friend_e  int default 0,
-  dem_yob   int NULL,
-  dem_heard int NULL,
-  dem_gender char (1) NULL,
-  dem_motivation int NULL,
-  dem_country char(8) NULL,
-  contact_name char (50) NULL,
-  contact_phone char (20) NULL,
-  motto char (128) NULL
+(
+id			numeric(10, 0)	identity	not NULL,
+email			varchar(64)	not NULL,
+password		varchar(8)	not NULL,
+listmode		smallint	not NULL,
+nonprofit		smallint	not NULL,
+team			int		not NULL,
+retire_to		int		not NULL,
+friend_a		int		not NULL,
+friend_b		int		not NULL,
+friend_c		int		not NULL,
+friend_d		int		not NULL,
+friend_e		int		not NULL,
+dem_yob			int		not NULL,
+dem_heard		int		not NULL,
+dem_gender		varchar(1)	not NULL,
+dem_motivation		int		not NULL,
+dem_country		varchar(8)	not NULL,
+contact_name		varchar(50)	not NULL,
+contact_phone		varchar(20)	not NULL,
+motto			varchar(255)	not NULL
 )
 go
-
+exec sp_bindefault defspace, 'STATS_Participantnew.EMAIL'
+exec sp_bindefault defspace, 'STATS_Participantnew.PASSWORD'
+exec sp_bindefault def0, 'STATS_Participantnew.LISTMODE'
+exec sp_bindefault def0, 'STATS_Participantnew.NONPROFIT'
+exec sp_bindefault def0, 'STATS_Participantnew.TEAM'
+exec sp_bindefault def0, 'STATS_Participantnew.RETIRE_TO'
+exec sp_bindefault def0, 'STATS_Participantnew.FRIEND_A'
+exec sp_bindefault def0, 'STATS_Participantnew.FRIEND_B'
+exec sp_bindefault def0, 'STATS_Participantnew.FRIEND_C'
+exec sp_bindefault def0, 'STATS_Participantnew.FRIEND_D'
+exec sp_bindefault def0, 'STATS_Participantnew.FRIEND_E'
+exec sp_bindefault def0, 'STATS_Participantnew.DEM_YOB'
+exec sp_bindefault def0, 'STATS_Participantnew.DEM_HEARD'
+exec sp_bindefault defspace, 'STATS_Participantnew.DEM_GENDER'
+exec sp_bindefault def0, 'STATS_Participantnew.DEM_MOTIVATION'
+exec sp_bindefault defspace, 'STATS_Participantnew.DEM_COUNTRY'
+exec sp_bindefault defspace, 'STATS_Participantnew.CONTACT_NAME'
+exec sp_bindefault defspace, 'STATS_Participantnew.CONTACT_PHONE'
+exec sp_bindefault defspace, 'STATS_Participantnew.MOTTO'
+go
 
 set identity_insert STATS_participantnew on
 go
@@ -54,16 +74,26 @@ go
 set identity_insert STATS_participantnew off
 go
 
-create index team on STATS_participantnew(team)
+insert STATS_participantnew
+ (email, password, listmode, nonprofit, team, retire_to, friend_a, friend_b,
+  friend_c, friend_d, friend_e, dem_yob, dem_heard, dem_gender, dem_motivation,
+  dem_country, contact_name, contact_phone, motto)
+ select email, password, listmode, nonprofit, team, retire_to, friend_a, friend_b,
+  friend_c, friend_d, friend_e, dem_yob, dem_heard, dem_gender, dem_motivation,
+  dem_country, contact_name, contact_phone, motto
+ from STATS_Participant
+ where id >= 500000
 go
 
-create index email on STATS_participantnew(email)
-go
 
-create index retire_to on STATS_participantnew(retire_to)
+print "Creating index iParticipantEMAIL"
 go
-
-create index id on STATS_participantnew(id)
+create unique clustered index iParticipantEMAIL on STATS_participantnew(email) with fillfactor = 75
+go
+print "Creating other indexes"
+alter table STATS_Participantnew add constraint pk_Participant primary key nonclustered (id) with fillfactor = 75
+create index iParticipantTEAM on STATS_participantnew(TEAM) with fillfactor = 75
+create index iParticipantRETIRE_TO on STATS_participantnew(RETIRE_TO) with fillfactor = 75
 go
 
 grant select,insert,update on STATS_participantnew to public
@@ -72,12 +102,6 @@ go
 grant all on STATS_participantnew to wheel
 go
 
-drop table STATS_participantold
-go
-
-sp_rename STATS_participant, STATS_participantold
-go
-
-sp_rename STATS_participantnew, STATS_participant
+print "STATS_participantnew has been created and populated; please run the phase 2 script to rename it and modify the records in the two _masters"
 go
 
