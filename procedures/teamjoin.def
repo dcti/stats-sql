@@ -1,4 +1,4 @@
--- $Id: teamjoin.def,v 1.3 2000/08/21 00:36:54 decibel Exp $
+-- $Id: teamjoin.def,v 1.4 2000/08/22 09:35:30 decibel Exp $
 
 \set procedure=p_teamjoin
 
@@ -7,7 +7,8 @@ begin
 	print "Database not specified! Using 'stats' as default!"
 	use stats
 end
-else
+go
+if ( "${1}" != "" )
 begin
 	use ${1}
 end
@@ -40,6 +41,13 @@ as
 		raiserror 99999 "team ID not specified"
 		return -5
 	end
+
+	if @team != 0
+		if not exists (select team from Stats_Team where team = @team) 
+		begin
+			raiserror 99998 "invalid team specified"
+			return -6
+		end
 
 	/* Grab just the date portion of today */
 	declare @date smalldatetime
