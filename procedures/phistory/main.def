@@ -1,4 +1,4 @@
--- $Id: main.def,v 1.10 2002/10/06 17:11:12 decibel Exp $
+-- $Id: main.def,v 1.11 2002/10/08 01:46:17 decibel Exp $
 
 \set procedure=p_phistory
 
@@ -64,7 +64,7 @@ as
 	set rowcount 0
 
 	/* Create a temp table to store ids */
-	select convert(int,id) as id into #ids
+	select convert(tinyint,@project_id) as project_id, convert(int,id) as id into #ids
 		from STATS_Participant
 		where RETIRE_TO = @id
 			OR id = @id
@@ -82,7 +82,7 @@ as
 	end
 	else
 	begin
-		exec @result = @proc @project_id, @scale
+		exec @result = @proc @scale
 		return @result
 	end
 go

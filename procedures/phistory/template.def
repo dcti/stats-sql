@@ -1,4 +1,4 @@
--- $Id: template.def,v 1.4 2002/10/02 22:29:24 decibel Exp $
+-- $Id: template.def,v 1.5 2002/10/08 01:46:17 decibel Exp $
 
 \set procedure=p_phistory_${2}
 
@@ -8,20 +8,20 @@ go
 \echo "Creating table #phistory"
 create table #ids
 (
-	id	int
+	project_id	tinyint,
+	id		int
 )
 go
 
 \echo "Creating procedure $procedure, using ORDER BY ${3}"
 create procedure $procedure
 (
-	@project	smallint,	/* Project to grab data for */
 	@scale		numeric(20,0)	/* What to scale the results by */
 )
 as
 	select DATE, sum(WORK_UNITS)/@scale as WORK_UNITS
 	from Email_Contrib ec, #ids i
-	where ec.project_id = @project
+	where ec.project_id = i.project_id
 		and ec.id = i.id
 	group by DATE
 	order by ${3}
