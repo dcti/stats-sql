@@ -1,62 +1,59 @@
-#!/usr/local/bin/sqsh -i
-#
-# $Id: team_rank_2.sql,v 1.4 2002/10/23 05:03:32 decibel Exp $
-#
-# Repopulates Team_Members for a project.
-#
-# Arguments:
-#       PROJECT_ID
+/*
+ $Id: team_rank_2.sql,v 1.5 2003/09/09 20:43:55 decibel Exp $
 
-set flushmessage on
-use stats
-go
+ Repopulates Team_Members fOR a project.
 
-print "::Updating Team_Rank - Pass 2"
-print "Creating summary table"
-go
+ Arguments:
+       ProjectID
+*/
+\set ON_ERROR_STOP 1
 
-select PROJECT_ID, TEAM_ID, min(FIRST_DATE) as FIRST_DATE, max(LAST_DATE) as LAST_DATE,
-		sum(WORK_TODAY) as WORK_TODAY, sum(sign(WORK_TODAY)) as MEMBERS_TODAY, count(*) as MEMBERS_OVERALL
-	into #TeamSummary
-	from Team_Members tm
-	where PROJECT_ID = ${1}
-	group by PROJECT_ID, TEAM_ID
-go
+\echo ::Updating Team_Rank - Pass 2
+\echo Creating summary table
 
-print "Counting current team membership"   
-go
+SELECT team_id, min(first_date) AS first_date, max(last_date) AS last_date,
+        sum(work_today) AS work_today, sum(sign(work_today)) AS members_today, count(*) AS members_overall
+    INTO TEMP teamsummary
+    FROM team_members tm
+    WHERE project_id = :ProjectID
+    GROUP BY project_id, team_id
+;
+ANALYZE VERBOSE teamsummary;
 
-declare @stats_date smalldatetime   
-select @stats_date = max(LAST_DATE)   
-	from Team_Members   
-	where PROJECT_ID = ${1} 
-select tm.PROJECT_ID, tm.TEAM_ID, count(*) as MEMBERS   
-	into #Team_Members_Current   
-	from Team_Joins tj, Team_Members tm   
-	where tj.JOIN_DATE <= @stats_date   
-		and isnull(tj.LAST_DATE, @stats_date) >= @stats_date   
-		and tj.ID = tm.ID   
-		and tj.TEAM_ID = tm.TEAM_ID   
-		and tm.PROJECT_ID = ${1}   
-	group by tm.PROJECT_ID, tm.TEAM_ID   
-go 
+\echo Counting current team membership   
+SELECT tm.team_id, count(*) AS members   
+    INTO TEMP team_members_current   
+    FROM team_joins tj, team_members tm   
+    WHERE tj.join_date <= (SELECT max(last_date) FROM team_members WHERE project_id = :ProjectID)
+        AND (tj.last_date >= (SELECT max(last_date) FROM team_members WHERE project_id = :ProjectID)
+            OR tj.last_date IS NULL)
+        AND tj.id = tm.id   
+        AND tj.team_id = tm.team_id   
+        AND tm.project_id = :ProjectID   
+    GROUP BY tm.project_id, tm.team_id   
+; 
+ANALYZE VERBOSE team_members_current;
 
 
-print ""
-print ""
-print "Updating Team_Rank"
-update Team_Rank set DAY_RANK_PREVIOUS = DAY_RANK,
-		OVERALL_RANK_PREVIOUS = OVERALL_RANK,
-		WORK_TODAY = s.WORK_TODAY,
-		WORK_TOTAL = WORK_TOTAL + s.WORK_TODAY,
-		MEMBERS_TODAY = s.MEMBERS_TODAY,
-		MEMBERS_OVERALL = s.MEMBERS_OVERALL,
-		MEMBERS_CURRENT = isnull(tmc.MEMBERS,0)
-	from #TeamSummary s, #Team_Members_Current tmc
-	where Team_Rank.PROJECT_ID = s.PROJECT_ID
-		and Team_Rank.PROJECT_ID *= tmc.PROJECT_ID
-		and s.PROJECT_ID *= tmc.PROJECT_ID
-		and Team_Rank.TEAM_ID = s.TEAM_ID
-		and Team_Rank.TEAM_ID *= tmc.TEAM_ID
-		and s.TEAM_ID *= tmc.TEAM_ID
-go
+\echo 
+\echo 
+\echo Updating Team_Rank
+BEGIN;
+    UPDATE team_rank
+        SET day_rank_previous = day_rank,
+            overall_rank_previous = overall_rank,
+            work_today = s.work_today,
+            work_total = work_total + s.work_today,
+            members_today = s.members_today,
+            members_overall = s.members_overall
+        FROM teamsummary s
+        WHERE team_rank.project_id = :ProjectID
+            AND team_rank.team_id = s.team_id
+    ;
+    UPDATE team_rank
+        SET members_current = tmc.members
+        FROM team_members_current tmc
+        WHERE team_rank.project_id = :ProjectID
+            AND team_rank.team_id = tmc.team_id
+    ;
+COMMIT;

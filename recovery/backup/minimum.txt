@@ -1,11 +1,3 @@
-Log_Info
-Project_statsrun
-Project_Status
-Projects
-Daily_Summary
-Platform_Contrib
-Email_Contrib
-
 STATS_country
 STATS_cpu
 STATS_dem_heard
@@ -21,3 +13,8 @@ STATS_Participant
 STATS_Team_Blocked
 Team_Joins
 STATS_team
+
+Log_Info
+Project_statsrun
+Project_Status
+Projects

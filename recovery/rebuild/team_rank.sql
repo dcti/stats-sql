@@ -1,41 +1,39 @@
-#!/usr/local/bin/sqsh -i
-#
-# $Id: team_rank.sql,v 1.11 2002/10/23 03:05:40 decibel Exp $
-#
-# Repopulates Team_Rank for a project.
-#
-# Arguments:
-#       PROJECT_ID
+/*
+ $Id: team_rank.sql,v 1.12 2003/09/09 20:43:55 decibel Exp $
 
-set flushmessage on
-use stats
-go
+ Repopulates Team_Rank fOR a project.
 
-print "::Updateing Team_Rank - Pass 1"
-print "Creating summary table"
-go
+ Arguments:
+       ProjectID
+*/
+\set ON_ERROR_STOP 1
 
-select TEAM_ID, min(FIRST_DATE) as FIRST_DATE, max(LAST_DATE) as LAST_DATE,
-		sum(WORK_YESTERDAY) as WORK_YESTERDAY, sum(WORK_TODAY) as WORK_TODAY, sum(WORK_TOTAL) as WORK_TOTAL
-	into #TeamSummary
-	from WorkSummary_${1}
-	where TEAM_ID >= 1
-		and TEAM_ID not in (select TEAM_ID from STATS_Team_Blocked)
-	group by TEAM_ID
-go
+\echo ::Updateing Team_Rank - Pass 1
+\echo Creating summary table
 
-print "Deleting old data"
-delete Team_Rank
-	where PROJECT_ID = ${1}
+SELECT team_id, min(first_date) AS first_date, max(last_date) AS last_date,
+        sum(work_yesterday) AS work_yesterday, sum(work_today) AS work_today, sum(work_total) AS work_total
+    INTO TEMP teamsummary
+    FROM worksummary_:ProjectID
+    WHERE team_id >= 1
+        AND team_id NOT IN (SELECT team_id FROM stats_team_blocked)
+    GROUP BY team_id
+;
 
-print ""
-print ""
-print "Inserting new data"
-insert into Team_Rank (PROJECT_ID, TEAM_ID, FIRST_DATE, LAST_DATE, WORK_TODAY, WORK_TOTAL,
-		DAY_RANK, DAY_RANK_PREVIOUS, OVERALL_RANK, OVERALL_RANK_PREVIOUS,
-		MEMBERS_TODAY, MEMBERS_OVERALL, MEMBERS_CURRENT)
-	select ${1}, TEAM_ID, FIRST_DATE, LAST_DATE, WORK_YESTERDAY, WORK_TOTAL-WORK_TODAY,
-		0, 0, 0, 0,
-		0, 0, 0
-	from #TeamSummary
-go
+BEGIN;
+    \echo Deleting old data
+    DELETE FROM team_rank
+        WHERE project_id = :ProjectID
+    ;
+    \echo 
+    \echo 
+    \echo Inserting new data
+    INSERT INTO team_rank (project_id, team_id, first_date, last_date, work_today, work_total,
+            day_rank, day_rank_previous, overall_rank, overall_rank_previous,
+            members_today, members_overall, members_current)
+        SELECT :ProjectID, team_id, first_date, last_date, work_yesterday, work_total-work_today,
+            0, 0, 0, 0,
+            0, 0, 0
+        FROM teamsummary
+    ;
+COMMIT;

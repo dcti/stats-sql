@@ -1,33 +1,34 @@
-#!/usr/local/bin/sqsh -i
+/*
+# $Id: team_members.sql,v 1.11 2003/09/09 20:43:55 decibel Exp $
 #
-# $Id: team_members.sql,v 1.10 2002/10/23 03:05:40 decibel Exp $
-#
-# Repopulates Team_Members for a project.
+# Repopulates Team_Members fOR a project.
 # Notes:
-#	The script does *not* re-rank.
-#	It assumes that the summary table has been created using make_summary.sql
+#    The script does *not* re-rank.
+#    It assumes that the summary table has been created using make_summary.sql
 #
 # Arguments:
-#       PROJECT_ID
+#       ProjectID
+*/
+\set ON_ERROR_STOP 1
 
-set flushmessage on
-use stats
-go
+\echo ::Updating Team_Members
+\echo Deleting old data
 
-print "::Updating Team_Members"
-print "Deleting old data"
-delete Team_Members
-where PROJECT_ID = ${1}
+BEGIN;
+    DELETE FROM team_members
+        WHERE project_id = :ProjectID
+    ;
 
-print "Inserting new data"
-insert into Team_Members (PROJECT_ID, ID, TEAM_ID, FIRST_DATE, LAST_DATE, WORK_TODAY, WORK_TOTAL,
-		DAY_RANK, DAY_RANK_PREVIOUS, OVERALL_RANK, OVERALL_RANK_PREVIOUS)
-	select ${1}, ws.ID, ws.TEAM_ID, min(ws.FIRST_DATE) as FIRST_DATE, max(ws.LAST_DATE) as LAST_DATE,
-		sum(ws.WORK_TODAY), sum(ws.WORK_TOTAL), 0, 0, 0, 0
-	from WorkSummary_${1} ws
-	where ws.TEAM_ID > 0
-		and ws.TEAM_ID not in (select TEAM_ID
-					from STATS_Team_Blocked
-				)
-	group by ID, TEAM_ID
-go
+    \echo Inserting new data
+    INSERT INTO team_members (project_id, id, team_id, first_date, last_date, work_today, work_total,
+            day_rank, day_rank_previous, overall_rank, overall_rank_previous)
+        SELECT :ProjectID, ws.id, ws.team_id, min(ws.first_date) AS first_date, max(ws.last_date) AS last_date,
+                sum(ws.work_today), sum(ws.work_total), 0, 0, 0, 0
+            FROM worksummary_:ProjectID ws
+            WHERE ws.team_id > 0
+                AND ws.team_id NOT IN (SELECT team_id
+                            FROM stats_team_blocked
+                        )
+            GROUP BY id, team_id
+    ;
+COMMIT;
