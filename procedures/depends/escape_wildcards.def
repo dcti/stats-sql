@@ -1,12 +1,12 @@
--- $Id: escape_wildcards.def,v 1.8 2001/12/26 01:23:39 decibel Exp $
+-- $Id: escape_wildcards.def,v 1.9 2001/12/29 18:28:21 decibel Exp $
 
 \set procedure=p_escape_wildcards
 
 -- a blank 'use' aborts the next transaction, so do this in two steps
 if ( "${1}" = "" )
 begin
-	print "Database not specified! Using 'sybsystemprocs' as default!"
-	use sybsystemprocs
+	print "Database not specified! Using 'stats' as default!"
+	use stats
 end
 go
 
