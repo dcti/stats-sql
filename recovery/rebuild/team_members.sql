@@ -1,6 +1,6 @@
 #!/usr/bin/sqsh -i
 #
-# $Id: team_members.sql,v 1.1 2000/09/27 05:15:08 decibel Exp $
+# $Id: team_members.sql,v 1.2 2000/09/27 07:13:40 decibel Exp $
 #
 # Repopulates Team_Members for a project.
 # Notes:
@@ -21,7 +21,7 @@ print "Inserting new data"
 insert into Team_Members (PROJECT_ID, ID, TEAM_ID, FIRST_DATE, LAST_DATE, WORK_TODAY, WORK_TOTAL,
 		DAY_RANK, DAY_RANK_PREVIOUS, OVERALL_RANK, OVERALL_RANK_PREVIOUS)
 	select ${1}, ws.ID, ws.TEAM_ID, min(ws.FIRST_DATE) as FIRST_DATE, max(ws.LAST_DATE) as LAST_DATE, 0, sum(ws.WORK_TOTAL),
-		@max_rank, @max_rank, @max_rank, @max_rank
+		0, 0, 0, 0
 	from WorkSummary_${1} ws, STATS_Team st
 	where st.LISTMODE <= 9
 	group by TEAM_ID, ID
