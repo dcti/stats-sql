@@ -1,4 +1,4 @@
--- $Id: main.def,v 1.1 2000/06/07 08:23:14 decibel Exp $
+-- $Id: main.def,v 1.2 2000/06/09 02:12:06 decibel Exp $
 
 \set procedure=p_lastupdate
 
@@ -53,7 +53,7 @@ begin
 	end
 	else
 	begin
-		if @contest in ("ogr")
+		if @contest in ("new")
 		begin
 			
 			/* Build the procedure name */
@@ -84,7 +84,7 @@ begin
 		return -1
 	end
 
-	if @contest in ("ogr")
+	if @contest in ("new")
 		exec @procname @project_id
 	else
 		exec @procname
