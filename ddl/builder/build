@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Definitions
-version='$Id: build,v 1.6 2000/03/31 05:53:07 decibel Exp $'
+version='$Id: build,v 1.7 2000/03/31 05:56:57 decibel Exp $'
 template="template/"
 work="work/"
 
@@ -98,7 +98,11 @@ if [ $delete = true ]; then
 
 		sed -e "s/@DATABASENAME@/${database}/g" -e "s/@TABLENAME@/${table}/g" ${templatedir}delete.1 > $workfile
 
-		if [ $debug != "true" ]; then sqsh $sqshoptions -h -i $workfile $force; fi
+		if [ $debug != "true" ]; then
+			sqsh $sqshoptions -h -i $workfile
+		else
+			echo "$workfile built"
+		fi
 	done
 fi
 
@@ -125,7 +129,11 @@ for table in $tables; do
 			sed -e "s/@DATABASENAME@/${database}/g" -e "s/@TABLENAME@/${table}/g" ${templatedir}table.4 >> $workfile
 		fi
 
-		if [ $debug != "true" ]; then sqsh $sqshoptions -h -i $workfile; fi
+		if [ $debug != "true" ]; then
+			sqsh $sqshoptions -h -i $workfile
+		else
+			echo "$workfile built"
+		fi
 
 	fi
 
@@ -145,7 +153,11 @@ for table in $tables; do
 		cat ${index}.idx >> $workfile
 		sed -e "s/@DATABASENAME@/${database}/g" -e "s/@TABLENAME@/${index}/g" ${templatedir}index.2 >> $workfile
 		
-		if [ $debug != "true" ]; then sqsh $sqshoptions -h -i $workfile; fi
+		if [ $debug != "true" ]; then
+			sqsh $sqshoptions -h -i $workfile
+		else
+			echo "$workfile built"
+		fi
 
 	fi
 
