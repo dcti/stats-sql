@@ -1,10 +1,8 @@
 #!/usr/local/bin/sqsh -i
 #
-# $Id: team_rank.sql,v 1.9 2002/10/07 06:53:56 decibel Exp $
+# $Id: team_rank.sql,v 1.10 2002/10/23 02:52:45 decibel Exp $
 #
 # Repopulates Team_Members for a project.
-# Notes:
-#	The script does *not* re-rank.
 #
 # Arguments:
 #       PROJECT_ID
