@@ -1,0 +1,89 @@
+use stats
+go
+
+drop procedure rank_rc5_64_e_o_rank
+go
+
+create procedure rank_rc5_64_e_o_rank
+(	@id numeric(7,0) = 0		/* Participant ID to look up */
+)
+as
+	/* NOTE!!!!
+	** You should not be calling this procedure directly, it should
+	** be called from 'rank'.
+	*/
+
+	declare @rank		int		/* Rank of participant */
+
+	select @rank = rank
+	from statproc.rc5_64_CACHE_em_RANK
+	where id = @id
+	
+	return @rank
+go
+
+
+drop procedure rank_rc5_64_e_y_rank
+go
+
+create procedure rank_rc5_64_e_y_rank
+(	@id numeric(7,0) = 0		/* Participant ID to look up */
+)
+as
+	/* NOTE!!!!
+	** You should not be calling this procedure directly, it should
+	** be called from 'rank'.
+	*/
+
+	declare @rank		int		/* Rank of participant */
+
+	select @rank = rank
+	from statproc.rc5_64_CACHE_em_YRANK
+	where id = @id
+	
+	return @rank
+go
+
+
+drop procedure rank_rc5_64_t_o_rank
+go
+
+create procedure rank_rc5_64_t_o_rank
+(	@id numeric(7,0) = 0		/* Participant ID to look up */
+)
+as
+	/* NOTE!!!!
+	** You should not be calling this procedure directly, it should
+	** be called from 'rank'.
+	*/
+
+	declare @rank		int		/* Rank of participant */
+
+	select @rank = rank
+	from statproc.rc5_64_CACHE_tm_RANK
+	where id = @id
+	
+	return @rank
+go
+
+
+drop procedure rank_rc5_64_t_y_rank
+go
+
+create procedure rank_rc5_64_t_y_rank
+(	@id numeric(7,0) = 0		/* Participant ID to look up */
+)
+as
+	/* NOTE!!!!
+	** You should not be calling this procedure directly, it should
+	** be called from 'rank'.
+	*/
+
+	declare @rank		int		/* Rank of participant */
+
+	select @rank = rank
+	from statproc.rc5_64_CACHE_tm_YRANK
+	where id = @id
+	
+	return @rank
+go
