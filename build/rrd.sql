@@ -17,7 +17,6 @@ SET SESSION AUTHORIZATION 'pgsql';
 
 SET search_path = rrd, pg_catalog;
 
--
 --
 -- TOC entry 4 (OID 591228957)
 -- Name: rrd; Type: TABLE; Schema: rrd; Owner: pgsql
@@ -184,8 +183,10 @@ ALTER TABLE ONLY bucket
 --
 
 ALTER TABLE ONLY source_status
-    ADD CONSTRAINT rrd_source_status__rrd_id FOREIGN KEY (rrd_id) REFERENCES rrd(rrd_id);
+    ADD CONSTRAINT rrd_source_status__rrd_id FOREIGN KEY (rrd_id) REFERENCES rrd(rrd_id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY source_status
+    ADD CONSTRAINT rrd_source_status__source_id FOREIGN KEY (source_id) REFERENCES source(source_id) ON DELETE CASCADE;
 
 --
 -- TOC entry 25 (OID 591228995)
