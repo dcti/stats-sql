@@ -1,13 +1,14 @@
 
-print 'Creating table OGR_Email_Rank'
+print 'Creating table Email_Rank'
 go
-if object_id('OGR_Email_Rank') is not NULL
+if object_id('Email_Rank') is not NULL
 begin
-	exec ('if not exists (select * from OGR_Email_Rank) begin drop table OGR_Email_Rank end')
+	exec ('if not exists (select * from Email_Rank) begin drop table Email_Rank end')
 end
 go
-create table OGR_Email_Rank
+create table Email_Rank
 (
+	PROJECT_ID		tinyint		not NULL,
 	ID			int		not NULL,
 	FIRST_DATE		smalldatetime	not NULL,
 	LAST_DATE		smalldatetime	not NULL,
@@ -20,15 +21,15 @@ create table OGR_Email_Rank
 )
 go
 create clustered index iDAY_RANK
-	on OGR_Email_Rank(DAY_RANK)
+	on Email_Rank(DAY_RANK)
 	with fillfactor = 100
 go
-alter table OGR_Email_Rank
-	add constraint pk_OGR_Email_Rank
+alter table Email_Rank
+	add constraint pk_Email_Rank
 	primary key nonclustered (ID)
 	with fillfactor = 100
 go
-grant select on OGR_Email_Rank to public
+grant select on Email_Rank to public
 go
 print 'Finished.'
 go

@@ -1,17 +1,17 @@
-print 'Creating table OGR_Day_Platform'
+print 'Creating table Platform_Contrib_Day'
 go
-if object_id('OGR_Day_Platform') is not NULL
+if object_id('Platform_Contrib_Day') is not NULL
 begin
-	drop table OGR_Day_Platform
+	drop table Platform_Contrib_Day
 end
 go
 
-create table OGR_Day_Platform
+create table Platform_Contrib_Day
 (
 	PROJECT_ID	tinyint		not NULL,
-	cpu		smallint	not NULL,
-	os		smallint	not NULL,
-	ver		smallint	not NULL,
-	size		numeric(20, 0)	not NULL
+	CPU		smallint	not NULL,
+	OS		smallint	not NULL,
+	VER		smallint	not NULL,
+	SIZE		numeric(20, 0)	not NULL
 )
 go

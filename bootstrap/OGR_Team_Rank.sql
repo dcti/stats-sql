@@ -1,12 +1,13 @@
-print 'Creating table OGR_Team_Rank'
+print 'Creating table Team_Rank'
 go
-if object_id('OGR_Team_Rank') is not NULL
+if object_id('Team_Rank') is not NULL
 begin
-	exec ('if not exists (select * from OGR_Team_Rank) begin drop table OGR_Team_Rank end')
+	exec ('if not exists (select * from Team_Rank) begin drop table Team_Rank end')
 end
 go
-create table OGR_Team_Rank
+create table Team_Rank
 (
+	PROJECT_ID		tinyint		not NULL,
 	TEAM_ID			int		not NULL,
 	FIRST_DATE		smalldatetime	not NULL,
 	LAST_DATE		smalldatetime	not NULL,
@@ -22,15 +23,15 @@ create table OGR_Team_Rank
 )
 go
 create clustered index iDAY_RANK
-	on OGR_Team_Rank(DAY_RANK)
+	on Team_Rank(DAY_RANK)
 	with fillfactor = 100
 go
-alter table OGR_Team_Rank
-	add constraint pk_OGR_Team_Rank
+alter table Team_Rank
+	add constraint pk_Team_Rank
 	primary key nonclustered (TEAM_ID)
 	with fillfactor = 100
 go
-grant select on OGR_Team_Rank to public
+grant select on Team_Rank to public
 go
 print 'Finished.'
 go

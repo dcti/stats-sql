@@ -1,23 +1,24 @@
-print 'Creating table OGR_Team_Members'
+print 'Creating table Team_Members'
 go
-if object_id('OGR_Team_Members') is not NULL
+if object_id('Team_Members') is not NULL
 begin
-	exec ('if not exists (select * from OGR_Team_Members) begin drop table OGR_Team_Members end')
+	exec ('if not exists (select * from Team_Members) begin drop table Team_Members end')
 end
 go
-create table OGR_Team_Members
+create table Team_Members
 (
+	PROJECT_ID	tinyint,
 	ID		int,
-	TEAM		int,
+	TEAM_ID		int,
 	FIRST_DATE	smalldatetime,
 	LAST_DATE	smalldatetime,
 	WORK_UNITS	numeric (20,0)
 )
 go
-create index main on OGR_Team_Members (team, blocks)
+create index main on Team_Members (TEAM_ID, WORK_UNITS)
 go
 
-grant select on OGR_Team_Members to public
+grant select on Team_Members to public
 go
 
 print 'Finished.'

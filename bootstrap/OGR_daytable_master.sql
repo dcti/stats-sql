@@ -1,15 +1,15 @@
 use stats
 go
 
-print 'Creating table OGR_Day_Master'
+print 'Creating table Email_Contrib_Day'
 go
-if object_id('OGR_Day_Master') is not NULL
+if object_id('Email_Contrib_Day') is not NULL
 begin
-	drop table OGR_Day_Master
+	drop table Email_Contrib_Day
 end
 go
 
-create table OGR_Day_Master
+create table Email_Contrib_Day
 (
 	PROJECT_ID	tinyint		not NULL,
 	EMAIL		varchar(64)	not NULL,

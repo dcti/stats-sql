@@ -1,5 +1,5 @@
 /*
-# Create the team membership table
+# Create the team membership table and populate it from _master
 */
 
 create table Team_Members

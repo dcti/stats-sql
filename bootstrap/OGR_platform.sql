@@ -1,5 +1,5 @@
 /*
-# $Id: OGR_platform.sql,v 1.1 2000/03/21 21:55:28 bwilson Exp $
+# $Id: OGR_platform.sql,v 1.2 2000/04/13 15:00:19 bwilson Exp $
 #
 # OGR_Platform
 #
@@ -15,35 +15,36 @@
 use stats
 go
 
-print 'Creating table OGR_Platform'
+print 'Creating table Platform_Contrib'
 go
-if object_id('OGR_Platform') is not NULL
+if object_id('Platform_Contrib') is not NULL
 begin
-	exec ('if not exists (select * from OGR_Platform) begin drop table OGR_Platform end')
+	exec ('if not exists (select * from Platform_Contrib) begin drop table Platform_Contrib end')
 end
 go
 
-create table OGR_Platform
+create table Platform_Contrib
 (
-  CPU           smallint,
-  OS            smallint,
-  VER           smallint,
-  DATE          smalldatetime,
-  PROJECT_ID	tinyint,
-  WORK_UNITS	numeric (20,0)
+	PROJECT_ID	tinyint,
+	DATE		smalldatetime,
+	CPU		smallint,
+	OS		smallint,
+	VER		smallint,
+	WORK_UNITS	numeric (20,0)
 )
 go
 
+/* TODO: Review appropriateness of these indexes */
 create clustered index iOSDATE
-	on OGR_Platform (OS, DATE, PROJECT_ID)
+	on Platform_Contrib (OS, DATE, PROJECT_ID)
 go
-alter table OGR_Platform
+alter table Platform_Contrib
 	add constraint pk_OGR_Platform
 	primary key nonclustered (CPU, OS, VER, DATE, PROJECT_ID)
 go
 create index iCPUDATE
-	on OGR_Platform (CPU, DATE, PROJECT_ID)
+	on Platform_Contrib (CPU, DATE, PROJECT_ID)
 go
-grant select on OGR_Platform to public
-grant insert on OGR_Platform to statproc
+grant select on Platform_Contrib to public
+grant insert on Platform_Contrib to statproc
 go
