@@ -1,6 +1,8 @@
--- $Id: index.sql,v 1.2 2003/03/12 23:38:35 nerf Exp $
+-- $Id: index.sql,v 1.3 2003/04/14 14:04:37 decibel Exp $
 -- All indices.  Also includes creating primary keys, as creating
 -- the primary key implies creating an index
+
+\set ON_ERROR_STOP 1
 
 CREATE UNIQUE INDEX csc_master__id_date ON csc_master USING btree (id, date);
 

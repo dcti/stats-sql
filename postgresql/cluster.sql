@@ -1,3 +1,5 @@
+\set ON_ERROR_STOP 1
+
 CLUSTER pk_CSC_master ON CSC_master;
 CLUSTER osdate ON CSC_platform;
 CLUSTER pk_Daily_Summary ON Daily_Summary;

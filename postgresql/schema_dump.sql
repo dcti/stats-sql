@@ -1,6 +1,8 @@
--- $Id: schema_dump.sql,v 1.4 2003/04/08 19:14:34 decibel Exp $
+-- $Id: schema_dump.sql,v 1.5 2003/04/14 14:04:37 decibel Exp $
 -- dump of stats database via pg_dump -s
 -- using this as template for table and index creation (table.sql and index.sql)
+
+\set ON_ERROR_STOP 1
 
 CREATE TABLE csc_dailies (
     date date NOT NULL,

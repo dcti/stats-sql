@@ -1,3 +1,5 @@
+\set ON_ERROR_STOP 1
+
  create group processing;
  create group backup;
  create group www;
