@@ -1,4 +1,4 @@
-# $Id: STATS_dailies.sql,v 1.1 1999/07/27 19:58:08 nugget Exp $
+# $Id: STATS_dailies.sql,v 1.2 1999/07/27 21:04:52 nugget Exp $
 #
 # STATS_dailies
 #
@@ -55,10 +55,21 @@ select distinct
   team
 into #teamcounts
 from RC5_64_master
+group by date,team
+go
+
+select distinct
+  date,
+  count(team) as teamcount
+into #teamsums
+from #teamcounts
 group by date
 go
 
-grant insert on STATS_dailies to statproc
+update STATS_dailies set
+  teams = teamcount
+from STATS_dailies, #teamsums 
+where #teamsums.date = STATS_dailies.date
 go
 
 create index top_participant on STATS_dailies(top_participant)
@@ -66,3 +77,10 @@ go
 
 create index top_team on STATS_dailies(top_team)
 go
+
+grant insert on STATS_dailies to statproc
+go
+
+grant select on STATS_dailies to public
+go
+
