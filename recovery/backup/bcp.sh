@@ -1,11 +1,12 @@
 #!/bin/sh
 #
-# $Id: bcp.sh,v 1.7 2002/10/04 16:29:29 decibel Exp $
+# $Id: bcp.sh,v 1.8 2002/10/06 22:58:17 decibel Exp $
 
 table_list='tables.txt'
 savedir='./'
 sqsh_flags='-w 256'
 nobcp=false
+bzip=false
 
 #Source the config file
 if [ -r bcp.conf ]; then
@@ -17,6 +18,9 @@ fi
 
 while [ x"$1" != x ]; do
 	case $1 in
+	    -b) bzip=true
+	        shift
+		continue;;
 	    -n)	nobcp=true
 		shift
 		continue;;
@@ -38,13 +42,17 @@ do
 	echo "getting table def..."
 	sqsh -S $server -U $user -P $password ${sqsh_flags} -i info.sql $table > ${savedir}${table}.info
 	if [ $nobcp = false ]; then
-		if [ -e ${savedir}${table}.bcp ]; then
-			echo "${savedir}${table}.bcp already exists, no BCP will be performed!"
+		if [ -e ${savedir}${table}.bcp* ]; then
+			echo "${savedir}${table}.bcp* already exists, no BCP will be performed!"
 		else
 			echo "bcp'ing..."
 			${SYBASE}/bin/bcp ${table} out ${savedir}${table}.bcp -n -S${server} -U${user} -P${password} | grep -v \
 				'1000 rows successfully bulk-copied'
 		fi
+	fi
+	if [ -r ${savedir}${table}.bcp -a $bzip = true ]; then
+	    echo "spawning bzip..."
+	    bzip2 ${savedir}${table}.bcp &
 	fi
 	echo "done."
 	echo
