@@ -17,20 +17,23 @@ begin
 	set rowcount 0
 
 	declare @rows int,
-		@maxworkrows int,
 		@pos int,
 		@pattern varchar(255),
 		@nextchar varchar(5)
+
+	if datalength(@searchtext) < 3
+	begin
+		return -1
+	end
 
 	create table #csc_psearch
 	(
 		id	int
 	)
 
-	select	@rows = 0,
-		@maxworkrows = @maxrows * 0	// maxworkrows must be 0 when sorting by rank
+	select	@rows = 0
 
-	if @escapewildcards = 1
+	if @escapewildcards = 1 and @searchtext like '%[%_]%'
 	begin
 		select @pos = 1,
 			@pattern = NULL
@@ -66,36 +69,26 @@ begin
 
 	select @pattern = @pattern + '%'
 
-	if charindex('@', @pattern) = 0
+	if charindex('@', @pattern) > 1
 	begin
-		set rowcount @maxworkrows
-
 		insert #csc_psearch (id)
 			select id
 			from STATS_Participant
 			where email like @pattern
-				and listmode < 10
 
 		select @rows = @@rowcount
-
-		set rowcount 0
 	end
 
 	if @rows = 0
 	begin
 		select @pattern = '%' + @pattern
 
-		set rowcount @maxworkrows
-
 		insert #csc_psearch
 			select id
 			from STATS_Participant
 			where email like @pattern
-				and listmode < 10
 
 		select @rows = @@rowcount
-
-		set rowcount 0
 	end
 	
 	set rowcount @maxrows
@@ -107,6 +100,7 @@ begin
                 where p.id = r.id
                 	and p.id = cp.id
                 	and r.id = cp.id
+			and p.listmode < 10
 		order by r.rank, p.email
 
 	set nocount on
