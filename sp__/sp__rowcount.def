@@ -1,0 +1,24 @@
+drop procedure sp__rowcount
+go
+
+create procedure sp__rowcount
+(	@table varchar(92)		/* Table to report on */
+)
+as
+begin
+	declare @count		int		/* Row count to return */
+
+	/* See if the object exists */
+	if (object_id(@table) is null)
+	begin
+		raiserror 99999 "Table %1! does not exist!", @table
+		return -1
+	end
+
+	select @count = sum(rowcnt(doampg))
+	from sysindexes
+	where id = object_id(@table)
+
+	return @count
+end
+go
