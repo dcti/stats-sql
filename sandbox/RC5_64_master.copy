@@ -1,0 +1,6 @@
+-- $Id: RC5_64_master.copy,v 1.1 2000/04/04 04:14:18 decibel Exp $
+
+	insert into ${destinationdb}..${table}
+	select *
+	from ${sourcedb}..${table} s, ${destinationdb}..STATS_Participant p
+	where s.id=p.id

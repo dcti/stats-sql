@@ -1,0 +1,4 @@
+-- $Id: RC5_64_platform.idx,v 1.1 2000/04/04 04:13:10 decibel Exp $
+	create clustered index osdate on ${table}(os, date) with allow_dup_row
+	create index cpudate on ${table}(cpu, date)
+	create index everything on ${table}(cpu, os, ver, date)
