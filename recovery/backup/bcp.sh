@@ -1,10 +1,9 @@
 #!/bin/sh
 #
-# $Id: bcp.sh,v 1.1 2000/11/05 13:44:06 decibel Exp $
+# $Id: bcp.sh,v 1.2 2000/11/06 05:55:58 decibel Exp $
 
 table_list='tables.txt'
 savedir='./'
-SYBASE='/usr/local/sybase'
 sqsh_flags='-w 256'
 
 #Source the config file
