@@ -1,5 +1,5 @@
 /*
- $Id: team_rank.sql,v 1.12 2003/09/09 20:43:55 decibel Exp $
+ $Id: team_rank.sql,v 1.13 2004/11/08 16:39:25 decibel Exp $
 
  Repopulates Team_Rank fOR a project.
 
@@ -16,7 +16,10 @@ SELECT team_id, min(first_date) AS first_date, max(last_date) AS last_date,
     INTO TEMP teamsummary
     FROM worksummary_:ProjectID
     WHERE team_id >= 1
-        AND team_id NOT IN (SELECT team_id FROM stats_team_blocked)
+        AND team_id NOT IN (SELECT team_id
+                    FROM stats_team_blocked
+                    WHERE block_date <= (SELECT max(last_date) FROM worksummary_:ProjectID)
+                )
     GROUP BY team_id
 ;
 

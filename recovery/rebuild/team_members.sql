@@ -1,5 +1,5 @@
 /*
-# $Id: team_members.sql,v 1.11 2003/09/09 20:43:55 decibel Exp $
+# $Id: team_members.sql,v 1.12 2004/11/08 16:39:25 decibel Exp $
 #
 # Repopulates Team_Members fOR a project.
 # Notes:
@@ -28,6 +28,7 @@ BEGIN;
             WHERE ws.team_id > 0
                 AND ws.team_id NOT IN (SELECT team_id
                             FROM stats_team_blocked
+                            WHERE block_date <= (SELECT max(last_date) FROM worksummary_:ProjectID)
                         )
             GROUP BY id, team_id
     ;

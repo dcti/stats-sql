@@ -1,5 +1,5 @@
 /*
- $Id: work_summary.sql,v 1.21 2004/07/20 02:44:20 decibel Exp $
+ $Id: work_summary.sql,v 1.22 2004/11/08 16:39:25 decibel Exp $
 
  Creates a summary table containing all work for a project
 
@@ -28,7 +28,8 @@ CREATE TEMP TABLE worksummary (
 -- query will treat PROJECT_ID = :ProjectID AS an SARG AND everything else AS a JOIN, which means we can't
 -- fully utilize our index.
 BEGIN;
-    SET LOCAL enable_seqscan = off;
+    --SET LOCAL enable_seqscan = off;
+    --explain analyze
     INSERT INTO worksummary (id, team_id, first_date, last_date, work_total, work_today, work_yesterday)
         SELECT id, team_id, min(date), max(date), sum(work_units), 0, 0
         FROM email_contrib
@@ -37,8 +38,10 @@ BEGIN;
     ;
 COMMIT;
 ANALYZE worksummary;
+CREATE INDEX worksummary__last_date ON worksummary (last_date);
 
 \echo Update for work today
+--explain analyze
 UPDATE worksummary
     SET work_today = ec.work_units
     FROM email_contrib ec
@@ -47,6 +50,7 @@ UPDATE worksummary
         AND ( ec.team_id = worksummary.team_id OR (ec.team_id IS NULL AND worksummary.team_id IS NULL) )
         AND ec.date = (SELECT max(last_date) FROM worksummary)
 ;
+--explain analyze
 UPDATE worksummary
     SET work_yesterday = ec.work_units
     FROM email_contrib ec
@@ -57,6 +61,7 @@ UPDATE worksummary
 ;
 
 \echo Update for retire_to
+--explain analyze
 UPDATE worksummary
     SET id = sp.retire_to
     FROM stats_participant sp
@@ -67,13 +72,18 @@ UPDATE worksummary
 ;
 
 \echo second pass summary
+--explain analyze
 SELECT ws.id, ws.team_id, min(first_date) AS first_date, max(last_date) AS last_date,
         sum(work_total) AS work_total, sum(work_today) AS work_today, sum(work_yesterday) AS work_yesterday
     INTO worksummary_:ProjectID
     FROM worksummary ws
-    WHERE ws.id NOT IN (SELECT id FROM stats_participant_blocked)
+    WHERE ws.id NOT IN (SELECT id
+                            FROM stats_participant_blocked
+                            WHERE block_date <= (SELECT max(last_date) FROM worksummary)
+                        )
     GROUP BY ws.id, ws.team_id
 ;
 
 drop table worksummary;
 ANALYZE VERBOSE worksummary_:ProjectID;
+
