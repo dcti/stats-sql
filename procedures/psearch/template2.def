@@ -1,0 +1,43 @@
+-- $Id: template2.def,v 1.1 2000/06/09 09:43:25 decibel Exp $
+
+\set procedure=p_psearch_${2}
+
+use ${1}
+go
+
+\echo "Creating table #psearch"
+create table #psearch
+(
+	id	int
+)
+go
+
+\echo "Creating procedure ${procedure}"
+
+create procedure $procedure
+(	@project_id tinyint = 0		/* PROJECT_ID */
+)
+	with recompile
+as
+begin
+	-- NOTE!!!!
+	-- You should not be calling this procedure directly, it should
+	-- be called from 'psearch'.
+
+	select p.id, p.listmode, p.contact_name, p.email, convert(varchar, r.FIRST_DATE, 100) as 'first_date',
+			convert(varchar, r.LAST_DATE, 100) as 'last_date', r.WORK_TOTAL, r.WORK_TODAY,
+			datediff(day, r.FIRST_DATE, r.LAST_DATE)+1 as Days_Working,
+			r.OVERALL_RANK, r.OVERALL_RANK_PREVIOUS - r.OVERALL_RANK as Overall_Change,
+			r.DAY_RANK, r.DAY_RANK_PREVIOUS - r.DAY_RANK as Day_Change
+                from STATS_Participant p, Email_Rank r, #psearch ps
+                where p.id = r.id
+                	and p.id = ps.id
+                	and r.id = ps.id
+                	and p.listmode < 10
+			and r.PROJECT_ID=@project_id
+		order by r.OVERALL_RANK , p.email
+        return
+end
+go
+grant exec on $procedure to public
+go

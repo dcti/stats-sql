@@ -1,17 +1,11 @@
--- $Id: delete.sql,v 1.3 2000/03/17 04:55:58 decibel Exp $
+-- $Id: delete.sql,v 1.4 2000/06/09 09:43:25 decibel Exp $
 
 \set procedure=p_psearch_${2}
 
-if ( "${1}" = "" )
-begin
-	print "Database not specified! Using 'stats' as default!"
-	use stats
-end
-else
-begin
-	use ${1}
-end
+use ${1}
 go
+
+\echo "procedure = $procedure"
 
 if (object_id("$procedure") is not null)
 begin

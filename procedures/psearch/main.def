@@ -1,14 +1,17 @@
--- $Id: main.def,v 1.6 2000/03/17 04:55:59 decibel Exp $
+-- $Id: main.def,v 1.7 2000/06/09 09:43:25 decibel Exp $
 
 \set procedure=p_psearch
 
+-- a blank 'use' aborts the next transaction, so do this in two steps
 if ( "${1}" = "" )
 begin
 	print "Database not specified! Using 'stats' as default!"
 	use stats
 end
-else
+go
+if ( "${1}" != "" )
 begin
+	print "Using database '%1!'", ${1}
 	use ${1}
 end
 go
@@ -25,10 +28,12 @@ print "Creating procedure ${procedure}"
 go
 
 create procedure $procedure
-	@project		varchar(10) = null,	/* Project to look at */
+(	@project		varchar(10) = null,	/* Project to look at */
 	@searchtext		varchar(255) = null,	/* Text to search for */
 	@maxrows		int = 50,		/* Max rows to return */
-	@escapewildcards	bit = 1			/* 1: escape wildcard characters in @searchtext */
+	@escapewildcards	bit = 1,		/* 1: escape wildcard characters in @searchtext */
+	@project_id		tinyint = 0		/* PROJECT_ID */
+)
 as
 begin
 	set nocount on
@@ -45,13 +50,14 @@ begin
 	begin
 		raiserror 99999 "Not enough parameters"
 		print "usage:"
-		print "	$procedure project, searchtext, maxrows, escapewildcards"
+		print "	$procedure project, searchtext, maxrows, escapewildcards, project_id"
 		print "where:"
 		print "	project is project to look at"
 		print " searchtext is the email to search for"
 		print " maxrows is the maximum number of rows to return"
 		print " escapewildcards is set to 1 if you want to escape wildcards in searchtext"
 		print "		[default], or 0 if you do not want to escape them"
+		print "	project_id is the project ID to search. Valid only when project='new'"
 		return -5
 	end
 
@@ -120,7 +126,7 @@ begin
 	-- Actually execute the procedure
 	set rowcount @maxrows
 	set nocount off
-	exec @procname
+	exec @procname @project_id
 	set nocount on
 	set rowcount 0
 

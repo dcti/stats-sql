@@ -1,10 +1,10 @@
 #!/bin/sh
 
 # Definitions
-version='$Id: psearch.sh,v 1.4 2000/03/17 04:55:58 decibel Exp $'
+version='$Id: psearch.sh,v 1.5 2000/06/09 09:43:25 decibel Exp $'
 sqlpath=psearch/
 deletescript=${sqlpath}delete.sql
-insertscript=${sqlpath}template.def
+insertscript=${sqlpath}template
 main_proc=${sqlpath}main.def
 
 # Variable initialization
@@ -14,10 +14,20 @@ sqshargs=""
 # Functions
 function setupsql () {
 	echo
-	echo Adding for $1
-	sqsh $sqshargs -i ${deletescript} $1
+	echo Adding $2
+	sqsh $sqshargs -i ${deletescript} $1 $2
 	if [ "$deleteonly" != "true" ]; then
-		sqsh $sqshargs -i $insertscript $1
+		sqsh $sqshargs -i ${insertscript}.def $1 $2
+	fi
+	return
+}
+
+function setupsql2 () {
+	echo
+	echo Adding $2
+	sqsh $sqshargs -i ${deletescript} $1 $2
+	if [ "$deleteonly" != "true" ]; then
+		sqsh $sqshargs -i ${insertscript}2.def $1 $2
 	fi
 	return
 }
@@ -54,9 +64,10 @@ if [ $database = "" ]; then
 	exit 1
 fi
 
-sqsh $sqshargs -i $main_proc
+sqsh $sqshargs -i $main_proc $database
 
-setupsql csc
-setupsql rc5_64
+setupsql $database csc
+setupsql $database rc5_64
+setupsql2 $database new
 
 [ -f ${sqlpath}depends ] && echo && cat ${sqlpath}depends
