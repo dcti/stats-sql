@@ -1,0 +1,6 @@
+#!/bin/sh
+sudo -u pgsql dropdb stats
+sudo -u pgsql createdb stats
+psql -Upgsql stats < tables.sql 2>&1 | grep -v NOTICE
+psql -Upgsql stats < index.sql
+psql -e -Upgsql stats < copy.sql
