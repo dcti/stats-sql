@@ -1,4 +1,4 @@
--- $Id: template.def,v 1.2 2000/10/18 11:12:51 decibel Exp $
+-- $Id: template.def,v 1.3 2000/10/18 22:13:18 decibel Exp $
 
 \set procedure=p_phistory_${2}
 
@@ -15,8 +15,11 @@ go
 
 \echo "Creating procedure $procedure, using ORDER BY ${3}"
 create procedure $procedure
+(
+	@scale		numeric(20,0)	/* What to scale the results by */
+)
 as
-	select DATE, sum(WORK_UNITS) as WORK_UNITS
+	select DATE, sum(WORK_UNITS)/@scale as WORK_UNITS
 	from #phistory
 	group by DATE
 	order by ${3}

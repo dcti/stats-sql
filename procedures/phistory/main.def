@@ -1,4 +1,4 @@
--- $Id: main.def,v 1.3 2000/10/18 11:12:51 decibel Exp $
+-- $Id: main.def,v 1.4 2000/10/18 22:13:18 decibel Exp $
 
 \set procedure=p_phistory
 
@@ -100,7 +100,11 @@ as
 	close retires
 	deallocate cursor retires
 
-	declare @result int, @proc varchar(40)
+	declare @scale numeric(20,0), @result int, @proc varchar(40)
+	select @scale = WORK_UNIT_SCALE
+		from Projects
+		where PROJECT_ID = @project_id
+
 	select @proc = "${1}_" + @sort_field + "_" + @sort_dir
 	if (object_id(@proc) is NULL)
 	begin
@@ -109,7 +113,7 @@ as
 	end
 	else
 	begin
-		exec @result = @proc
+		exec @result = @proc @scale
 		return @result
 	end
 go
