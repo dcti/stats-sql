@@ -1,6 +1,6 @@
 #!/usr/bin/sqsh -i
 #
-# $Id: team_rank.sql,v 1.6 2001/01/21 18:14:16 decibel Exp $
+# $Id: team_rank.sql,v 1.7 2001/05/18 07:34:28 decibel Exp $
 #
 # Repopulates Team_Members for a project.
 # Notes:
@@ -10,6 +10,7 @@
 #       PROJECT_ID
 
 set flushmessage on
+use stats
 go
 
 print "Deleting old data"

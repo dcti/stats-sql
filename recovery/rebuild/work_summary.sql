@@ -1,11 +1,12 @@
 #!/usr/bin/sqsh -i
 #
-# $Id: work_summary.sql,v 1.10 2001/01/21 18:09:52 decibel Exp $
+# $Id: work_summary.sql,v 1.11 2001/05/18 07:34:28 decibel Exp $
 #
 # Creates a summary table containing all work for a project
 #
 
 set flushmessage on
+use stats
 go
 
 print ""

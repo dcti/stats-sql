@@ -1,6 +1,6 @@
 #!/usr/bin/sqsh -i
 #
-# $Id: email_rank.sql,v 1.5 2001/01/21 18:09:52 decibel Exp $
+# $Id: email_rank.sql,v 1.6 2001/05/18 07:34:28 decibel Exp $
 #
 # Phase 1 of repopulating Email_Rank for a project. After this script, you should
 # re-rank, then run email_rank_2.sql.
@@ -12,6 +12,7 @@
 #       PROJECT_ID
 
 set flushmessage on
+use stats
 go
 
 print "Deleting old data"
