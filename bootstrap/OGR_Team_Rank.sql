@@ -1,3 +1,4 @@
+# $Id: OGR_Team_Rank.sql,v 1.3 2000/06/26 23:09:57 decibel Exp $
 print 'Creating table Team_Rank'
 go
 if object_id('Team_Rank') is not NULL
@@ -19,7 +20,7 @@ create table Team_Rank
 	OVERALL_RANK_PREVIOUS	int		not NULL,
 	MEMBERS_TODAY		int		not NULL,
 	MEMBERS_OVERALL		int		not NULL,
-	MEMBERS_LISTED		int		not NULL
+	MEMBERS_CURRENT		int		not NULL
 )
 go
 create clustered index iDAY_RANK
