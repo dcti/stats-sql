@@ -1,7 +1,6 @@
 CSC_dailies
 CSC_master
 CSC_platform
-CSC_team
 Daily_Summary
 Email_Contrib
 Platform_Contrib
