@@ -1,0 +1,31 @@
+How to rebuild a project from the base tables:
+
+1. Ensure that the WorkSummary_$PROJECT_ID table doesn't exist. Drop it if it does.
+
+2. Build the WorkSummary table:
+
+sqsh -D stats -U sa -P password -i worksummary.sql $PROJECT_ID
+
+This takes about an hour for RC5 with no web traffic.
+
+3. Build the email stuff:
+
+./rebuild_email.sh $PROJECT_ID '-D stats -U sa -P password'
+
+4. Build the team stuff:
+
+./rebuild_team.sh $PROJECT_ID '-D stats -U sa -P password'
+
+5. Run audit.sql to verify that everything checks out:
+
+The easiest way to do this is to login as statproc, cd stats-proc/daily && ./audit.sql $PROJECT_ID
+
+IF AUDIT.SQL ISN'T HAPPY WITH THE PROJECT, DO NOT PROCEED
+
+6. If you're recovering from a statsrun that died, you'll need to handle some of the steps manually.
+See stats-proc/daily/runday and runday2
+
+7. Finally, if you're cleaning up from a bombed run, you'll need to remove the lockfile from ~statproc/log
+
+
+$Id: README,v 1.1 2002/09/25 18:28:40 decibel Exp $
