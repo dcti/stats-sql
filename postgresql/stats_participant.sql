@@ -1,10 +1,10 @@
--- $Id: stats_participant.sql,v 1.3 2003/04/14 21:43:35 decibel Exp $
+-- $Id: stats_participant.sql,v 1.4 2003/04/14 21:46:50 decibel Exp $
 
 \set ON_ERROR_STOP 1
 
 select now() as start into temp start_time;
 \t
-select '$Name:  $ start time: ' || start from start_time;
+select '$RCSName:  $ start time: ' || start from start_time;
 \t
 
 
@@ -26,4 +26,4 @@ ALTER TABLE ONLY stats_participant
 vacuum full analyze verbose stats_participant;
 
 \t
-select '$Name:  $ stop time: ' || now() || ', duration: ' || age(now(),start) from start_time;
+select '$RCSName:  $ stop time: ' || now() || ', duration: ' || age(now(),start) from start_time;

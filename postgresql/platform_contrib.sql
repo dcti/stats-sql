@@ -1,10 +1,10 @@
--- $Id: platform_contrib.sql,v 1.3 2003/04/14 21:43:35 decibel Exp $
+-- $Id: platform_contrib.sql,v 1.4 2003/04/14 21:46:50 decibel Exp $
 
 \set ON_ERROR_STOP 1
 
 select now() as start into temp start_time;
 \t
-select '$Name:  $ start time: ' || start from start_time;
+select '$RCSName:  $ start time: ' || start from start_time;
 \t
 
 COPY Platform_Contrib (PROJECT_ID, DATE, CPU, OS, VER, WORK_UNITS) FROM '/home/decibel/blower/Platform_Contrib.bcp' WITH DELIMITER '\t';
@@ -22,4 +22,4 @@ CLUSTER Platform_Contrib_pkey ON Platform_Contrib;
 vacuum full analyze verbose platform_contrib;
 
 \t
-select '$Name:  $ stop time: ' || now() || ', duration: ' || age(now(),start) from start_time;
+select '$RCSName:  $ stop time: ' || now() || ', duration: ' || age(now(),start) from start_time;
