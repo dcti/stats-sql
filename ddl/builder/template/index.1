@@ -1,4 +1,4 @@
--- $Id: index.1,v 1.5 2000/03/17 04:32:14 decibel Exp $
+-- $Id: index.1,v 1.6 2000/03/27 05:25:17 decibel Exp $
 
 \set table=@TABLENAME@
 \set database=@DATABASENAME@
@@ -9,7 +9,7 @@ go
 if db_id("$database") is NULL
 begin
 	print "The database '%1!' does not exist!", $database
-	insert into #abort values ('1')
+	insert into #abort values (1)
 end
 go
 
@@ -21,7 +21,7 @@ begin
 	if object_id("$table") is NULL
 	begin
 		print "Table '%1!' doesn't exist!", $table 
-		insert into #abort values ('1')
+		insert into #abort values (1)
 	end
 end
 go
