@@ -3,4 +3,6 @@ sudo -u pgsql dropdb stats
 sudo -u pgsql createdb -D PGDATA_stats stats || exit 1
 psql -Upgsql stats < tables.sql || exit 1
 psql -e -Upgsql stats < copy.sql || exit 1
+./move.pl stats STATS_Participant || exit 1
+./move.pl stats STATS_team || exit 1
 psql -Upgsql stats < index.sql 2>&1 | grep -v NOTICE || exit 1
