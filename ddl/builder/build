@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Definitions
-version='$Id: build,v 1.9 2000/03/31 06:45:21 decibel Exp $'
+version='$Id: build,v 1.10 2000/04/04 04:12:58 decibel Exp $'
 template="template/"
 work="work/"
 
@@ -85,7 +85,7 @@ if [ x"$tables" = x ]; then
 	exit 1
 fi
 
-tables=`echo $tables | tr -s " " | tr "[:space:]" "\n" | cut -d"." -f1 | sort | uniq`
+tables=`echo $tables | tr -s " " | tr "[:space:]" "\n" | cut -d"." -f1 | grep -v default | sort | uniq`
 
 # Thanks to linux's stupid idea that bash is a drop-in replacement for sh, we have to do this:
 if [ $debug != "true" ]; then
