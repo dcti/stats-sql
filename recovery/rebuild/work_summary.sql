@@ -1,6 +1,6 @@
 #!/usr/local/bin/sqsh -i
 #
-# $Id: work_summary.sql,v 1.16 2002/10/06 06:34:50 decibel Exp $
+# $Id: work_summary.sql,v 1.17 2002/10/06 22:59:18 decibel Exp $
 #
 # Creates a summary table containing all work for a project
 #
@@ -72,15 +72,15 @@ update #WorkSummary
 go
 
 print "Second pass summary"
-insert into WorkSummary_${1} (ID, TEAM_ID, FIRST_DATE, LAST_DATE, WORK_TOTAL, WORK_TODAY, WORK_YESTERDAY)
-	select ws.ID, ws.TEAM_ID, min(FIRST_DATE) as FIRST_DATE, max(LAST_DATE) as LAST_DATE,
+select ws.ID, ws.TEAM_ID, min(FIRST_DATE) as FIRST_DATE, max(LAST_DATE) as LAST_DATE,
 		sum(WORK_TOTAL) as WORK_TOTAL, sum(WORK_TODAY) as WORK_TODAY, sum(WORK_YESTERDAY) as WORK_YESTERDAY
 	into WorkSummary_${1}
 	from #WorkSummary ws
-	where ws.ID not in (select ID
-					from STATS_Participant_Blocked
-				)
+	where ws.ID not in (select ID from STATS_Participant_Blocked)
 	group by ws.ID, ws.TEAM_ID
 
 drop table #WorkSummary
+go
+
+create index team on WorkSummary_${1}(TEAM_ID)
 go
