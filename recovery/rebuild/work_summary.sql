@@ -1,6 +1,6 @@
 #!/usr/bin/sqsh -i
 #
-# $Id: work_summary.sql,v 1.4 2000/10/22 02:01:26 decibel Exp $
+# $Id: work_summary.sql,v 1.5 2000/10/22 02:02:57 decibel Exp $
 #
 # Creates a summary table containing all work for a project
 #
@@ -17,7 +17,7 @@ print "First pass summary"
 -- Include PROJECT_ID here so that it can be used in the join in the next query. If we don't, the next
 -- query will treat PROJECT_ID = ${1} as an SARG and everything else as a JOIN, which means we can't
 -- fully utilize our index.
-create #WorkSummary (
+create table #WorkSummary (
 	PROJECT_ID tinyint,
 	ID int,
 	TEAM_ID int,
