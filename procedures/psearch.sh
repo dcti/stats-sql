@@ -6,6 +6,8 @@ insertscript=${sqlpath}template.def
 main_proc=${sqlpath}main_proc.def
 
 function setupsql () {
+	echo
+	echo Adding for $1
 	sqsh $sqshargs -i ${deletescript} $1
 	if [ "$deleteonly" != "true" ]; then
 		sqsh $sqshargs -i $insertscript $1
@@ -27,4 +29,4 @@ sqsh $sqshargs -i $main_proc
 setupsql csc
 setupsql rc5_64
 
-[ -f ${sqlpath}depends ] && cat ${sqlpath}depends
+[ -f ${sqlpath}depends ] && echo && cat ${sqlpath}depends

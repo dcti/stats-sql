@@ -5,7 +5,8 @@ go
 
 if (object_id("$procedure") is not null)
 begin
-	print "Dropping procedure $procedure"
+	revoke exec on $procedure to public
+	print "Dropping procedure ${procedure}"
 	drop procedure $procedure
 end
 go
