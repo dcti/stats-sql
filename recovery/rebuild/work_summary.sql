@@ -1,5 +1,5 @@
 /*
- $Id: work_summary.sql,v 1.20 2003/12/12 22:41:35 decibel Exp $
+ $Id: work_summary.sql,v 1.21 2004/07/20 02:44:20 decibel Exp $
 
  Creates a summary table containing all work for a project
 
@@ -44,7 +44,7 @@ UPDATE worksummary
     FROM email_contrib ec
     WHERE ec.project_id = :ProjectID
         AND ec.id = worksummary.id
-        AND ec.team_id = worksummary.team_id
+        AND ( ec.team_id = worksummary.team_id OR (ec.team_id IS NULL AND worksummary.team_id IS NULL) )
         AND ec.date = (SELECT max(last_date) FROM worksummary)
 ;
 UPDATE worksummary
@@ -52,7 +52,7 @@ UPDATE worksummary
     FROM email_contrib ec
     WHERE ec.project_id = :ProjectID
         AND ec.id = worksummary.id
-        AND ec.team_id = worksummary.team_id
+        AND ( ec.team_id = worksummary.team_id OR (ec.team_id IS NULL AND worksummary.team_id IS NULL) )
         AND ec.date = (SELECT max(last_date) - interval '1 day' FROM worksummary)
 ;
 
