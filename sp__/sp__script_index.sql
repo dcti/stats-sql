@@ -17,7 +17,7 @@ create procedure $procedure
 )
 as
 begin
-	-- $Id: sp__script_index.sql,v 1.3 2001/12/21 21:58:33 decibel Exp $
+	-- $Id: sp__script_index.sql,v 1.4 2001/12/21 21:59:39 decibel Exp $
 	set nocount on
 
 	declare @msg varchar(250)
@@ -135,12 +135,7 @@ begin
 		end
 
 
-		select @out = ')' + @with + " on " + s.name
-		from syssegments s, sysindexes i
-			where s.segment = i.segment
-				and i.id = object_id(@objname)
-				and i.indid = @indid
-
+		select @out = ')' + @with
 		print @out
 		print "go"
 		print ""
