@@ -1,5 +1,6 @@
--- $Id: info.sql,v 1.3 2000/11/09 10:13:06 decibel Exp $
+-- $Id: info.sql,v 1.4 2002/10/04 16:32:19 decibel Exp $
 
+select getdate()
 sp_help "${1}"
 go -f
 sp__objspace "${1}"
