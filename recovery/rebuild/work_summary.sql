@@ -1,5 +1,5 @@
 /*
- $Id: work_summary.sql,v 1.18.2.1 2003/04/27 12:26:59 decibel Exp $
+ $Id: work_summary.sql,v 1.18.2.2 2003/04/27 22:04:32 decibel Exp $
 
  Creates a summary table containing all work for a project
 
@@ -11,16 +11,19 @@
 \echo Make sure that WorkSummary_:ProjectID does not exist!!!
 \echo 
 
+CREATE TEMP worksummary (
+    id              int     not null
+    , team_id       int     not null
+    , first_date    date    not null
+    , last_date     date    not null
+    , work_total    bigint  not null
+) WITHOUT OIDS
+;
+
 \echo First pass summary
 -- Include PROJECT_ID here so that it can be used in the join in the next query. If we don't, the next
 -- query will treat PROJECT_ID = :ProjectID AS an SARG AND everything else AS a JOIN, which means we can't
 -- fully utilize our index.
-SELECT id, team_id, date AS first_date, date AS last_date,
-        work_units AS work_total, work_units AS work_today, work_units AS work_yesterday
-    INTO TEMP worksummary
-    FROM email_contrib
-    WHERE 1=0
-;
 BEGIN;
     SET LOCAL enable_seqscan = off;
     INSERT INTO worksummary (id, team_id, first_date, last_date, work_total, work_today, work_yesterday)
