@@ -1,6 +1,6 @@
 #!/usr/local/bin/sqsh -i
 #
-# $Id: work_summary.sql,v 1.12 2001/12/29 08:32:08 decibel Exp $
+# $Id: work_summary.sql,v 1.13 2002/01/10 23:26:11 decibel Exp $
 #
 # Creates a summary table containing all work for a project
 #
@@ -59,11 +59,16 @@ update #WorkSummary
 go
 
 print "Update for retire_to"
+declare @last smalldatetime
+select @last=max(LAST_DATE)
+	from #WorkSummary
+
 update #WorkSummary
 	set ID = sp.RETIRE_TO
 	from Stats_Participant sp
 	where sp.ID = #WorkSummary.ID
 		and sp.RETIRE_TO > 0
+		and sp.RETIRE_DATE <= @last
 
 create table WorkSummary_${1} (
 	ID int,
