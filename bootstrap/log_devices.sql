@@ -1,5 +1,5 @@
 
-# $Id: log_devices.sql,v 1.2 1999/10/10 22:18:31 decibel Exp $
+# $Id: log_devices.sql,v 1.3 1999/10/10 22:28:34 decibel Exp $
 #
 # This file will create the required devices for the logging database.
 # It must be run with SA privledges. Note that before running, you
@@ -16,12 +16,12 @@ go
 
 disk init 
   name = "dev_logsa", 
-  physname = "/dev/sdb2", 
+  physname = "/usr/local/sybase/data/dev_logsa.dat", 
   vdevno = 2, size = 51200
 go
 
 disk init
   name = "dev_logs_logsa"
-  physname = "/dev/sdb2",
+  physname = "/usr/local/sybase/logs/dev_logs_logsa.dat",
   vdevno = 3, size = 25600
 go
