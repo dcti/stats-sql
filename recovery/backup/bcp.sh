@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Id: bcp.sh,v 1.5 2000/11/09 10:18:42 decibel Exp $
+# $Id: bcp.sh,v 1.6 2000/11/09 13:18:18 decibel Exp $
 
 table_list='tables.txt'
 savedir='./'
@@ -37,9 +37,13 @@ do
 	echo "getting table def..."
 	sqsh -S $server -U $user -P $password ${sqsh_flags} -i info.sql $table > ${savedir}${table}.info
 	if [ $nobcp = false ]; then
-		echo "bcp'ing..."
-		${SYBASE}/bin/bcp ${table} out ${savedir}${table}.bcp -n -S${server} -U${user} -P${password} | grep -v \
-			'1000 rows successfully bulk-copied'
+		if [ -e ${savedir}${table}.bcp ]; then
+			echo "${savedir}${table}.bcp already exists, no BCP will be performed!"
+		else
+			echo "bcp'ing..."
+			${SYBASE}/bin/bcp ${table} out ${savedir}${table}.bcp -n -S${server} -U${user} -P${password} | grep -v \
+				'1000 rows successfully bulk-copied'
+		fi
 	fi
 	echo "done."
 	echo
