@@ -1,5 +1,5 @@
 /*
- $Id: work_summary.sql,v 1.18.2.2 2003/04/27 22:04:32 decibel Exp $
+ $Id: work_summary.sql,v 1.18.2.3 2003/04/27 22:06:34 decibel Exp $
 
  Creates a summary table containing all work for a project
 
@@ -16,7 +16,9 @@ CREATE TEMP worksummary (
     , team_id       int     not null
     , first_date    date    not null
     , last_date     date    not null
-    , work_total    bigint  not null
+    , work_total    numeric(20,0)  not null
+    , work_today    bigint  not null
+    , work_yesterday    bigint  not null
 ) WITHOUT OIDS
 ;
 
