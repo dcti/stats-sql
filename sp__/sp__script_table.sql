@@ -27,13 +27,13 @@ begin
 		@colstatus tinyint
 	declare @typename sysname(30)
 
-	if not exists (select * from sysobjects where type = 'U' and name = @name)
+	select @objid = object_id(@name)
+	
+	if @objid is null
 	begin
 		raiserror 99999 "Object '%1!' does not exist!", @name
 		return
 	end
-
-	select @objid = object_id(@name)
 
 	select @outputline = 'create table ' + @name
 	print @outputline
@@ -104,4 +104,7 @@ end
 go
 
 grant execute on $procedure to wheel
+go
+
+grant execute on $procedure to backup
 go
