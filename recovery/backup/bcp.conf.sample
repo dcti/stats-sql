@@ -1,0 +1,13 @@
+# $Id: bcp.conf.sample,v 1.1 2000/11/05 13:44:06 decibel Exp $
+#
+# Configuration for bcp.sh
+#
+# Note that for any values not specified here, defaults will be used,
+# EXCEPT for 'server', 'user', and 'password', which MUST be specified here.
+
+server=TALLY			#Server to backup
+user=backup_username		#Username to use to login to sybase
+password=backup_user_password	#Password
+
+SYBASE='/usr/local/sybase'	#Proper setting for $SYBASE environment file
+savedir='/dctichip/tally/'	#Directory to save files to
