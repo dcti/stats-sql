@@ -1,0 +1,54 @@
+use master
+go
+
+/set procedure=p_escape_wildcards
+print 'Creating procedure $procedure'
+go
+if object_id('$procedure') is not NULL
+begin
+	drop procedure $procedure
+end
+go
+create procedure $procedure
+	@textin		varchar(255),
+	@textout	varchar(255)	output
+as
+begin
+	set nocount on
+	set rowcount 0
+
+	declare 
+		@pos int,
+		@nextchar varchar(5)
+
+	select @pos = 1,
+		@textout = NULL
+
+	while @pos <= datalength(@textin)
+	begin
+		select @nextchar = substring(@textin, @pos, 1)
+
+		if @nextchar = '%'
+		begin
+			select @nextchar = '[%]'
+		end
+		else if @nextchar = '_'
+		begin
+			select @nextchar = '[_]'
+		end
+
+		if @pos = 1
+		begin
+			select @textout = @nextchar
+		end
+		else
+		begin
+			select @textout = @textout + @nextchar
+		end
+		select @pos = @pos + 1
+	end
+        return
+end
+go
+grant exec on $procedure to public
+go
