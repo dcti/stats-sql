@@ -1,4 +1,4 @@
--- $Id: tables.sql,v 1.17 2003/08/28 23:35:50 decibel Exp $
+-- $Id: tables.sql,v 1.18 2003/08/30 15:50:55 decibel Exp $
 -- Create all table, but without indexes or primary keys
 
 \set ON_ERROR_STOP 1
@@ -216,7 +216,7 @@ CREATE TABLE stats_participant (
     nonprofit smallint NOT NULL,
     retire_to integer NOT NULL,
     retire_date date,
-    created date,
+    created timestamp,
     team integer NOT NULL,
     friend_a integer NOT NULL,
     friend_b integer NOT NULL,
@@ -315,7 +315,7 @@ CREATE TABLE stats_team (
     team serial NOT NULL,
     listmode smallint NOT NULL,
     "password" character(8),
-    created date,
+    created timestamp,
     name varchar(64) NOT NULL,
     url varchar(128),
     contactname varchar(64),
