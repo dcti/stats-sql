@@ -1,14 +1,16 @@
 #!/bin/sh
 
 # Definitions
-version='$Id: build,v 1.4 2000/03/27 05:26:16 decibel Exp $'
+version='$Id: build,v 1.5 2000/03/27 05:49:52 decibel Exp $'
 template="template/"
 work="work/"
 
 # Misc variables
 buildtable="true"
 buildindex="true"
-debug="fales"
+debug="false"
+delete="false"
+force="false"
 sqshargs=""
 database=""
 tables=""
@@ -36,8 +38,14 @@ while [ x"$1" != x ]; do
 	    -i) buildtable="false"
 		shift
 		continue;;
-	    -d) debug="true"
+	-debug) debug="true"
 	    	shift
+		continue;;
+	    -d) delete="true"
+		shift
+		continue;;
+	    -f) force="force"
+		shift
 		continue;;
 	    -o) shift
 		sqshoptions="$1"
@@ -50,7 +58,9 @@ Usage: build [options] database tables
 Options:
   -t		Only build the table (no indexes)
   -i		Only build the indexes
-  -d		Debug (build the workfile, but don't attempt to run it)
+  -d		Delete tables beforehand
+  -f		Force (delete even if tables contain data)
+  -debug	Debug (build the workfile, but don't attempt to run it)
   -o "options"	Options for sqsh
   -v		Print version information, then exit
 EOF
@@ -79,6 +89,18 @@ sqshoptions=`tcsh -c "echo ${sqshoptions}"`
 
 echo "Using sqsh options: ${sqshoptions}"
 
+# Delete first, if it's called for
+if [ $delete = true ]; then
+	for table in $tables; do
+		# Build the sql file
+		workfile="${workdir}${table}.del.sql"
+
+		sed -e "s/@DATABASENAME@/${database}/g" -e "s/@TABLENAME@/${table}/g" ${templatedir}delete.1 > $workfile
+
+		if [ $debug != "true" ]; then sqsh $sqshoptions -h -i $workfile $force; fi
+	done
+fi
+
 for table in $tables; do
 	# Build the table
 	if [ $buildtable = true ]; then 
@@ -102,7 +124,7 @@ for table in $tables; do
 			sed -e "s/@DATABASENAME@/${database}/g" -e "s/@TABLENAME@/${table}/g" ${templatedir}table.4 >> $workfile
 		fi
 
-		if [ $debug != "true" ]; then sqsh $sqshoptions -i $workfile; fi
+		if [ $debug != "true" ]; then sqsh $sqshoptions -h -i $workfile; fi
 
 	fi
 
@@ -122,7 +144,7 @@ for table in $tables; do
 		cat ${index}.idx >> $workfile
 		sed -e "s/@DATABASENAME@/${database}/g" -e "s/@TABLENAME@/${index}/g" ${templatedir}index.2 >> $workfile
 		
-		if [ $debug != "true" ]; then sqsh $sqshoptions -i $workfile; fi
+		if [ $debug != "true" ]; then sqsh $sqshoptions -h -i $workfile; fi
 
 	fi
 
