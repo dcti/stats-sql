@@ -1,4 +1,0 @@
-NOTE!
-
-These procedures depend on the procedure 'p_escape_wildcards', please
-ensure that this procedure exists and is executable!
