@@ -1,10 +1,10 @@
--- $Id: email_rank.sql,v 1.4 2003/04/14 21:19:03 decibel Exp $
+-- $Id: email_rank.sql,v 1.5 2003/04/14 21:43:35 decibel Exp $
 
 \set ON_ERROR_STOP 1
 
 select now() as start into temp start_time;
 \t
-select '$File:$ start time: ' || start from start_time;
+select '$Name:  $ start time: ' || start from start_time;
 \t
 
  grant Select on Email_Rank to public;
@@ -25,5 +25,7 @@ ALTER TABLE ONLY email_rank
 
 CLUSTER Email_Rank_pkey ON Email_Rank;
 
+vacuum full analyze verbose email_rank;
+
 \t
-select '$File:$ stop time: ' || now() || ', duration: ' || age(now(),start) from start_time;
+select '$Name:  $ stop time: ' || now() || ', duration: ' || age(now(),start) from start_time;
