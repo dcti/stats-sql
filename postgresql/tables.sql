@@ -1,4 +1,4 @@
--- $Id: tables.sql,v 1.11 2003/04/14 14:56:57 decibel Exp $
+-- $Id: tables.sql,v 1.12 2003/04/14 15:11:48 decibel Exp $
 -- Create all table, but without indexes or primary keys
 
 \set ON_ERROR_STOP 1
@@ -59,7 +59,7 @@ CREATE TABLE daily_summary (
 
 
 
-CREATE TABLE email_contrib2 (
+CREATE TABLE email_contrib (
     project_id int NOT NULL,
     id integer NOT NULL,
     date date NOT NULL,
