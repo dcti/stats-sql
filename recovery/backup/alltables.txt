@@ -26,7 +26,6 @@ Project_Status
 Projects
 STATS_country
 STATS_cpu
-STATS_dailies
 STATS_dem_heard
 STATS_dem_motivation
 STATS_nonprofit
