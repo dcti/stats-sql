@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: doall2,v 1.11 2003/04/14 20:20:27 decibel Exp $
+# $Id: doall2,v 1.12 2003/04/14 20:31:17 decibel Exp $
 
 dropdb stats
 createdb -D PGDATA_stats stats || exit 1
@@ -8,6 +8,7 @@ psql stats < tables.sql || exit 1
 # Fire off some stuff in the background
 psql stats < email_contrib.sql 2>&1 | grep -v NOTICE | tee email_contrib.log &
 psql stats < email_rank.sql 2>&1 | grep -v NOTICE | tee email_rank.log &
+psql stats < platform_contrib.sql 2>&1 | grep -v NOTICE | tee platform_contrib.log &
 ./stats_participant.sh | tee stats_participant.log &
 
 psql -e stats < copy.sql || exit 1

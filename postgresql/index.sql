@@ -1,4 +1,4 @@
--- $Id: index.sql,v 1.5 2003/04/14 20:20:27 decibel Exp $
+-- $Id: index.sql,v 1.6 2003/04/14 20:31:17 decibel Exp $
 -- All indices.  Also includes creating primary keys, as creating
 -- the primary key implies creating an index
 
@@ -23,10 +23,6 @@ CREATE INDEX csc_platform__cpu_date ON csc_platform USING btree (cpu, date);
 CREATE INDEX email_contrib_today__team_id ON email_contrib_today USING btree (project_id, team_id);
 
 
-
-
-
-CREATE INDEX platform_contrib__projectdate ON platform_contrib USING btree (project_id, date);
 
 
 
@@ -153,11 +149,6 @@ ALTER TABLE ONLY email_rank_last_update
 
 ALTER TABLE ONLY log_info
     ADD CONSTRAINT log_info_pkey PRIMARY KEY (project_id, log_timestamp);
-
-
-
-ALTER TABLE ONLY platform_contrib
-    ADD CONSTRAINT platform_contrib_pkey PRIMARY KEY (project_id, cpu, os, ver, date);
 
 
 
