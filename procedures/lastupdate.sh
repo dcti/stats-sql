@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Definitions
-version='$Id: lastupdate.sh,v 1.7 2001/12/26 01:24:02 decibel Exp $'
+version='$Id: lastupdate.sh,v 1.8 2002/10/06 22:43:57 decibel Exp $'
 sqlpath=lastupdate/
 deletescript=${sqlpath}delete.sql
 insertscript=${sqlpath}template
@@ -68,14 +68,6 @@ setupsql csc_t_o statproc.csc_CACHE_tm_rank last
 setupsql csc_t_y statproc.csc_CACHE_tm_yrank last
 setupsql csc_m csc_master date
 setupsql csc_p csc_platform date
-
-setupsql rc5_64_e_o statproc.rc5_64_CACHE_em_rank last
-setupsql rc5_64_e_y statproc.rc5_64_CACHE_em_yrank last
-setupsql rc5_64_t_o statproc.rc5_64_CACHE_tm_rank last
-setupsql rc5_64_t_y statproc.rc5_64_CACHE_tm_yrank last
-#setupsql rc5_64_m rc5_64_master date
-setupsql rc5_64_m rc5_64_platform date
-setupsql rc5_64_p rc5_64_platform date
 
 setupsql2 new_e Email_Rank LAST_DATE
 setupsql2 new_t Team_Rank LAST_DATE
