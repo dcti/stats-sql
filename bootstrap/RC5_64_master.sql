@@ -1,4 +1,4 @@
-# $Id: RC5_64_master.sql,v 1.1 1999/07/25 06:03:21 nugget Exp $
+# $Id: RC5_64_master.sql,v 1.2 1999/09/29 17:56:41 nugget Exp $
 #
 # RC5_64_master
 #
@@ -16,12 +16,12 @@ go
 # drop view RC5_64_master
 # go
 
-create table vRC5_64_master
+create table RC5_64_master
 (
-  id numeric (7,0),
-  team int,
-  date smalldatetime,
-  blocks numeric (7,0)
+  id		numeric (7,0)	,
+  team		int		default 0,
+  date		smalldatetime	,
+  blocks	numeric (7,0)	
 )
 go
 
