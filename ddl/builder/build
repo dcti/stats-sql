@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Definitions
-version='$Id: build,v 1.5 2000/03/27 05:49:52 decibel Exp $'
+version='$Id: build,v 1.6 2000/03/31 05:53:07 decibel Exp $'
 template="template/"
 work="work/"
 
@@ -85,9 +85,10 @@ fi
 tables=`echo $tables | sed -e 's/.def//g' -e 's/.idx//g' | tr -s " " | tr "[:space:]" "\n" | sort | uniq`
 
 # Thanks to linux's stupid idea that bash is a drop-in replacement for sh, we have to do this:
-sqshoptions=`tcsh -c "echo ${sqshoptions}"`
-
-echo "Using sqsh options: ${sqshoptions}"
+if [ $debug != "true" ]; then
+	sqshoptions=`tcsh -c "echo ${sqshoptions}"`
+	echo "Using sqsh options: ${sqshoptions}"
+fi
 
 # Delete first, if it's called for
 if [ $delete = true ]; then
