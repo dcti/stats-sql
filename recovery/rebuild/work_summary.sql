@@ -1,10 +1,11 @@
 /*
- $Id: work_summary.sql,v 1.18.2.4 2003/04/27 22:11:25 decibel Exp $
+ $Id: work_summary.sql,v 1.18.2.5 2003/04/30 06:38:01 decibel Exp $
 
  Creates a summary table containing all work for a project
 
        ProjectID
 */
+\set ON_ERROR_STOP 1
 
 \echo 
 \echo Note:

@@ -1,5 +1,5 @@
 /*
-# $Id: email_rank.sql,v 1.7.2.1 2003/04/27 12:26:59 decibel Exp $
+# $Id: email_rank.sql,v 1.7.2.2 2003/04/30 06:38:01 decibel Exp $
 #
 # Phase 1 of repopulating Email_Rank fOR a project. After this script, you should
 # re-rank, then run email_rank_2.sql.
@@ -10,6 +10,7 @@
 # Arguments:
 #       ProjectID
 */
+\set ON_ERROR_STOP 1
 
 BEGIN;
     \echo Deleting old data

@@ -1,4 +1,5 @@
--- $Id: platform.sql,v 1.1.2.1 2003/04/27 12:26:59 decibel Exp $
+-- $Id: platform.sql,v 1.1.2.2 2003/04/30 06:38:01 decibel Exp $
+\set ON_ERROR_STOP 1
 
 BEGIN;
     DELETE FROM platform_summary WHERE project_id = :ProjectID ;

@@ -1,5 +1,5 @@
 /*
-# $Id: team_members.sql,v 1.10.2.1 2003/04/27 12:26:59 decibel Exp $
+# $Id: team_members.sql,v 1.10.2.2 2003/04/30 06:38:01 decibel Exp $
 #
 # Repopulates Team_Members fOR a project.
 # Notes:
@@ -9,6 +9,7 @@
 # Arguments:
 #       ProjectID
 */
+\set ON_ERROR_STOP 1
 
 \echo ::Updating Team_Members
 \echo Deleting old data
