@@ -1,4 +1,4 @@
--- $Id: display_name.psql,v 1.1.2.1 2003/09/01 01:49:33 decibel Exp $
+-- $Id: display_name.psql,v 1.1.2.2 2003/09/01 03:46:32 decibel Exp $
 
 -- display name
 CREATE OR REPLACE FUNCTION stats_participant_display_name
@@ -18,7 +18,7 @@ CREATE OR REPLACE FUNCTION stats_participant_display_name
                 ELSE ''Listmode ('' || cast($1 AS varchar) || '') error for ID '' || $2
             END
     ' LANGUAGE SQL
-    STABLE
+    IMMUTABLE
 ;
 
 SELECT listmode, id, email, contact_name, email AS expected
@@ -56,6 +56,56 @@ INSERT INTO display_test VALUES(19,2147483647,'email','contact','Listmode (19) e
 SELECT 'ERROR!', *, stats_participant_display_name(listmode, id, email, contact_name)
     FROM display_test
     WHERE expected != stats_participant_display_name(listmode, id, email, contact_name)
+;
+
+CREATE OR REPLACE FUNCTION stats_participant_display_name_l
+    (
+        stats_participant.listmode%TYPE
+        , stats_participant.id%TYPE
+        , stats_participant.email%TYPE
+        , stats_participant.contact_name%TYPE
+    ) RETURNS varchar
+    AS '
+    SELECT lower(stats_participant_display_name($1, $2, $3, $4))
+    ' LANGUAGE SQL
+    IMMUTABLE
+;
+
+SELECT listmode, id, email, contact_name, email AS expected
+    INTO TEMP display_test_l
+    FROM stats_participant
+    WHERE 1=0
+;
+
+INSERT INTO display_test_l VALUES(0,2147483647,'email','contact','email');
+INSERT INTO display_test_l VALUES(1,2147483647,'email','contact','participant #2,147,483,647');
+INSERT INTO display_test_l VALUES(2,2147483647,'email','contact','contact');
+INSERT INTO display_test_l VALUES(2,2147483647,'email','','participant #2,147,483,647');
+INSERT INTO display_test_l VALUES(2,2147483647,'blanks','       ','participant #2,147,483,647');
+INSERT INTO display_test_l VALUES(2,2147483647,'null',NULL,'participant #2,147,483,647');
+
+INSERT INTO display_test_l VALUES(8,2147483647,'email','contact','email');
+INSERT INTO display_test_l VALUES(9,2147483647,'email','contact','email');
+
+INSERT INTO display_test_l VALUES(3,2147483647,'email','contact','listmode (3) error for id 2147483647');
+INSERT INTO display_test_l VALUES(4,2147483647,'email','contact','listmode (4) error for id 2147483647');
+INSERT INTO display_test_l VALUES(5,2147483647,'email','contact','listmode (5) error for id 2147483647');
+INSERT INTO display_test_l VALUES(6,2147483647,'email','contact','listmode (6) error for id 2147483647');
+INSERT INTO display_test_l VALUES(7,2147483647,'email','contact','listmode (7) error for id 2147483647');
+INSERT INTO display_test_l VALUES(10,2147483647,'email','contact','listmode (10) error for id 2147483647');
+INSERT INTO display_test_l VALUES(11,2147483647,'email','contact','listmode (11) error for id 2147483647');
+INSERT INTO display_test_l VALUES(12,2147483647,'email','contact','listmode (12) error for id 2147483647');
+INSERT INTO display_test_l VALUES(13,2147483647,'email','contact','listmode (13) error for id 2147483647');
+INSERT INTO display_test_l VALUES(14,2147483647,'email','contact','listmode (14) error for id 2147483647');
+INSERT INTO display_test_l VALUES(15,2147483647,'email','contact','listmode (15) error for id 2147483647');
+INSERT INTO display_test_l VALUES(16,2147483647,'email','contact','listmode (16) error for id 2147483647');
+INSERT INTO display_test_l VALUES(17,2147483647,'email','contact','listmode (17) error for id 2147483647');
+INSERT INTO display_test_l VALUES(18,2147483647,'email','contact','listmode (18) error for id 2147483647');
+INSERT INTO display_test_l VALUES(19,2147483647,'email','contact','listmode (19) error for id 2147483647');
+
+SELECT 'ERROR!', *, stats_participant_display_name_l(listmode, id, email, contact_name)
+    FROM display_test_l
+    WHERE expected != stats_participant_display_name_l(listmode, id, email, contact_name)
 ;
 
 -- vi:expandtab ts=4 sw=4 filetype=sql
