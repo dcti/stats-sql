@@ -1,0 +1,76 @@
+-- $Id: base.psql,v 1.1.2.1 2003/09/01 01:49:08 decibel Exp $
+
+\set ON_ERROR_STOP 1
+
+-- MIN
+CREATE OR REPLACE FUNCTION min(timestamp, timestamp) RETURNS timestamp
+    RETURNS NULL ON NULL INPUT
+    AS '
+    SELECT CASE WHEN $1 < $2 THEN $1 ELSE $2 END
+    ' LANGUAGE SQL
+    IMMUTABLE
+;
+CREATE OR REPLACE FUNCTION min(numeric, numeric) RETURNS numeric
+    RETURNS NULL ON NULL INPUT
+    AS '
+    SELECT CASE WHEN $1 < $2 THEN $1 ELSE $2 END
+    ' LANGUAGE SQL
+    IMMUTABLE
+;
+
+-- MAX
+CREATE OR REPLACE FUNCTION max(timestamp, timestamp) RETURNS timestamp
+    RETURNS NULL ON NULL INPUT
+    AS '
+    SELECT CASE WHEN $1 > $2 THEN $1 ELSE $2 END
+    ' LANGUAGE SQL
+    IMMUTABLE
+;
+CREATE OR REPLACE FUNCTION max(numeric, numeric) RETURNS numeric
+    RETURNS NULL ON NULL INPUT
+    AS '
+    SELECT CASE WHEN $1 > $2 THEN $1 ELSE $2 END
+    ' LANGUAGE SQL
+    IMMUTABLE
+;
+
+-- ISZERO
+CREATE OR REPLACE FUNCTION iszero(numeric, numeric) RETURNS numeric
+    RETURNS NULL ON NULL INPUT
+    AS '
+    SELECT CASE WHEN $1 = 0 THEN $2 ELSE $1 END
+    ' LANGUAGE SQL
+    IMMUTABLE
+;
+
+-- ISEMPTY
+CREATE OR REPLACE FUNCTION isempty(varchar, varchar) RETURNS varchar
+    RETURNS NULL ON NULL INPUT
+    AS '
+    SELECT CASE WHEN $1 = '''' THEN $2 ELSE $1 END
+    ' LANGUAGE SQL
+    IMMUTABLE
+;
+
+CREATE TEMP TABLE isempty_test (a varchar, b varchar, expected varchar);
+INSERT INTO isempty_test values('a','b','a');
+INSERT INTO isempty_test values('','b','b');
+INSERT INTO isempty_test values(NULL,'b',NULL);
+INSERT INTO isempty_test values('a',NULL,NULL);
+SELECT 'ERROR!', *, isempty(a,b)
+    FROM isempty_test
+    WHERE isempty(a,b) != expected
+;
+
+-- RAISE
+CREATE OR REPLACE FUNCTION raise_exception(char) RETURNS void
+    RETURNS NULL ON NULL INPUT
+    AS '
+    BEGIN
+        RAISE EXCEPTION ''%'', $1;
+        RETURN;
+    END;
+    ' LANGUAGE 'plpgsql'
+;
+
+-- vi:expandtab ts=4 sw=4 filetype=sql
