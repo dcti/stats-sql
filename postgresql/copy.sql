@@ -14,7 +14,7 @@ COPY Platform_Summary FROM '/home/decibel/blower/Platform_Summary.bcp' WITH DELI
 COPY Project_Status FROM '/home/decibel/blower/Project_Status.bcp' WITH DELIMITER '\t';
 COPY Project_statsrun FROM '/home/decibel/blower/Project_statsrun.bcp' WITH DELIMITER '\t' NULL '';
 COPY Projects FROM '/home/decibel/blower/Projects.bcp' WITH DELIMITER '\t' NULL '';
-COPY Log_Info FROM '/home/decibel/blower/Log_Info.bcp' WITH DELIMITER '\t' NULL '';
+COPY Log_Info FROM '/home/decibel/blower/Log_Info.bcp.clean' WITH DELIMITER '\t' NULL '';
 COPY STATS_Participant_Blocked FROM '/home/decibel/blower/STATS_Participant_Blocked.bcp' WITH DELIMITER '\t';
 COPY STATS_Participant_Friend FROM '/home/decibel/blower/STATS_Participant_Friend.bcp' WITH DELIMITER '\t';
 COPY STATS_Team_Blocked FROM '/home/decibel/blower/STATS_Team_Blocked.bcp' WITH DELIMITER '\t';

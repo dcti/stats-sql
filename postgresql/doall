@@ -1,4 +1,5 @@
 #!/bin/sh
+cat ~/blower/Log_Info.bcp |sed -e 's/:000//'>~/blower/Log_Info.bcp.clean||exit 1
 sudo -u pgsql dropdb stats
 sudo -u pgsql createdb -D PGDATA_stats stats || exit 1
 psql -Upgsql stats < tables.sql || exit 1
