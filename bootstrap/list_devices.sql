@@ -1,4 +1,5 @@
-# $Id: list_devices.sql,v 1.2 1999/10/10 22:18:31 decibel Exp $
+#!/usr/bin/sqsh -i
+# $Id: list_devices.sql,v 1.3 1999/11/20 22:30:13 decibel Exp $
 #
 # This script will list the device numbers in use.
 
