@@ -1,0 +1,27 @@
+-- $Id: functions.sql,v 1.1 2003/04/17 22:49:26 decibel Exp $
+
+\set ON_ERROR_STOP 1
+
+-- MIN
+CREATE OR REPLACE FUNCTION min(numeric, numeric) RETURNS numeric
+    RETURNS NULL ON NULL INPUT
+    AS '
+    SELECT CASE WHEN $1 < $2 THEN $1 ELSE $2 END
+    ' LANGUAGE SQL
+;
+
+-- MAX
+CREATE OR REPLACE FUNCTION max(numeric, numeric) RETURNS numeric
+    RETURNS NULL ON NULL INPUT
+    AS '
+    SELECT CASE WHEN $1 > $2 THEN $1 ELSE $2 END
+    ' LANGUAGE SQL
+;
+
+-- ISZERO
+CREATE OR REPLACE FUNCTION iszero(numeric, numeric) RETURNS numeric
+    RETURNS NULL ON NULL INPUT
+    AS '
+    SELECT CASE WHEN $1 = 0 THEN $2 ELSE $1 END
+    ' LANGUAGE SQL
+;
