@@ -1,0 +1,66 @@
+/*
+	Procedure: rank
+*/
+
+create procedure rank
+(	@section varchar(1) = null	/* What section to look at (i.e. e for email, t for team) */
+	@contest varchar(10) = null	/* Contest that we want the ranking on */
+	@timeframe varchar(1) = null	/* Timeframe we want to look at (overall v. yesterday) */
+	@id numeric(7,0) = 0		/* Participant ID to look up */
+)
+as
+	
+	declare @tablename	char(20)	/* Name of the table to look in */
+	declare @rank		int(4)		/* Rank of participant */
+
+	/* 1.0 Error checking */
+
+	/* 1.1 Make sure all the parameters were specified */
+	if ( (@section = null) or (@contest = null) or (@timeframe = null) or (@id = 0) )
+	begin
+		print "usage:"
+		print "	 participant_rank contest, timeframe, id"
+		print "where:"
+		print "	contest is contest to check rank on"
+		print " timeframe is the ranking to check (i.e. o for overall or y for yesterday)"
+		print "	id is the participant ID to check"
+		return(-5)
+	end
+
+	select @section = lower(@section)
+	if (@section = "e")
+		select @section = "em"
+	else if (@section = "t")
+		select @section = "tm"
+	else
+	begin
+		print "Invalid section '%1!' specified, must be 'e' or 't'", @section
+		return(-5)
+	end
+	
+	/* 1.2  */
+	select @timeframe = upper(@timeframe)
+	if not @timeframe in ("", "O", "Y")
+	begin
+		print "Invalid timeframe '%1!' specified, must be 'O' or 'Y'", @timeframe
+		return(-5)
+	end
+	if ( @timeframe = 'O' )
+		select @timeframe = ""
+
+	/* Build the table name */
+	select @tablename = @contest + "_CACHE_" + @section + "_" + @timeframe + "RANK"
+	
+	/* See if the silly table exists */
+	if object_id(@tablename) is NULL)
+	begin
+		print "The table '%1!' does not exist!",@tablename
+		return(-1)
+	end
+
+	/* Do the query */
+	select @rank = rank
+	from @tablename
+	where id = @id
+
+	return @rank
