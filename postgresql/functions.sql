@@ -1,4 +1,4 @@
--- $Id: functions.sql,v 1.3 2003/04/22 20:34:09 decibel Exp $
+-- $Id: functions.sql,v 1.4 2003/04/22 21:21:10 decibel Exp $
 
 \set ON_ERROR_STOP 1
 
@@ -60,7 +60,6 @@ CREATE OR REPLACE FUNCTION stats_set_last_update(projects.project_id%TYPE, char,
         update_date ALIAS FOR $3;
 
         update_date_string varchar(20);
-        rows int := 0;
         table_name varchar(50);
         statement varchar(500);
     BEGIN
@@ -88,32 +87,23 @@ CREATE OR REPLACE FUNCTION stats_set_last_update(projects.project_id%TYPE, char,
             update_date_string := '''''''' || update_date || ''''''::date'';
         END IF;
 
-    -- First, try and do the update
+    -- First, insert if we need to
+        statement := ''INSERT INTO '' || quote_ident(table_name)
+                            || ''(project_id) SELECT '' || project_id
+                            || '' WHERE NOT EXISTS (SELECT 1 FROM ''
+                            || quote_ident(table_name)
+                            || '' WHERE project_id = '' || project_id || '')''
+        ;
+
+        EXECUTE statement;
+
+    -- Now do the update
         statement := ''UPDATE '' || quote_ident(table_name) || '' SET last_date = ''
-                        || quote_literal(update_date)
+                        || coalesce(quote_literal(update_date), ''NULL'')
                         || '' WHERE project_id = '' || project_id
         ;
 
         EXECUTE statement;
-GET DIAGNOSTICS rows = ROW_COUNT;
-raise notice ''%: %'', rows, statement;
-rows := 0;
-
-    -- If no rows were modified then do the insert
-        IF NOT FOUND THEN
-            statement := ''INSERT INTO '' || quote_ident(table_name)
-                                || ''(project_id, last_date) VALUES('' || project_id
-                                || '', '' || quote_literal(update_date) || '')''
-            ;
-
-            PERFORM statement;
-GET DIAGNOSTICS rows = ROW_COUNT;
-raise notice ''%: %'', rows, statement;
-
-            IF NOT FOUND THEN
-                RAISE EXCEPTION ''No rows updated or inserted in %'', function_name;
-            END IF;
-        END IF;
 
         RETURN;
     END;
