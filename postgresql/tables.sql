@@ -1,4 +1,4 @@
--- $Id: tables.sql,v 1.8 2003/04/08 19:14:34 decibel Exp $
+-- $Id: tables.sql,v 1.9 2003/04/09 16:23:48 decibel Exp $
 -- Create all table, but without indexes or primary keys
 
 CREATE TABLE csc_dailies (
@@ -199,7 +199,11 @@ CREATE TABLE projects (
     logfile_prefix character varying(10) NOT NULL,
     sponsor_url character varying(255) NOT NULL,
     sponsor_name character varying(255) NOT NULL,
-    logo_url character varying(255) NOT NULL
+    logo_url character varying(255) NOT NULL,
+         deprecated_fields character(1) NOT NULL,  
+     work_unit_name character varying(20) NOT NULL,  
+     dist_unit_scale numeric(38,0) NOT NULL,  
+     work_unit_scale numeric(38,0) NOT NULL
 ) WITHOUT OIDS;
 
 
