@@ -1,0 +1,24 @@
+-- $Id: template.def,v 1.1 2000/10/18 10:59:07 decibel Exp $
+
+\set procedure=p_phistory_${2}
+
+use ${1}
+go
+
+\echo "Creating procedure $procedure, using ORDER BY ${3}"
+create procedure $procedure
+(
+)
+as
+	select DATE, sum(WORK_UNITS) as WORK_UNITS
+	from #phistory
+	group by DATE
+	order by ${3}
+
+	return @@rowcount
+
+go
+
+grant execute on $procedure to public
+go
+

@@ -1,4 +1,4 @@
--- $Id: main.def,v 1.1 2000/10/18 10:28:24 decibel Exp $
+-- $Id: main.def,v 1.2 2000/10/18 10:59:07 decibel Exp $
 
 \set procedure=p_phistory
 
@@ -24,9 +24,10 @@ go
 \echo "Creating procedure $procedure"
 create procedure $procedure
 (
-	@project_id tinyint,		/* Project ID */
-	@id int = 0,			/* Participant ID */
-	@sort varchar(255) = NULL	/* Sort order (optional) */
+	@project_id tinyint,			/* Project ID */
+	@id int = 0,				/* Participant ID */
+	@sort_field varchar(30) = "DATE",	/* Field to sort on */
+	@sort_dir char(4) = "asc"		/* Sort direction (asc or desc) */
 )
 as
 
@@ -43,6 +44,20 @@ as
 		return -5
 	end
 
+	select @sort_field = lower(@sort_field)
+	if @sort_field not in ("date", "work_units")
+	begin
+		raiserror 99999 "invalid sort field specified"
+		return -5
+	end
+
+	select @sort_dir = lower(@sort_dir)
+	if @sort_dir not in ("asc", "desc")
+	begin
+		raiserror 99999 "invalid sort direction specified"
+		return -5
+	end
+	
 	/* Don't hold any locks */
 	set transaction isolation level 0
 
@@ -85,23 +100,18 @@ as
 	close retires
 	deallocate cursor retires
 
-	if (@sort = NULL)
+	declare @result int, @proc varchar(40)
+	select @proc = "${1}_" + @sort_field + "_" + @sort_direction
+	if (object_id(@proc) is NULL)
 	begin
-		select DATE, sum(WORK_UNITS) as WORK_UNITS
-		from #phistory
-		group by DATE
-		order by DATE desc
+		raiserror 99999 "Procedure '%1!' does not exist!", @proc
+		return -1
 	end
 	else
 	begin
-		declare @sql varchar(255)
-		select @sql = "select DATE, sum(WORK_UNITS) as WORK_UNITS from #phistory "
-		select @sql = @sql + "group by DATE order by " + @sort
-		exec @sql
+		exec @result = @proc
+		return @@result
 	end
-
-	return @@rowcount
-
 go
 
 grant execute on $procedure to public
