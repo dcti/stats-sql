@@ -1,4 +1,4 @@
--- $Id: functions.sql,v 1.4 2003/04/22 21:21:10 decibel Exp $
+-- $Id: functions.sql,v 1.5 2003/04/22 21:28:03 decibel Exp $
 
 \set ON_ERROR_STOP 1
 
@@ -48,6 +48,7 @@ CREATE OR REPLACE FUNCTION stats_get_last_update(projects.project_id%TYPE, char)
         RETURN last_update;
     END;
     ' LANGUAGE 'plpgsql'
+    STABLE
 ;
 CREATE OR REPLACE FUNCTION stats_set_last_update(projects.project_id%TYPE, char, date) RETURNS void
     AS '
@@ -108,6 +109,7 @@ CREATE OR REPLACE FUNCTION stats_set_last_update(projects.project_id%TYPE, char,
         RETURN;
     END;
     ' LANGUAGE 'plpgsql'
+    VOLATILE
 ;
 
 -- MIN
@@ -116,12 +118,14 @@ CREATE OR REPLACE FUNCTION min(timestamp, timestamp) RETURNS timestamp
     AS '
     SELECT CASE WHEN $1 < $2 THEN $1 ELSE $2 END
     ' LANGUAGE SQL
+    IMMUTABLE
 ;
 CREATE OR REPLACE FUNCTION min(numeric, numeric) RETURNS numeric
     RETURNS NULL ON NULL INPUT
     AS '
     SELECT CASE WHEN $1 < $2 THEN $1 ELSE $2 END
     ' LANGUAGE SQL
+    IMMUTABLE
 ;
 
 -- MAX
@@ -130,12 +134,14 @@ CREATE OR REPLACE FUNCTION max(timestamp, timestamp) RETURNS timestamp
     AS '
     SELECT CASE WHEN $1 > $2 THEN $1 ELSE $2 END
     ' LANGUAGE SQL
+    IMMUTABLE
 ;
 CREATE OR REPLACE FUNCTION max(numeric, numeric) RETURNS numeric
     RETURNS NULL ON NULL INPUT
     AS '
     SELECT CASE WHEN $1 > $2 THEN $1 ELSE $2 END
     ' LANGUAGE SQL
+    IMMUTABLE
 ;
 
 -- ISZERO
@@ -144,4 +150,5 @@ CREATE OR REPLACE FUNCTION iszero(numeric, numeric) RETURNS numeric
     AS '
     SELECT CASE WHEN $1 = 0 THEN $2 ELSE $1 END
     ' LANGUAGE SQL
+    IMMUTABLE
 ;
