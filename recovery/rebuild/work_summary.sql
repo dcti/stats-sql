@@ -1,6 +1,6 @@
 #!/usr/local/bin/sqsh -i
 #
-# $Id: work_summary.sql,v 1.13 2002/01/10 23:26:11 decibel Exp $
+# $Id: work_summary.sql,v 1.14 2002/03/04 07:40:27 decibel Exp $
 #
 # Creates a summary table containing all work for a project
 #
@@ -33,7 +33,7 @@ insert into #WorkSummary (PROJECT_ID, ID, TEAM_ID, FIRST_DATE, LAST_DATE, WORK_T
 	select ${1}, ID, TEAM_ID, min(DATE), max(DATE), sum(WORK_UNITS), 0, 0
 	from Email_Contrib
 	where PROJECT_ID = ${1}
-	group by ID, TEAM_ID
+	group by PROJECT_ID, ID, TEAM_ID
 go
 
 print "Update for work today"
@@ -68,7 +68,7 @@ update #WorkSummary
 	from Stats_Participant sp
 	where sp.ID = #WorkSummary.ID
 		and sp.RETIRE_TO > 0
-		and sp.RETIRE_DATE <= @last
+		and (sp.RETIRE_DATE <= @last or sp.RETIRE_DATE is NULL)
 
 create table WorkSummary_${1} (
 	ID int,

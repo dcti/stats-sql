@@ -1,6 +1,6 @@
 #!/usr/local/bin/sqsh -i
 #
-# $Id: email_rank_2.sql,v 1.2 2001/12/29 08:32:08 decibel Exp $
+# $Id: email_rank_2.sql,v 1.3 2002/03/04 07:40:27 decibel Exp $
 #
 # Phase 1 of repopulating Email_Rank for a project. After this script, you should
 # re-rank, then run email_rank_2.sql.
@@ -11,12 +11,27 @@
 # Arguments:
 #       PROJECT_ID
 
-set flushmessage on
 use stats
+set flushmessage on
+go
+
+create table #EmailSum (
+	ID		int		not null,
+	WORK_TODAY	numeric(20,0)	not null
+)
+go
+
+#dbcc traceon(3604,302,310)
+#set statistics io on
+#set statistics time on
+#set showplan on
+
+# It's worth creating the index...
+create unique clustered index pk on #EmailSum(ID)
 go
 
 print "Creating summary table"
-select ID, sum(WORK_TODAY) as WORK_TODAY into #EmailSum
+insert into #EmailSum select ID, sum(WORK_TODAY) as WORK_TODAY
 	from WorkSummary_${1}
 	group by id
 go
