@@ -1,0 +1,9 @@
+	-- $Id: STATS_cpu.def,v 1.1 2000/03/06 07:38:25 decibel Exp $
+	create table ${table}
+	(
+		cpu			int		not NULL,
+		name			char(32)	not NULL,
+		image			char(64)	NULL,
+		category		char(32)	NULL,
+	)
+	

@@ -1,0 +1,24 @@
+	-- $Id: STATS_participant.def,v 1.1 2000/03/06 07:38:25 decibel Exp $
+	create table $table
+	(
+		id			numeric(10, 0)	not NULL	identity,
+		email			varchar(64)	not NULL,
+		password		char(8)		not NULL,
+		listmode		smallint	not NULL,
+		nonprofit		smallint	not NULL,
+		team			int		not NULL,
+		retire_to		int		not NULL,
+		friend_a		int		not NULL,
+		friend_b		int		not NULL,
+		friend_c		int		not NULL,
+		friend_d		int		not NULL,
+		friend_e		int		not NULL,
+		dem_yob			int		not NULL,
+		dem_heard		smallint	not NULL,
+		dem_gender		char(1)		not NULL,
+		dem_motivation		smallint	not NULL,
+		dem_country		varchar(8)	not NULL,
+		contact_name		varchar(50)	not NULL,
+		contact_phone		varchar(20)	not NULL,
+		motto			varchar(255)	not NULL
+	)

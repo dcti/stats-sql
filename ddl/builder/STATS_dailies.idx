@@ -1,0 +1,6 @@
+-- $Id: STATS_dailies.idx,v 1.1 2000/03/06 07:38:25 decibel Exp $
+create index date on ${table}(date)
+create index top_oparticipant on ${table}(top_oparticipant)
+create index top_yparticipant on ${table}(top_yparticipant)
+create index top_oteam on ${table}(top_oteam)
+create index top_yteam on ${table}(top_yteam)

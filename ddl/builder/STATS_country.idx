@@ -1,0 +1,3 @@
+	-- $Id: STATS_country.idx,v 1.1 2000/03/06 07:38:25 decibel Exp $
+	create index country on ${table}(country)
+	create index code on ${table}(code)

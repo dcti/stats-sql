@@ -1,0 +1,6 @@
+	-- $Id: STATS_country.def,v 1.1 2000/03/06 07:38:25 decibel Exp $
+	create table ${table}
+	(
+		country			char(64)	not NULL,
+		code			char(2)		not NULL
+	)

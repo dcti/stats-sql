@@ -1,0 +1,2 @@
+	-- $Id: STATS_cpu.idx,v 1.1 2000/03/06 07:38:25 decibel Exp $
+	create unique clustered index cpu on ${table}(cpu)
