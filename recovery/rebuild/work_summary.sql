@@ -1,6 +1,6 @@
 #!/usr/local/bin/sqsh -i
 #
-# $Id: work_summary.sql,v 1.17 2002/10/06 22:59:18 decibel Exp $
+# $Id: work_summary.sql,v 1.18 2002/10/07 06:52:36 decibel Exp $
 #
 # Creates a summary table containing all work for a project
 #
@@ -80,7 +80,4 @@ select ws.ID, ws.TEAM_ID, min(FIRST_DATE) as FIRST_DATE, max(LAST_DATE) as LAST_
 	group by ws.ID, ws.TEAM_ID
 
 drop table #WorkSummary
-go
-
-create index team on WorkSummary_${1}(TEAM_ID)
 go
