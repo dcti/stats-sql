@@ -1,4 +1,4 @@
--- $Id: p_teamjoin.sql,v 1.2 2003/10/22 03:58:52 thejet Exp $
+-- $Id: p_teamjoin.sql,v 1.3 2003/10/22 20:23:24 thejet Exp $
 
 \set ON_ERROR_STOP 1
 
@@ -8,7 +8,7 @@ CREATE OR REPLACE FUNCTION p_teamjoin(integer, integer) RETURNS void
     DECLARE
         today date := CURRENT_DATE;
         yesterday date := CURRENT_DATE -1; 
-        tempvar integer;
+
         participant_id ALIAS FOR $1;
         new_team_id ALIAS FOR $2;
     BEGIN
@@ -22,8 +22,7 @@ CREATE OR REPLACE FUNCTION p_teamjoin(integer, integer) RETURNS void
 	END IF;
 
 	IF new_team_id != 0 THEN
-            SELECT team INTO tempvar FROM stats_team WHERE team = new_team_id;
-            IF NOT FOUND THEN
+            IF NOT EXISTS(SELECT * FROM stats_team WHERE team = new_team_id) THEN
                 RAISE EXCEPTION ''Invalid Team Specified'';
             END IF;
         END IF;
@@ -35,9 +34,8 @@ CREATE OR REPLACE FUNCTION p_teamjoin(integer, integer) RETURNS void
 
 	/* If the person was on the same team yesterday, update that record
 		instead of adding a new one */
-        SELECT team_id INTO tempvar FROM team_joins WHERE id = participant_id
-                AND (last_date IS NULL OR last_date = yesterday) AND team_id = new_team_id;
-        IF FOUND THEN
+        IF EXISTS(SELECT team_id INTO tempvar FROM team_joins WHERE id = participant_id
+                AND (last_date IS NULL OR last_date = yesterday) AND team_id = new_team_id) THEN
             UPDATE team_joins
                 SET last_date = NULL,
                     leave_team_id = 0
