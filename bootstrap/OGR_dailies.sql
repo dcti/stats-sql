@@ -1,9 +1,9 @@
 /*
-# $Id: OGR_dailies.sql,v 1.1 2000/03/21 21:55:28 bwilson Exp $
+# $Id: OGR_dailies.sql,v 1.2 2000/04/11 14:11:12 bwilson Exp $
 #
 # OGR
 #
-# This table holds miscellaneous figures for each day of the contest.
+# This table holds miscellaneous figures for each day of each project.
 #
 # In addition to creating the table, this script will attempt to
 # populate it with data from an existing OGR_Master table.
@@ -16,14 +16,14 @@
 use stats
 go
 
-print 'Creating table OGR_Dailies'
+print 'Creating table Daily_Summary'
 go
-if object_id('OGR_Dailies') is not NULL
+if object_id('Daily_Summary') is not NULL
 begin
-	drop table OGR_Dailies
+	drop table Daily_Summary
 end
 go
-create table OGR_Dailies
+create table Daily_Summary
 (
 	DATE			smalldatetime	not NULL,
 	PROJECT_ID		tinyint		not NULL,
@@ -44,7 +44,7 @@ go
 print 'Population routine'
 go
 insert into
-  OGR_Dailies (date, PROJECT_ID, WORK_UNITS, PARTICIPANTS,
+  Daily_Summary (date, PROJECT_ID, WORK_UNITS, PARTICIPANTS,
                  TOP_oparticipant, TOP_OPWORK,
                  TOP_YPARTICIPANT, TOP_YPWORK,
                  teams,
@@ -63,7 +63,7 @@ insert into
     0 as TOP_OTEAM,
     0 as TOP_OTWORK,
     0 as TOP_yteam,
-    0 as TOP_YTWORK
+    0 as TOP_YTEAMWORK
   from OGR_Master
   group by date, PROJECT_ID
   order by date, PROJECT_ID
@@ -80,17 +80,17 @@ select date, PROJECT_ID, count(team) as teamcount
   group by date, PROJECT_ID
 go
 
-update OGR_Dailies
+update Daily_Summary
   set teams = teamcount
-  from OGR_Dailies, #teamsums
-  where #teamsums.date = OGR_Dailies.date
-  	and #teamsums.PROJECT_ID = OGR_Dailies.PROJECT_ID
+  from Daily_Summary, #teamsums
+  where #teamsums.date = Daily_Summary.date
+  	and #teamsums.PROJECT_ID = Daily_Summary.PROJECT_ID
 go
 
-alter table OGR_Dailies
-	add constraint pk_OGR_Dailies primary key clustered (date, PROJECT_ID)
+alter table Daily_Summary
+	add constraint pk_Daily_Summary primary key clustered (date, PROJECT_ID)
 go
-grant insert on OGR_Dailies to statproc
-grant select on OGR_Dailies to public
+grant insert on Daily_Summary to statproc
+grant select on Daily_Summary to public
 go
 
