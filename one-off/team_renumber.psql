@@ -1,38 +1,24 @@
--- $Id: team_renumber.psql,v 1.1 2003/11/18 05:09:42 decibel Exp $
+-- $Id: team_renumber.psql,v 1.2 2003/11/19 14:29:02 decibel Exp $
 
 BEGIN TRANSACTION;
-ALTER TABLE team_joins DROP CONSTRAINT fk_team_joins_teamid;
-ALTER TABLE daily_summary DROP CONSTRAINT fk_daily_summary__top_oteam;
-ALTER TABLE daily_summary DROP CONSTRAINT fk_daily_summary__top_yteam;
+SELECT * INTO TEMP team
+    FROM temp_new_team_id
+    ORDER BY new_id
+    LIMIT 10
+;
+
+DELETE FROM temp_new_team_id
+    WHERE old_id in (SELECT old_id FROM team)
+;
+
 UPDATE stats_team
     SET team = n.new_id
-    FROM temp_new_team_id n
-    WHERE stats_team.team = n.old_id
+    FROM team n
+    WHERE stats_team.team in n.old_id
 ;
 
-UPDATE team_joins
-    SET team_id = n.new_id
-    FROM temp_new_team_id n
-    WHERE team_joins.team_id = n.old_id
+INSERT INTO new_team_id(old_id, new_id)
+    SELECT old_id, new_id
+        FROM team
 ;
-ALTER TABLE team_joins ADD FOREIGN KEY (team_id) REFERENCES stats_team(team);
-
-UPDATE daily_summary
-    SET top_oteam = n.new_id
-    FROM temp_new_team_id n
-    WHERE daily_summary.top_oteam = n.old_id
-;
-UPDATE daily_summary
-    SET top_yteam = n.new_id
-    FROM temp_new_team_id n
-    WHERE daily_summary.top_yteam = n.old_id
-;
-ALTER TABLE daily_summary ADD constraint fk_daily_summary__top_oteam FOREIGN KEY (top_oteam) REFERENCES stats_team(team);
-ALTER TABLE daily_summary ADD constraint fk_daily_summary__top_yteam FOREIGN KEY (top_yteam) REFERENCES stats_team(team);
-    
-UPDATE email_contrib
-    SET team_id = n.new_id
-    FROM temp_new_team_id n
-    WHERE email_contrib.team_id = n.old_id
-;
-
+COMMIT;
