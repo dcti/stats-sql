@@ -1,4 +1,4 @@
--- $Id: index.1,v 1.1 2000/02/20 19:05:49 decibel Exp $
+-- $Id: index.1,v 1.2 2000/02/20 20:09:46 decibel Exp $
 
 \set table=@TABLENAME@
 \set database=@DATABASENAME@
@@ -17,7 +17,7 @@ if NOT exists (select * from #abort)
 begin
 	if object_id('$table') is NULL
 	begin
-		print '$table doesn't exist!'
+		print "table '%1!' doesn't exist!", $table 
 		insert #abort select 1
 	end
 end
@@ -25,3 +25,4 @@ go
 
 if NOT exists (select * from #abort)
 begin
+
