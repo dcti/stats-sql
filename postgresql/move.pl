@@ -3,12 +3,14 @@
 use strict;
 
 use DBI;
-use moveconf
+use moveconf;
 
 # This tels DBD::Sybase to connect to blower
 $ENV{DSQUERY} = 'BLOWER';
 
+print "Connect to sybase...\n";
 my $syb = DBI->connect("DBI:Sybase:dbname=$ARGV[0]", $moveconf::syb_user, $moveconf::syb_password) or die;
+print "Connect to postgresql...\n";
 my $pgsql = DBI->connect("DBI:Pg:dbname=$ARGV[0]", $moveconf::pg_user) or die;
 
 my $s = $syb->prepare("select * from $ARGV[1]");
