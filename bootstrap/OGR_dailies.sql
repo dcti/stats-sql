@@ -1,5 +1,5 @@
 /*
-# $Id: OGR_dailies.sql,v 1.3 2000/04/20 13:14:01 bwilson Exp $
+# $Id: OGR_dailies.sql,v 1.4 2000/06/04 21:55:14 decibel Exp $
 #
 # This table holds summary statistics for each day of each project.
 #
@@ -46,7 +46,7 @@ insert Daily_Summary (DATE, PROJECT_ID, WORK_UNITS,
 		TEAMS, TOP_OTEAM, TOP_OTWORK, TOP_YTEAM, TOP_YTWORK)
 	select DATE, PROJECT_ID, sum(WORK_UNITS), 
 		count(distinct ID), 0, 0, 0, 0,
-  		0, 0, 0 ,0, 0)
+  		0, 0, 0 ,0, 0
 	from Email_Contrib
 	group by DATE, PROJECT_ID
 	order by DATE, PROJECT_ID
