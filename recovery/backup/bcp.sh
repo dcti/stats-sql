@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Id: bcp.sh,v 1.4 2000/11/09 10:17:28 decibel Exp $
+# $Id: bcp.sh,v 1.5 2000/11/09 10:18:42 decibel Exp $
 
 table_list='tables.txt'
 savedir='./'
@@ -29,7 +29,7 @@ while [ x"$1" != x ]; do
 	esac
 done
 
-for table in `cat $table_list | grep -v #`
+for table in `cat $table_list | grep -v '#'`
 do
 	echo "Starting backup of $table"
 	echo "getting table info..."
