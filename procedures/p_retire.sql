@@ -1,4 +1,4 @@
--- $Id: p_retire.sql,v 1.3 2003/10/30 16:25:03 decibel Exp $
+-- $Id: p_retire.sql,v 1.4 2003/12/28 18:53:17 decibel Exp $
 
 /*
  Participant Retire
@@ -71,11 +71,13 @@ AS '
             RAISE EXCEPTION ''Cant retire into a retired account.'';
     END IF;
 
-        /** Collapsed this into one SQL statement, rather than two **/
+        // Update both the newly retired participant, and everyone retired to that participant
+        // Only update retire_date for the newly retired participant
         UPDATE stats_participant
             SET retire_to = new_participant_id, 
-                retire_date = CASE WHEN retire_to = 0 THEN CURRENT_DATE ELSE retire_date END
-            WHERE id = participant_id OR retire_to = participant_id;
+                retire_date = CASE WHEN retire_date IS NULL THEN CURRENT_DATE ELSE retire_date END
+            WHERE id = participant_id OR retire_to = participant_id
+        ;
 
     RETURN;
      END;
