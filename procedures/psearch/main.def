@@ -1,4 +1,4 @@
-# $Id: main.def,v 1.1 2000/01/18 07:41:54 decibel Exp $
+# $Id: main.def,v 1.2 2000/01/26 21:24:57 bwilson Exp $
 
 use stats
 go
@@ -13,7 +13,7 @@ begin
 end
 go
 create procedure $procedure
-	@project		varchar(10) = null,	/* Contest to look at */
+	@project		varchar(10) = null,	/* Project to look at */
 	@searchtext		varchar(255) = null,	/* Text to search for */
 	@maxrows		int = 50,		/* Max rows to return */
 	@escapewildcards	bit = 1			/* 1: escape wildcard characters in @searchtext */
@@ -22,31 +22,38 @@ begin
 	set nocount on
 	set rowcount 0
 
-	declare @rows		int,		
-		@maxworkrows	int,		/* Maximum rows for worktable */
+	declare @rows		int,
 		@pattern	varchar(255),	/* Search pattern to use */
 		@procname	varchar(30)	/* Name of the procedure to run */
 
 	/* Error checking */
 
 	/* Make sure all required parameters were specified */
-	if ( (@contest = null) or (@searchtext = null) )
+	if ( (@project is null) or (@searchtext is null) )
 	begin
 		raiserror 99999 "Not enough parameters"
 		print "usage:"
-		print "	$procedure contest, searchtext, maxrows, escapewildcards"
+		print "	$procedure project, searchtext, maxrows, escapewildcards"
 		print "where:"
-		print "	contest is contest to look at"
+		print "	project is project to look at"
 		print " searchtext is the email to search for"
 		print " maxrows is the maximum number of rows to return"
 		print " escapewildcards is set to 1 if you want to escape wildcards in searchtext"
-		print "		(%, -) [default], or 0 if you do not want to escape them"
+		print "		(%, _) [default], or 0 if you do not want to escape them"
+		return -5
+	end
+
+	/* Don't allow searches on less than three characters */
+	if datalength(@searchtext) < 3
+	begin
+		raiserror 99999 "Search text is too short"
+		print "searchtext must be at least three characters"
 		return -5
 	end
 
 	/* Build the procedure name */
-	select @procname = "$procedure_" + @contest
-	
+	select @procname = "$procedure_" + @project
+
 	/* See if the silly procedure exists */
 	if (object_id(@procname) is NULL)
 	begin
@@ -60,8 +67,7 @@ begin
 		id	int
 	)
 
-	select	@rows = 0,
-		@maxworkrows = @maxrows * 0	-- maxworkrows must be 0 when sorting by rank
+	select	@rows = 0
 
 	# See if we should escape the wildcards
 	if @escapewildcards = 1
@@ -76,10 +82,8 @@ begin
 	# Do the search
 	select @pattern = @pattern + '%'
 
-	if charindex('@', @pattern) = 0
+	if charindex('@', @pattern) > 1
 	begin
-		set rowcount @maxworkrows
-
 		insert #psearch (id)
 			select id
 			from STATS_Participant
@@ -87,15 +91,12 @@ begin
 				and listmode < 10
 
 		select @rows = @@rowcount
-
-		set rowcount 0
 	end
+
 	# If we didn't get any rows back (maybe because we didn't even search), search again
 	if @rows = 0
 	begin
 		select @pattern = '%' + @pattern
-
-		set rowcount @maxworkrows
 
 		insert #psearch
 			select id
@@ -104,11 +105,9 @@ begin
 				and listmode < 10
 
 		select @rows = @@rowcount
-
-		set rowcount 0
 	end
 
-	# Actually execute the procedure	
+	# Actually execute the procedure
 	set rowcount @maxrows
 	set nocount off
 	exec @procname

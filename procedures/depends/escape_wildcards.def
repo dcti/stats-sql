@@ -17,12 +17,12 @@ begin
 	set nocount on
 	set rowcount 0
 
-	declare 
-		@pos int,
-		@nextchar varchar(5)
+	declare	@pos int,
+		@nextchar varchar(5),
+		@out varchar(255)
 
 	select @pos = 1,
-		@textout = NULL
+		@out = NULL
 
 	while @pos <= datalength(@textin)
 	begin
@@ -39,14 +39,17 @@ begin
 
 		if @pos = 1
 		begin
-			select @textout = @nextchar
+			select @out = @nextchar
 		end
 		else
 		begin
-			select @textout = @textout + @nextchar
+			select @out = @out + @nextchar
 		end
 		select @pos = @pos + 1
 	end
+
+	select @textout = @out
+
         return
 end
 go

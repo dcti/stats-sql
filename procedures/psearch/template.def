@@ -13,6 +13,7 @@ go
 \echo "Creating procedure ${procedure}"
 
 create procedure $procedure
+	with recompile
 as
 begin
 	-- NOTE!!!!
@@ -23,11 +24,10 @@ begin
 			convert(varchar, r.last, 100) as 'last', r.blocks, r.days_working, r.overall_rate,
 			r.rank, r.change
                 from STATS_Participant p, statproc.${1}_CACHE_em_RANK r, #psearch ps
-                where
-			p.listmode < 10
-			and p.id = r.id
+                where p.id = r.id
                 	and p.id = ps.id
                 	and r.id = ps.id
+                	and p.listmode < 10
 		order by r.rank, p.email
         return
 end
