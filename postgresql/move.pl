@@ -9,7 +9,7 @@ use moveconf
 $ENV{DSQUERY} = 'BLOWER';
 
 my $syb = DBI->connect("DBI:Sybase:dbname=$ARGV[0]", $moveconf::syb_user, $moveconf::syb_password) or die;
-my $pgsql = DBI->connect("DBI:Pg:dbname=$ARGV[0]") or die;
+my $pgsql = DBI->connect("DBI:Pg:dbname=$ARGV[0]", $moveconf::pg_user) or die;
 
 my $s = $syb->prepare("select * from $ARGV[1]");
 $s->execute;
