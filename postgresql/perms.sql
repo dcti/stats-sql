@@ -92,3 +92,4 @@
  grant Select on STATS_Participant_Blocked to public;
  grant Insert on STATS_Participant_Blocked to group processing;
  grant Delete on STATS_Participant_Blocked to group processing;
+ grant select on stats_participant_listmode to public;
