@@ -249,7 +249,7 @@ BEGIN
                                             , hits, min_hits, max_hits
                                         )
                     SELECT b.bucket_id, l.page_id, l.project_id, other
-                                            , count(*), count(*), count(*)
+                                            , sum(hits), min(hits), max(hits)
                         FROM rrd.bucket b
                             , page_log.v_rrd l
 
