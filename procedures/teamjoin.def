@@ -1,4 +1,4 @@
--- $Id: teamjoin.def,v 1.6 2000/08/22 11:17:39 decibel Exp $
+-- $Id: teamjoin.def,v 1.7 2000/08/23 21:49:08 decibel Exp $
 
 \set procedure=p_teamjoin
 
@@ -57,7 +57,7 @@ as
 	select @yesterday = dateadd(day, -1, @today)
 
 	/* If the participant already has a record for today, nuke it */
-	delete jcn_Team_Joins2
+	delete Team_Joins
 	where ID = @id
 		and JOIN_DATE = @today
 
@@ -65,12 +65,12 @@ as
 		instead of adding a new one */
 	if @team = (
 		select TEAM_ID
-		from jcn_team_joins2
+		from Team_Joins
 		where ID = @id
 			and ( LAST_DATE = null or LAST_DATE = @yesterday )
 	)
 	begin
-		update jcn_team_joins2
+		update Team_Joins
 			set LAST_DATE = null,
 				LEAVE_TEAM_ID = 0
 		where ID = @id
@@ -79,7 +79,7 @@ as
 	else
 	begin
 		/* Update the entry for the previous team, if there is one */
-		update jcn_Team_Joins2
+		update Team_Joins
 			set LAST_DATE = @yesterday,
 				LEAVE_TEAM_ID = @team
 		where ID = @id
@@ -90,7 +90,7 @@ as
 		/* Insert a new record, unless we're joining 'team 0' */
 		if @team != 0
 		begin
-			insert jcn_Team_Joins2 (ID, TEAM_ID, JOIN_DATE)
+			insert Team_Joins (ID, TEAM_ID, JOIN_DATE)
 			values (@id, @team, @today )
 		end
 	end
