@@ -1,6 +1,6 @@
 #!/usr/bin/sqsh -i
 #
-# $Id: team_rank.sql,v 1.3 2000/10/29 06:27:58 decibel Exp $
+# $Id: team_rank.sql,v 1.4 2000/10/30 13:46:21 decibel Exp $
 #
 # Repopulates Team_Members for a project.
 # Notes:
@@ -17,6 +17,8 @@ print "Deleting old data"
 delete Team_Rank
 where PROJECT_ID = ${1}
 
+print ""
+print ""
 print "Inserting new data"
 declare @stats_date smalldatetime
 select @stats_date = LAST_STATS_DATE
@@ -36,6 +38,8 @@ insert into Team_Rank (PROJECT_ID, TEAM_ID, FIRST_DATE, LAST_DATE, WORK_TODAY, W
 	where tm.PROJECT_ID = ${1}
 	group by TEAM_ID
 
+print ""
+print ""
 print "Counting current team membership"
 select TEAM_ID, count(*) as MEMBERS
 	into #Team_Members_Current
@@ -44,6 +48,8 @@ select TEAM_ID, count(*) as MEMBERS
 		and isnull(LAST_DATE, @stats_date) >= @stats_date
 	group by TEAM_ID
 
+print ""
+print ""
 print "Updating MEMBERS_CURRENT"
 update Team_Rank
 	set MEMBERS_CURRENT = MEMBERS
