@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: doall,v 1.8 2003/04/08 22:40:38 decibel Exp $
+# $Id: doall,v 1.9 2003/04/14 19:28:23 decibel Exp $
 
 cat ~/blower/Log_Info.bcp |sed -e 's/:000//'>~/blower/Log_Info.bcp.clean||exit 1
-sudo -u pgsql ./doall2
+sudo -u pgsql ./doall2 | tee doall.log
