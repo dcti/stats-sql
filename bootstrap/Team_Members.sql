@@ -5,12 +5,17 @@ drop table Team_Members
 go
 create table Team_Members
 (
-	PROJECT_ID	tinyint,
-	ID		int not NULL,
-	TEAM_ID		int not NULL,
-	FIRST_DATE	smalldatetime,
-	LAST_DATE	smalldatetime,
-	WORK_UNITS	numeric (20,0)
+	PROJECT_ID		tinyint,
+	ID			int		not NULL,
+	TEAM_ID			int		not NULL,
+	FIRST_DATE		smalldatetime,
+	LAST_DATE		smalldatetime,
+	WORK_TODAY		numeric (20,0),
+	WORK_TOTAL		numeric (20,0),
+	DAY_RANK		int		not NULL,
+	DAY_RANK_PREVIOUS	int		not NULL,
+	OVERALL_RANK		int		not NULL,
+	OVERALL_RANK_PREVIOUS	int		not NULL
 )
 go
 
@@ -36,13 +41,15 @@ update #RANKa
 print ":: Populating Team_Members table"
 go
 insert into Team_Members
-  (PROJECT_ID, ID, TEAM_ID, FIRST_DATE, LAST_DATE, WORK_UNITS)
-select PROJECT_ID, ID, TEAM_ID, min(FIRST_DATE), max(LAST_DATE), sum(WORK_UNITS)
+  (PROJECT_ID, ID, TEAM_ID, FIRST_DATE, LAST_DATE, WORK_TODAY, WORK_TOTAL, DAY_RANK, DAY_RANK_PREVIOUS,
+  	OVERALL_RANK, OVERALL_RANK_PREVIOUS)
+select PROJECT_ID, ID, TEAM_ID, min(FIRST_DATE), max(LAST_DATE), 0, sum(WORK_UNITS), 1000000, 1000000,
+	1000000, 1000000
 from #RANKa
 group by PROJECT_ID, ID, TEAM_ID
 go
 
-create index iMain on Team_Members(TEAM_ID, WORK_UNITS)
+create index iMain on Team_Members(TEAM_ID, ID)
 go
 
 grant select on Team_Members to public
