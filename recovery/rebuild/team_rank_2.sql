@@ -1,6 +1,6 @@
 #!/usr/local/bin/sqsh -i
 #
-# $Id: team_rank_2.sql,v 1.1 2002/10/23 02:52:45 decibel Exp $
+# $Id: team_rank_2.sql,v 1.2 2002/10/23 03:03:26 decibel Exp $
 #
 # Repopulates Team_Members for a project.
 #
@@ -19,12 +19,17 @@ select PROJECT_ID, TEAM_ID, min(FIRST_DATE) as FIRST_DATE, max(LAST_DATE) as LAS
 	into #TeamSummary
 	from Team_Members tm
 	where PROJECT_ID = ${1}
-	group by TEAM_ID
+	group by PROJECT_ID, TEAM_ID
 go
 
 print "Counting current team membership"   
 go
-select tm.TEAM_ID, count(*) as MEMBERS   
+
+declare @stats_date smalldatetime   
+select @stats_date = max(LAST_DATE)   
+	from Team_Members   
+	where PROJECT_ID = ${1} 
+select tm.PROJECT_ID, tm.TEAM_ID, count(*) as MEMBERS   
 	into #Team_Members_Current   
 	from Team_Joins tj, Team_Members tm   
 	where tj.JOIN_DATE <= @stats_date   
@@ -32,7 +37,7 @@ select tm.TEAM_ID, count(*) as MEMBERS
 		and tj.ID = tm.ID   
 		and tj.TEAM_ID = tm.TEAM_ID   
 		and tm.PROJECT_ID = ${1}   
-	group by tm.TEAM_ID   
+	group by tm.PROJECT_ID, tm.TEAM_ID   
 go 
 
 
@@ -53,5 +58,4 @@ update Team_Rank set DAY_RANK_PREVIOUS = DAY_RANK,
 		and Team_Rank.TEAM_ID = s.TEAM_ID
 		and Team_Rank.TEAM_ID = tmc.TEAM_ID
 		and s.TEAM_ID = tmc.TEAM_ID
-
 go
