@@ -42,13 +42,6 @@
  grant Delete on Email_Contrib_Today to group wheel;
  grant Update on Email_Contrib_Today to group processing;
  grant Update on Email_Contrib_Today to group wheel;
- grant Select on Email_Rank to public;
- grant Insert on Email_Rank to group processing;
- grant Insert on Email_Rank to group wheel;
- grant Delete on Email_Rank to group processing;
- grant Delete on Email_Rank to group wheel;
- grant Update on Email_Rank to group processing;
- grant Update on Email_Rank to group wheel;
  grant Select on Platform_Contrib to public;
  grant Insert on Platform_Contrib to group processing;
  grant Select on Platform_Contrib_Today to public;

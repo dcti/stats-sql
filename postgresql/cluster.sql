@@ -1,4 +1,4 @@
--- $Id: cluster.sql,v 1.4 2003/04/14 16:01:33 decibel Exp $
+-- $Id: cluster.sql,v 1.5 2003/04/14 20:20:26 decibel Exp $
 
 --\set ON_ERROR_STOP 1
 
@@ -7,7 +7,6 @@ CLUSTER csc_platform_pkey ON CSC_platform;
 CLUSTER Daily_Summary_pkey ON Daily_Summary;
 CLUSTER Project_Last_Date_pkey ON Email_Contrib_Last_Update;
 CLUSTER Email_Contrib_Today_pkey ON Email_Contrib_Today;
-CLUSTER Email_Rank_pkey ON Email_Rank;
 CLUSTER Project_Last_Date_pkey ON Email_Rank_Last_Update;
 CLUSTER project_logtime ON Log_Info;
 CLUSTER Platform_Contrib_pkey ON Platform_Contrib;
