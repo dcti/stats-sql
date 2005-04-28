@@ -307,8 +307,10 @@ GRANT INSERT,UPDATE,DELETE ON TABLE platform_summary TO GROUP processing;
 --
 
 CREATE TABLE project_status (
-    status character(1) NOT NULL,
-    description character varying(115) NOT NULL
+    created timestamptz NOT NULL
+    , updated timestamptz NOT NULL
+    , status character(1) NOT NULL
+    , description character varying(115) NOT NULL
 ) WITHOUT OIDS;
 
 
@@ -373,6 +375,8 @@ CREATE TABLE projects (
     sponsor_url character varying(255) NOT NULL,
     sponsor_name character varying(255) NOT NULL,
     logo_url character varying(255) NOT NULL
+    , created timestamptz NOT NULL
+    , updated timestamptz NOT NULL
 ) WITHOUT OIDS;
 
 
@@ -472,8 +476,10 @@ GRANT INSERT,DELETE ON TABLE stats_team_blocked TO GROUP processing;
 --
 
 CREATE TABLE stats_country (
-    code character(2) NOT NULL,
-    country character varying(64) NOT NULL
+    created timestamptz NOT NULL
+    , updated timestamptz NOT NULL
+    , code character(2) NOT NULL
+    , country character varying(64) NOT NULL
 ) WITHOUT OIDS;
 
 
@@ -492,10 +498,12 @@ GRANT SELECT ON TABLE stats_country TO PUBLIC;
 --
 
 CREATE TABLE stats_cpu (
-    cpu integer NOT NULL,
-    name character varying(32) NOT NULL,
-    image character varying(64),
-    category character varying(32)
+    cpu integer NOT NULL
+    , created timestamptz NOT NULL
+    , updated timestamptz NOT NULL
+    , name character varying(32) NOT NULL
+    , image character varying(64)
+    , category character varying(32)
 ) WITHOUT OIDS;
 
 
@@ -514,8 +522,10 @@ GRANT SELECT ON TABLE stats_cpu TO PUBLIC;
 --
 
 CREATE TABLE stats_dem_heard (
-    heard smallint NOT NULL,
-    description character varying(100) NOT NULL
+    heard smallint NOT NULL
+    , created timestamptz NOT NULL
+    , updated timestamptz NOT NULL
+    , description character varying(100) NOT NULL
 ) WITHOUT OIDS;
 
 
@@ -534,8 +544,10 @@ GRANT SELECT ON TABLE stats_dem_heard TO GROUP backup;
 --
 
 CREATE TABLE stats_dem_motivation (
-    motivation smallint NOT NULL,
-    description character varying(100) NOT NULL
+    motivation smallint NOT NULL
+    , created timestamptz NOT NULL
+    , updated timestamptz NOT NULL
+    , description character varying(100) NOT NULL
 ) WITHOUT OIDS;
 
 
@@ -554,10 +566,12 @@ GRANT SELECT ON TABLE stats_dem_motivation TO GROUP backup;
 --
 
 CREATE TABLE stats_nonprofit (
-    nonprofit integer NOT NULL,
-    name character varying(64) NOT NULL,
-    url character varying(64) NOT NULL,
-    comments text NOT NULL
+    nonprofit integer NOT NULL
+    , created timestamptz NOT NULL
+    , updated timestamptz NOT NULL
+    , name character varying(64) NOT NULL
+    , url character varying(64) NOT NULL
+    , comments text NOT NULL
 ) WITHOUT OIDS;
 
 
@@ -576,10 +590,12 @@ GRANT SELECT ON TABLE stats_nonprofit TO PUBLIC;
 --
 
 CREATE TABLE stats_os (
-    os integer NOT NULL,
-    name character varying(32) NOT NULL,
-    image character varying(64),
-    category character varying(32)
+    os integer NOT NULL
+    , created timestamptz NOT NULL
+    , updated timestamptz NOT NULL
+    , name character varying(32) NOT NULL
+    , image character varying(64)
+    , category character varying(32)
 ) WITHOUT OIDS;
 
 
@@ -1914,3 +1930,41 @@ ALTER TABLE ONLY team_joins
     ADD CONSTRAINT fk_team_joins_teamid FOREIGN KEY (team_id) REFERENCES stats_team(team) ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 
+
+
+
+CREATE TABLE version (
+    component   text    NOT NULL CONSTRAINT version__component PRIMARY KEY
+    , version   text    NOT NULL
+) WITHOUT OIDs;
+INSERT INTO version VALUES('schema','2.1');
+
+
+CREATE FUNCTION T_created_updated() RETURNS TRIGGER AS '
+BEGIN
+   NEW.updated := CURRENT_TIMESTAMP;
+   IF TG_OP = ''INSERT'' THEN
+      NEW.created := CURRENT_TIMESTAMP;
+   ELSE
+      NEW.created := OLD.created;
+   END IF;
+   RETURN NEW;
+END;
+' LANGUAGE plpgsql;
+
+CREATE TRIGGER created_insert BEFORE INSERT OR UPDATE ON
+		projects FOR EACH ROW EXECUTE PROCEDURE public.T_created_updated();
+CREATE TRIGGER created_insert BEFORE INSERT OR UPDATE ON
+		project_status FOR EACH ROW EXECUTE PROCEDURE public.T_created_updated();
+CREATE TRIGGER created_insert BEFORE INSERT OR UPDATE ON
+		stats_country FOR EACH ROW EXECUTE PROCEDURE public.T_created_updated();
+CREATE TRIGGER created_insert BEFORE INSERT OR UPDATE ON
+		stats_cpu FOR EACH ROW EXECUTE PROCEDURE public.T_created_updated();
+CREATE TRIGGER created_insert BEFORE INSERT OR UPDATE ON
+		stats_dem_heard FOR EACH ROW EXECUTE PROCEDURE public.T_created_updated();
+CREATE TRIGGER created_insert BEFORE INSERT OR UPDATE ON
+		stats_dem_motivation FOR EACH ROW EXECUTE PROCEDURE public.T_created_updated();
+CREATE TRIGGER created_insert BEFORE INSERT OR UPDATE ON
+		stats_nonprofit FOR EACH ROW EXECUTE PROCEDURE public.T_created_updated();
+CREATE TRIGGER created_insert BEFORE INSERT OR UPDATE ON
+		stats_os FOR EACH ROW EXECUTE PROCEDURE public.T_created_updated();
