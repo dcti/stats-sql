@@ -1,4 +1,4 @@
-$Id: README,v 1.3 2005/04/29 20:29:22 decibel Exp $
+$Id: README,v 1.4 2005/04/29 20:30:35 decibel Exp $
 
 The schema script is expecting the pgsql account to exist in the database, so
 if you use the -O option on createdb you will need to either create that account
@@ -8,4 +8,5 @@ If you're not using an account called 'statproc' to do the statsproc stuff, you
 will need to change the owner of the import_bcp table. The best way to do this is
 via psql:
 
-ALTER GROUP processing ADD USER username;
+ALTER GROUP processing ADD USER otheruser;
+ALTER TABLE import_bcp OWNER TO otheruser;
