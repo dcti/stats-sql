@@ -34,17 +34,17 @@ CREATE TABLE daily_summary (
     project_id integer NOT NULL,
     participants integer NOT NULL,
     participants_new integer NOT NULL,
-    top_oparticipant integer NOT NULL,
-    top_yparticipant integer NOT NULL,
+    top_oparticipant integer ,
+    top_yparticipant integer ,
     teams integer NOT NULL,
     teams_new integer NOT NULL,
-    top_oteam integer NOT NULL,
-    top_yteam integer NOT NULL,
+    top_oteam integer ,
+    top_yteam integer ,
     work_units bigint NOT NULL,
-    top_opwork bigint NOT NULL,
-    top_otwork bigint NOT NULL,
-    top_ypwork bigint NOT NULL,
-    top_ytwork bigint NOT NULL
+    top_opwork bigint ,
+    top_otwork bigint ,
+    top_ypwork bigint ,
+    top_ytwork bigint 
 ) WITHOUT OIDS;
 
 
@@ -67,7 +67,7 @@ CREATE TABLE email_contrib (
     project_id integer NOT NULL,
     id integer NOT NULL,
     date date NOT NULL,
-    team_id integer NOT NULL,
+    team_id integer,
     work_units bigint NOT NULL
 ) WITHOUT OIDS;
 
@@ -111,7 +111,7 @@ GRANT INSERT,UPDATE ON TABLE email_contrib_last_update TO GROUP processing;
 CREATE TABLE email_contrib_today (
     project_id integer NOT NULL,
     id integer NOT NULL,
-    team_id integer NOT NULL,
+    team_id integer,
     credit_id integer NOT NULL,
     work_units bigint NOT NULL
 ) WITHOUT OIDS;
@@ -396,6 +396,7 @@ GRANT SELECT ON TABLE projects TO PUBLIC;
 
 CREATE TABLE stats_participant_blocked (
     id integer NOT NULL
+    , block_date date NOT NULL
 ) WITHOUT OIDS;
 
 
@@ -457,6 +458,7 @@ GRANT SELECT ON TABLE stats_participant_listmode TO PUBLIC;
 
 CREATE TABLE stats_team_blocked (
     team_id integer NOT NULL
+    , block_date date NOT NULL
 ) WITHOUT OIDS;
 
 
