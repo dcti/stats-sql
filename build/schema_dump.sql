@@ -1198,7 +1198,7 @@ CREATE TABLE stats_participant (
     id integer NOT NULL,
     listmode smallint DEFAULT 0 NOT NULL,
     nonprofit smallint DEFAULT 0 NOT NULL,
-    retire_to integer DEFAULT 0 NOT NULL,
+    retire_to integer,
     retire_date date,
     created timestamp without time zone,
     dem_yob integer DEFAULT 0 NOT NULL,
