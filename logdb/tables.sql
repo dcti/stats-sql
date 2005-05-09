@@ -1,4 +1,4 @@
--- $Id: tables.sql,v 1.6 2005/05/09 22:59:17 decibel Exp $
+-- $Id: tables.sql,v 1.7 2005/05/09 23:03:29 decibel Exp $
 
 CREATE TABLE email (
 	email_id	serial 		PRIMARY KEY
@@ -77,9 +77,9 @@ CREATE TABLE log_24 (
 	, ip_address		inet NOT NULL
 	, email_id		integer NOT NULL CONSTRAINT log_24__email_ri REFERENCES email
 	, platform_id		integer NOT NULL CONSTRAINT log_24__platform_ri REFERENCES platform
-	, workunit_tid		text NOT NULL
-	, nodecount		bigint NOT NULL
 	, status		smallint
+	, nodecount		bigint NOT NULL
+	, workunit_tid		text NOT NULL
 ) WITHOUT OIDs;
 CREATE INDEX log_24__email_id ON log_24( email_id );
 
