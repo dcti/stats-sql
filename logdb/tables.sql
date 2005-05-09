@@ -1,4 +1,4 @@
--- $Id: tables.sql,v 1.1 2005/05/09 05:56:06 decibel Exp $
+-- $Id: tables.sql,v 1.2 2005/05/09 05:57:10 decibel Exp $
 
 CREATE TABLE email (
 	email_id	serial 		PRIMARY KEY
@@ -31,7 +31,7 @@ CREATE TABLE log_24 (
 	, ip_address		inet NOT NULL
 	, email_id		integer NOT NULL REFERENCES email
 	, platform_id		integer NOT NULL REFERENCES platform
-	, ogr_stub		integer NOT NULL
+	, ogr_stub		text NOT NULL
 	, nodecount		bigint NOT NULL
 	, status		smallint
 ) WITHOUT OIDs;
@@ -41,7 +41,7 @@ CREATE TABLE log_25 (
 	, ip_address		inet NOT NULL
 	, email_id		integer NOT NULL REFERENCES email
 	, platform_id		integer NOT NULL REFERENCES platform
-	, ogr_stub		integer NOT NULL
+	, ogr_stub		text NOT NULL
 	, nodecount		bigint NOT NULL
 	, status		smallint
 ) WITHOUT OIDs;
