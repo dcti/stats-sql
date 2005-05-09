@@ -1,4 +1,4 @@
--- $Id: tables.sql,v 1.5 2005/05/09 22:49:28 decibel Exp $
+-- $Id: tables.sql,v 1.6 2005/05/09 22:59:17 decibel Exp $
 
 CREATE TABLE email (
 	email_id	serial 		PRIMARY KEY
@@ -20,17 +20,17 @@ CREATE TABLE platform (
 CREATE TABLE import_r72 (
 	return_time	timestamp NOT NULL
 	, ip_address	inet NOT NULL
-	, email		varchar(64) NOT NULL
 	, os_type	integer NOT NULL
 	, cpu_type	integer NOT NULL
 	, version	integer NOT NULL
-	, project_id	smallint NOT NULL
-	, workunit_tid	varchar(20) NOT NULL
-	, iter		smallint NOT NULL
 	, core		integer NOT NULL
-	, cmc_last	varchar(20)
 	, cmc_count	integer
+	, project_id	smallint NOT NULL
+	, iter		smallint NOT NULL
 	, cmc_ok	smallint
+	, workunit_tid	varchar(20) NOT NULL
+	, email		varchar(64) NOT NULL
+	, cmc_last	varchar(20)
 ) WITHOUT OIDs;
 
 CREATE TABLE log_8 (
@@ -61,15 +61,15 @@ CREATE INDEX log_r72_other__email_id ON log_r72_other( project_id, email_id );
 CREATE TABLE import_ogr (
 	return_time	timestamp NOT NULL
 	, ip_address	inet NOT NULL
-	, email		varchar(64) NOT NULL
 	, os_type	integer NOT NULL
 	, cpu_type	integer NOT NULL
 	, version	integer NOT NULL
+	, status	smallint
 	, project_id	smallint NOT NULL
+	, nodecount	bigint NOT NULL
+	, email		varchar(64) NOT NULL
 	-- TODO create a custom ogr node datatype
 	, stub_marks	varchar(22) NOT NULL
-	, nodecount	bigint NOT NULL
-	, status	smallint
 ) WITHOUT OIDs;
 
 CREATE TABLE log_24 (
