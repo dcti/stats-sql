@@ -1493,86 +1493,46 @@ CREATE INDEX team_joins__overall_rank ON team_rank USING btree (overall_rank);
 CREATE UNIQUE INDEX stats_team__team_listmode ON stats_team USING btree (team, listmode);
 
 
---
--- TOC entry 179 (OID 702324164)
--- Name: stats_participant__id_listmode; Type: INDEX; Schema: public; Owner: pgsql
---
-
 CREATE UNIQUE INDEX stats_participant__id_listmode ON stats_participant USING btree (id, listmode);
-
-
---
--- TOC entry 178 (OID 702324165)
--- Name: stats_participant__emailid; Type: INDEX; Schema: public; Owner: pgsql
---
-
 CREATE UNIQUE INDEX stats_participant__emailid ON stats_participant USING btree (email, id);
-
-
---
--- TOC entry 183 (OID 702324166)
--- Name: stats_participant__participantretire_id; Type: INDEX; Schema: public; Owner: pgsql
---
-
 CREATE UNIQUE INDEX stats_participant__participantretire_id ON stats_participant USING btree (retire_to, id);
-
-
---
--- TOC entry 180 (OID 702324167)
--- Name: stats_participant__id_retire_listmode; Type: INDEX; Schema: public; Owner: pgsql
---
-
 CREATE UNIQUE INDEX stats_participant__id_retire_listmode ON stats_participant USING btree (id, retire_to, listmode);
-
-
---
--- TOC entry 182 (OID 702324168)
--- Name: stats_participant__listmode; Type: INDEX; Schema: public; Owner: pgsql
---
-
 CREATE INDEX stats_participant__listmode ON stats_participant USING btree (listmode);
-
-
---
--- TOC entry 175 (OID 702324169)
--- Name: stats_participant__dem_heard; Type: INDEX; Schema: public; Owner: pgsql
---
-
 CREATE INDEX stats_participant__dem_heard ON stats_participant USING btree (dem_heard);
-
-
---
--- TOC entry 176 (OID 702324170)
--- Name: stats_participant__dem_motivation; Type: INDEX; Schema: public; Owner: pgsql
---
-
 CREATE INDEX stats_participant__dem_motivation ON stats_participant USING btree (dem_motivation);
-
-
---
--- TOC entry 174 (OID 702324171)
--- Name: stats_participant__dem_country; Type: INDEX; Schema: public; Owner: pgsql
---
-
 CREATE INDEX stats_participant__dem_country ON stats_participant USING btree (dem_country);
-
-
---
--- TOC entry 184 (OID 702324172)
--- Name: stats_participant__search; Type: INDEX; Schema: public; Owner: pgsql
---
-
 CREATE INDEX stats_participant__search ON stats_participant USING btree (stats_participant_display_name_l(listmode, id, email, contact_name));
-
-
---
--- TOC entry 181 (OID 702324173)
--- Name: stats_participant__lemail; Type: INDEX; Schema: public; Owner: pgsql
---
-
 CREATE UNIQUE INDEX stats_participant__lemail ON stats_participant USING btree (lower(email));
 
 
+CREATE FUNCTION T_created() RETURNS "trigger"
+    AS '
+BEGIN
+    IF TG_OP = ''INSERT'' THEN
+        NEW.created := now();
+    ELSIF TG_OP = ''UPDATE'' THEN
+        NEW.created := OLD.created;
+    END IF;
+    RETURN NEW;
+END;
+'
+    LANGUAGE plpgsql;
+
+ALTER TABLE stats_participant CLUSTER ON stats_participant__lemail;
+
+ALTER TABLE ONLY stats_participant
+    ADD CONSTRAINT stats_participant_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY stats_participant
+    ADD CONSTRAINT stats_participant__email UNIQUE (email);
+ALTER TABLE ONLY stats_participant
+    ADD CONSTRAINT fk_stats_participant__country FOREIGN KEY (dem_country) REFERENCES stats_country(code);
+ALTER TABLE ONLY stats_participant
+    ADD CONSTRAINT fk_stats_participant__listmode FOREIGN KEY (listmode) REFERENCES stats_participant_listmode(listmode) ON UPDATE CASCADE;
+
+CREATE TRIGGER created
+    BEFORE INSERT OR UPDATE ON stats_participant
+    FOR EACH ROW
+    EXECUTE PROCEDURE T_created();
 --
 -- TOC entry 151 (OID 831861330)
 -- Name: team_joins__team_id; Type: INDEX; Schema: public; Owner: pgsql
