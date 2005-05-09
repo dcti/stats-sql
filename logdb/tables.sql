@@ -1,4 +1,4 @@
--- $Id: tables.sql,v 1.2 2005/05/09 05:57:10 decibel Exp $
+-- $Id: tables.sql,v 1.3 2005/05/09 22:17:43 decibel Exp $
 
 CREATE TABLE email (
 	email_id	serial 		PRIMARY KEY
@@ -13,6 +13,21 @@ CREATE TABLE platform (
 	, UNIQUE (os, cpu, version)
 ) WITHOUT OIDs;
 
+CREATE TABLE import_r72 (
+	return_time	timestamp NOT NULL
+	, ip_address	inet NOT NULL
+	, email		varchar(64) NOT NULL
+	, os_type	integer NOT NULL
+	, cpu_type	integer NOT NULL
+	, version	integer NOT NULL
+	, key_block	varchar(20) NOT NULL
+	, iter		smallint NOT NULL
+	, core		integer NOT NULL
+	, cmc_last	varchar(20)
+	, cmc_count	integer
+	, cmc_ok	smallint
+) WITHOUT OIDs;
+
 CREATE TABLE log_8 (
 	return_time		timestamp NOT NULL
 	, ip_address		inet NOT NULL
@@ -24,6 +39,18 @@ CREATE TABLE log_8 (
 	, core			smallint NOT NULL
 	, key_block		varchar(20) NOT NULL
 	, cmc_last		varchar(20)
+) WITHOUT OIDs;
+
+CREATE TABLE import_ogr (
+	return_time	timestamp NOT NULL
+	, ip_address	inet NOT NULL
+	, email		varchar(64) NOT NULL
+	, os_type	integer NOT NULL
+	, cpu_type	integer NOT NULL
+	, version	integer NOT NULL
+	, stub_marks	varchar(22) NOT NULL
+	, nodecount	bigint NOT NULL
+	, status	smallint
 ) WITHOUT OIDs;
 
 CREATE TABLE log_24 (
@@ -44,33 +71,6 @@ CREATE TABLE log_25 (
 	, ogr_stub		text NOT NULL
 	, nodecount		bigint NOT NULL
 	, status		smallint
-) WITHOUT OIDs;
-
-CREATE TABLE import_r72 (
-	return_time	timestamp NOT NULL
-	, ip_address	inet NOT NULL
-	, email		varchar(64) NOT NULL
-	, os_type	integer NOT NULL
-	, cpu_type	integer NOT NULL
-	, version	integer NOT NULL
-	, key_block	varchar(20) NOT NULL
-	, iter		smallint NOT NULL
-	, core		integer NOT NULL
-	, cmc_last	varchar(20)
-	, cmc_count	integer
-	, cmc_ok	smallint
-) WITHOUT OIDs;
-
-CREATE TABLE import_ogr (
-	return_time	timestamp NOT NULL
-	, ip_address	inet NOT NULL
-	, email		varchar(64) NOT NULL
-	, os_type	integer NOT NULL
-	, cpu_type	integer NOT NULL
-	, version	integer NOT NULL
-	, stub_marks	varchar(22) NOT NULL
-	, nodecount	bigint NOT NULL
-	, status	smallint
 ) WITHOUT OIDs;
 
 -- vi: noexpandtab ts=8 sw=8
