@@ -1,9 +1,11 @@
--- $Id: views.sql,v 1.1 2005/05/09 05:56:06 decibel Exp $
+-- $Id: views.sql,v 1.2 2005/05/09 19:42:27 decibel Exp $
+
+-- Note, we'll need something similar for log_r72, but that can wait for now
 
 CREATE OR REPLACE VIEW log_ogr AS
-    SELECT * FROM log_24
+    SELECT 24::smallint AS project_id, * FROM log_24
     UNION ALL
-    SELECT * FROM log_25
+    SELECT 25::smallint AS project_id, * FROM log_25
 ;
 
 CREATE OR REPLACE log_ogr_insert_24 AS ON INSERT TO log_ogr
