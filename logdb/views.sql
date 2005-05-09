@@ -1,4 +1,4 @@
--- $Id: views.sql,v 1.4 2005/05/09 22:13:53 nerf Exp $
+-- $Id: views.sql,v 1.5 2005/05/09 22:17:35 decibel Exp $
 
 -- Note, we'll need something similar for log_r72, but that can wait for now
 
@@ -8,7 +8,7 @@ CREATE OR REPLACE VIEW log_ogr AS
     SELECT 25::smallint AS project_id, * FROM log_25
 ;
 
-CREATE OR REPLACE RULE log_ogr_insert_null AS ON INSERT TO log_ogr
+CREATE OR REPLACE RULE log_ogr_insert_other AS ON INSERT TO log_ogr
     DO INSTEAD NOTHING
 ;
 
