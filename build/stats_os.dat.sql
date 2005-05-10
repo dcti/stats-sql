@@ -14,52 +14,52 @@ SET search_path = public, pg_catalog;
 -- Name: stats_os; Type: TABLE DATA; Schema: public; Owner: pgsql
 --
 
-COPY stats_os (os, name, image, category) FROM stdin;
-0	Unknown                         	unknown.gif	\N
-1	Win32                           	Win32.gif	\N
-2	DOS                             	DOS.gif	\N
-3	FreeBSD                         	FreeBSD.gif	\N
-4	Linux                           	Linux.gif	\N
-5	BeOS                            	Beos.gif	\N
-19	NeXTSTEP	NextStep.gif	\N
-7	IRIX                            	IRIX.gif	\N
-8	VMS                             	VMS.gif	\N
-10	UnixWare                        	unknown.gif	\N
-11	OS/2                            	OS2.gif	\N
-14	SunOS                           	Solaris.gif	\N
-15	Solaris                         	Solaris.gif	\N
-16	Unused                          	unknown.gif	\N
-17	Unused                          	unknown.gif	\N
-21	QNX                             	unknown.gif	\N
-22	QNX Neutrino                    	unknown.gif	\N
-23	Unused                          	unknown.gif	\N
-24	Unused                          	unknown.gif	\N
-25	AIX                             	AIX.gif	\N
-26	Unused                          	unknown.gif	\N
-29	OpenBSD                         	OpenBSD.gif	\N
-30	NetWare                         	NetWare.gif	\N
-31	MVS                             	unknown.gif	\N
-32	Ultrix                          	unknown.gif	\N
-33	Unused                          	unknown.gif	\N
-35	DGUX                            	unknown.gif	\N
-38	Dynix                           	unknown.gif	\N
-40	Unused                          	unknown.gif	\N
-42	DESCracker                      	unknown.gif	\N
-45	MorphOS	MorphOS.png	\N
-6	Mac OS	MacOS.gif	\N
-43	Mac OS X	MacOS.gif	\N
-18	BSD/OS	BSDi.gif	\N
-34	RISC OS	RiscOS.gif	\N
-28	Amiga OS	Amiga.gif	\N
-20	SCO OpenServer	SCO.gif	\N
-39	OS/390	unknown.gif	\N
-37	Sinix/Reliant Unix	unknown.gif	\N
-9	DEC OSF/1	DECUnix.gif	\N
-12	HP-UX	HPUX.gif	\N
-13	NetBSD                          	NetBSD.gif	\N
-27	Mac OS X	MacOS.gif	\N
-41	Win16                           	Win16.gif	\N
-36	Win32s                          	Win32.gif	\N
+COPY stats_os (os, name, image, category, created, updated) FROM stdin;
+0	Unknown                         	unknown.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+1	Win32                           	Win32.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+2	DOS                             	DOS.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+3	FreeBSD                         	FreeBSD.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+4	Linux                           	Linux.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+5	BeOS                            	Beos.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+19	NeXTSTEP	NextStep.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+7	IRIX                            	IRIX.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+8	VMS                             	VMS.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+10	UnixWare                        	unknown.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+11	OS/2                            	OS2.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+14	SunOS                           	Solaris.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+15	Solaris                         	Solaris.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+16	Unused                          	unknown.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+17	Unused                          	unknown.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+21	QNX                             	unknown.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+22	QNX Neutrino                    	unknown.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+23	Unused                          	unknown.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+24	Unused                          	unknown.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+25	AIX                             	AIX.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+26	Unused                          	unknown.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+29	OpenBSD                         	OpenBSD.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+30	NetWare                         	NetWare.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+31	MVS                             	unknown.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+32	Ultrix                          	unknown.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+33	Unused                          	unknown.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+35	DGUX                            	unknown.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+38	Dynix                           	unknown.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+40	Unused                          	unknown.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+42	DESCracker                      	unknown.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+45	MorphOS	MorphOS.png	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+6	Mac OS	MacOS.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+43	Mac OS X	MacOS.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+18	BSD/OS	BSDi.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+34	RISC OS	RiscOS.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+28	Amiga OS	Amiga.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+20	SCO OpenServer	SCO.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+39	OS/390	unknown.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+37	Sinix/Reliant Unix	unknown.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+9	DEC OSF/1	DECUnix.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+12	HP-UX	HPUX.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+13	NetBSD                          	NetBSD.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+27	Mac OS X	MacOS.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+41	Win16                           	Win16.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
+36	Win32s                          	Win32.gif	\N	2005-04-28 06:28:49.065319+00	2005-04-28 06:28:49.065319+00
 \.
 
 

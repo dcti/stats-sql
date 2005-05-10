@@ -13,3 +13,4 @@ do_dump stats_dem_heard
 do_dump stats_dem_motivation
 do_dump stats_nonprofit
 do_dump stats_os
+do_dump stats_participant_listmode
