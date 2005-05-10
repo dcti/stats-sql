@@ -1827,15 +1827,6 @@ ALTER TABLE ONLY stats_participant
 
 
 --
--- TOC entry 177 (OID 702324176)
--- Name: stats_participant__email; Type: CONSTRAINT; Schema: public; Owner: pgsql
---
-
-ALTER TABLE ONLY stats_participant
-    ADD CONSTRAINT stats_participant__email UNIQUE (email);
-
-
---
 -- TOC entry 207 (OID 702324218)
 -- Name: fk_team_joins__participant_id; Type: CONSTRAINT; Schema: public; Owner: pgsql
 --
