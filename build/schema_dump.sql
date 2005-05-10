@@ -1505,34 +1505,13 @@ CREATE INDEX stats_participant__search ON stats_participant USING btree (stats_p
 CREATE UNIQUE INDEX stats_participant__lemail ON stats_participant USING btree (lower(email));
 
 
-CREATE FUNCTION T_created() RETURNS "trigger"
-    AS '
-BEGIN
-    IF TG_OP = ''INSERT'' THEN
-        NEW.created := now();
-    ELSIF TG_OP = ''UPDATE'' THEN
-        NEW.created := OLD.created;
-    END IF;
-    RETURN NEW;
-END;
-'
-    LANGUAGE plpgsql;
-
 ALTER TABLE stats_participant CLUSTER ON stats_participant__lemail;
 
 ALTER TABLE ONLY stats_participant
     ADD CONSTRAINT stats_participant_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY stats_participant
     ADD CONSTRAINT stats_participant__email UNIQUE (email);
-ALTER TABLE ONLY stats_participant
-    ADD CONSTRAINT fk_stats_participant__country FOREIGN KEY (dem_country) REFERENCES stats_country(code);
-ALTER TABLE ONLY stats_participant
-    ADD CONSTRAINT fk_stats_participant__listmode FOREIGN KEY (listmode) REFERENCES stats_participant_listmode(listmode) ON UPDATE CASCADE;
 
-CREATE TRIGGER created
-    BEFORE INSERT OR UPDATE ON stats_participant
-    FOR EACH ROW
-    EXECUTE PROCEDURE T_created();
 --
 -- TOC entry 151 (OID 831861330)
 -- Name: team_joins__team_id; Type: INDEX; Schema: public; Owner: pgsql
@@ -1857,15 +1836,6 @@ ALTER TABLE ONLY stats_participant
 
 
 --
--- TOC entry 208 (OID 702324178)
--- Name: fk_stats_participant__country; Type: CONSTRAINT; Schema: public; Owner: pgsql
---
-
-ALTER TABLE ONLY stats_participant
-    ADD CONSTRAINT fk_stats_participant__country FOREIGN KEY (dem_country) REFERENCES stats_country(code) ON UPDATE NO ACTION ON DELETE NO ACTION;
-
-
---
 -- TOC entry 207 (OID 702324218)
 -- Name: fk_team_joins__participant_id; Type: CONSTRAINT; Schema: public; Owner: pgsql
 --
@@ -1892,6 +1862,13 @@ ALTER TABLE ONLY team_joins
     ADD CONSTRAINT fk_team_joins_teamid FOREIGN KEY (team_id) REFERENCES stats_team(team) ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 
+ALTER TABLE ONLY stats_participant
+    ADD CONSTRAINT fk_stats_participant__country FOREIGN KEY (dem_country) REFERENCES stats_country(code);
+ALTER TABLE ONLY stats_participant
+    ADD CONSTRAINT fk_stats_participant__listmode FOREIGN KEY (listmode) REFERENCES stats_participant_listmode(listmode) ON UPDATE CASCADE;
+ALTER TABLE ONLY stats_participant
+    ADD CONSTRAINT fk_stats_participant__country FOREIGN KEY (dem_country) REFERENCES stats_country(code) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
 
 
 
@@ -1914,19 +1891,35 @@ BEGIN
 END;
 ' LANGUAGE plpgsql;
 
-CREATE TRIGGER created_insert BEFORE INSERT OR UPDATE ON
+CREATE FUNCTION T_created() RETURNS "trigger"
+    AS '
+BEGIN
+    IF TG_OP = ''INSERT'' THEN
+        NEW.created := now();
+    ELSIF TG_OP = ''UPDATE'' THEN
+        NEW.created := OLD.created;
+    END IF;
+    RETURN NEW;
+END;
+'
+    LANGUAGE plpgsql;
+
+CREATE TRIGGER created BEFORE INSERT OR UPDATE ON
+    stats_participant FOR EACH ROW EXECUTE PROCEDURE T_created();
+
+CREATE TRIGGER created_updated BEFORE INSERT OR UPDATE ON
 		projects FOR EACH ROW EXECUTE PROCEDURE public.T_created_updated();
-CREATE TRIGGER created_insert BEFORE INSERT OR UPDATE ON
+CREATE TRIGGER created_updated BEFORE INSERT OR UPDATE ON
 		project_status FOR EACH ROW EXECUTE PROCEDURE public.T_created_updated();
-CREATE TRIGGER created_insert BEFORE INSERT OR UPDATE ON
+CREATE TRIGGER created_updated BEFORE INSERT OR UPDATE ON
 		stats_country FOR EACH ROW EXECUTE PROCEDURE public.T_created_updated();
-CREATE TRIGGER created_insert BEFORE INSERT OR UPDATE ON
+CREATE TRIGGER created_updated BEFORE INSERT OR UPDATE ON
 		stats_cpu FOR EACH ROW EXECUTE PROCEDURE public.T_created_updated();
-CREATE TRIGGER created_insert BEFORE INSERT OR UPDATE ON
+CREATE TRIGGER created_updated BEFORE INSERT OR UPDATE ON
 		stats_dem_heard FOR EACH ROW EXECUTE PROCEDURE public.T_created_updated();
-CREATE TRIGGER created_insert BEFORE INSERT OR UPDATE ON
+CREATE TRIGGER created_updated BEFORE INSERT OR UPDATE ON
 		stats_dem_motivation FOR EACH ROW EXECUTE PROCEDURE public.T_created_updated();
-CREATE TRIGGER created_insert BEFORE INSERT OR UPDATE ON
+CREATE TRIGGER created_updated BEFORE INSERT OR UPDATE ON
 		stats_nonprofit FOR EACH ROW EXECUTE PROCEDURE public.T_created_updated();
-CREATE TRIGGER created_insert BEFORE INSERT OR UPDATE ON
+CREATE TRIGGER created_updated BEFORE INSERT OR UPDATE ON
 		stats_os FOR EACH ROW EXECUTE PROCEDURE public.T_created_updated();
