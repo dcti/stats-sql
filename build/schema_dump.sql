@@ -1818,15 +1818,6 @@ ALTER TABLE ONLY email_contrib
 
 
 --
--- TOC entry 185 (OID 702324174)
--- Name: stats_participant_pkey; Type: CONSTRAINT; Schema: public; Owner: pgsql
---
-
-ALTER TABLE ONLY stats_participant
-    ADD CONSTRAINT stats_participant_pkey PRIMARY KEY (id);
-
-
---
 -- TOC entry 207 (OID 702324218)
 -- Name: fk_team_joins__participant_id; Type: CONSTRAINT; Schema: public; Owner: pgsql
 --
@@ -1857,8 +1848,6 @@ ALTER TABLE ONLY stats_participant
     ADD CONSTRAINT fk_stats_participant__country FOREIGN KEY (dem_country) REFERENCES stats_country(code);
 ALTER TABLE ONLY stats_participant
     ADD CONSTRAINT fk_stats_participant__listmode FOREIGN KEY (listmode) REFERENCES stats_participant_listmode(listmode) ON UPDATE CASCADE;
-ALTER TABLE ONLY stats_participant
-    ADD CONSTRAINT fk_stats_participant__country FOREIGN KEY (dem_country) REFERENCES stats_country(code) ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 
 
