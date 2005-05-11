@@ -1,4 +1,4 @@
-$Id: README,v 1.5 2005/05/09 23:12:31 decibel Exp $
+$Id: README,v 1.6 2005/05/11 18:03:33 decibel Exp $
 
 The schema script is expecting the pgsql account to exist in the database, so
 if you use the -O option on createdb you will need to either create that account
@@ -13,7 +13,7 @@ ALTER TABLE import_bcp OWNER TO otheruser;
 
 If you run build.sh more than once you'll get some user/group errors. It's normal.
 
-If you have logs for old projects you should update the projects table and set their
-status to 'O' for 'open'. IE:
+I've tried to provide a projects table that will probably make sense for personal
+stats, but you should double-check project_type and status. Project_type needs to
+match @projects in statsconf.pm, and projects with a status != 'O' will not be run.
 
-UPDATE projects SET status='O' WHERE project_id=24;
