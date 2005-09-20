@@ -1,0 +1,14 @@
+These scripts are meant to help run pg_autovacuum as a daemon. Currently, any
+time PostgreSQL shuts down, pg_autovacuum will die. I've also had issues with
+it crashing. pg_autovacuum.* is intended to run as a daemon. In a nutshell, it
+will start pg_autovacuum and wait for it to exit. After it exits, it sleeps 10
+seconds and attempts to restart it. It also catches appropriate signals and
+sends them to pg_autovacuum and exits if needed.
+
+bash and sh do not act the same when handling signals. If your OS symlinks
+/bin/sh to bash, you'll probably need to use the .bash script. Otherwise you
+should use the .sh script.
+
+019.pg_autovacuum.sh is a startup script for FreeBSD which is intended to be
+placed into /usr/local/etc/rc.d. It might be useful on other OS's with some
+modification.
