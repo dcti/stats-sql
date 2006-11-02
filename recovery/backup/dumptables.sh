@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Id: dumptables.sh,v 1.2 2004/02/03 22:51:50 decibel Exp $
+# $Id: dumptables.sh,v 1.3 2006/11/02 16:53:10 decibel Exp $
 
 # Defaults
 database=stats
@@ -46,13 +46,13 @@ fi
 dump ( ) {
     echo Dumping $table
     case $compression in
-        n) pg_dump -d $database --use-set-session-authorization -U $user $dump_options -f $output/$table.tbl -t $table
+        n) pg_dump --use-set-session-authorization -U $user $dump_options -f $output/$table.tbl -t $table $database 
             continue;;
-        bb) pg_dump -d $database --use-set-session-authorization -U $user $dump_options -f $output/$table.tbl -t $table
+        bb) pg_dump --use-set-session-authorization -U $user $dump_options -f $output/$table.tbl -t $table $database 
             echo Beginning compression of $output/$table.tbl in the background
             (bzip2 $output/$table.tbl && echo Compression of $output/$table.tbl done) &
             continue;;
-        b) pg_dump -d $database --use-set-session-authorization -U $user $dump_options -t $table | bzip2 > $output/$table.tbl.bz2
+        b) pg_dump --use-set-session-authorization -U $user $dump_options -t $table $database | bzip2 > $output/$table.tbl.bz2
             continue;;
     esac
 }
