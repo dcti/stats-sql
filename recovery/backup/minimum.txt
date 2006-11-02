@@ -14,7 +14,7 @@ stats_team_blocked
 team_joins
 stats_team
 
-log_info
-project_statsrun
+#log_info
+#project_statsrun
 project_status
 projects
