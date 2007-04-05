@@ -1,4 +1,4 @@
--- $Id: tables.sql,v 1.8 2005/06/17 22:54:02 decibel Exp $
+-- $Id: tables.sql,v 1.9 2007/04/05 17:48:56 nerf Exp $
 
 -- Note that we should probable just create this as a temp table in the import script
 CREATE TABLE import (
@@ -101,5 +101,22 @@ CREATE TABLE log_ogr_other WITHOUT OIDs AS
 ALTER TABLE log_ogr_other ADD CONSTRAINT log_ogr_other__email_ri FOREIGN KEY ( email_id ) REFERENCES email;
 ALTER TABLE log_ogr_other ADD CONSTRAINT log_ogr_other__platform_ri FOREIGN KEY ( platform_id ) REFERENCES platform;
 CREATE INDEX log_ogr_other__email_id ON log_ogr_other( project_id, email_id );
+
+/*
+	LOG_HISTORY
+	This stores when a log was done.  This also serves
+	as a rudimentary locking mechanism.  Do not confuse this
+	with real locking.
+*/
+
+CREATE TABLE log_history (
+	log_type		smallint NOT NULL
+	, logday		date NOT NULL
+	, loghour		smallint NOT NULL
+	, lines			integer
+	, badlines		integer
+	, starttime		timestamp
+	, endtime		timestamp
+) PRIMARY KEY (log_type,logday,loghour) WITHOUT OIDS;
 
 -- vi: noexpandtab ts=8 sw=8
