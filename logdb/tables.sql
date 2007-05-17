@@ -1,4 +1,4 @@
--- $Id: tables.sql,v 1.9 2007/04/05 17:48:56 nerf Exp $
+-- $Id: tables.sql,v 1.10 2007/05/17 19:55:56 decibel Exp $
 
 -- Note that we should probable just create this as a temp table in the import script
 CREATE TABLE import (
@@ -117,6 +117,7 @@ CREATE TABLE log_history (
 	, badlines		integer
 	, starttime		timestamp
 	, endtime		timestamp
-) PRIMARY KEY (log_type,logday,loghour) WITHOUT OIDS;
+	, PRIMARY KEY (log_type,logday,loghour)
+) WITHOUT OIDS;
 
 -- vi: noexpandtab ts=8 sw=8
