@@ -1,4 +1,17 @@
--- $Id: tables.sql,v 1.10 2007/05/17 19:55:56 decibel Exp $
+-- $Id: tables.sql,v 1.11 2007/06/04 05:39:42 decibel Exp $
+
+CREATE TABLE log_type (
+	log_type_id	smallint NOT NULL PRIMARY KEY
+	, log_type	text NOT NULL UNIQUE
+) WITHOUT OIDs;
+COPY log_type (log_type_id, log_type) FROM stdin DELIMITER ',';
+3,RC5
+6,CSC
+8,R72
+24,OGR
+25,OGRP2
+\.
+
 
 -- Note that we should probable just create this as a temp table in the import script
 CREATE TABLE import (
@@ -54,15 +67,17 @@ CREATE TABLE platform (
 
 CREATE TABLE log_8 (
 	return_time		timestamp NOT NULL
-	, ip_address		inet NOT NULL
 	, email_id		integer NOT NULL REFERENCES email
 	, platform_id		integer NOT NULL REFERENCES platform
+	, ip_address		inet
 	, rc5_cmc_count		integer
 	, rc5_cmc_ok		smallint
 	, rc5_iter		smallint NOT NULL
 	, core			smallint NOT NULL
+	, log_type_id		smallint NOT NULL
 	, workunit_tid		varchar(20) NOT NULL
 	, rc5_cmc_last		varchar(20)
+	, bad_ip_address	text
 ) WITHOUT OIDs;
 CREATE INDEX log_8__email_id ON log_8( email_id );
 
@@ -79,12 +94,14 @@ CREATE INDEX log_rc5_other__email_id ON log_rc5_other( project_id, email_id );
 
 CREATE TABLE log_24 (
 	return_time		timestamp NOT NULL
-	, ip_address		inet NOT NULL
 	, email_id		integer NOT NULL CONSTRAINT log_24__email_ri REFERENCES email
 	, platform_id		integer NOT NULL CONSTRAINT log_24__platform_ri REFERENCES platform
+	, ip_address		inet
 	, ogr_status		smallint
+	, log_type_id		smallint NOT NULL
 	, ogr_nodecount		bigint NOT NULL
 	, workunit_tid		text NOT NULL
+	, bad_ip_address	text
 ) WITHOUT OIDs;
 CREATE INDEX log_24__email_id ON log_24( email_id );
 
@@ -110,14 +127,14 @@ CREATE INDEX log_ogr_other__email_id ON log_ogr_other( project_id, email_id );
 */
 
 CREATE TABLE log_history (
-	log_type		smallint NOT NULL
-	, logday		date NOT NULL
+	logday			date NOT NULL
 	, loghour		smallint NOT NULL
+	, log_type_id		smallint NOT NULL
 	, lines			integer
 	, badlines		integer
 	, starttime		timestamp
 	, endtime		timestamp
-	, PRIMARY KEY (log_type,logday,loghour)
+	, PRIMARY KEY ( logday, loghour, log_type_id )
 ) WITHOUT OIDS;
 
 -- vi: noexpandtab ts=8 sw=8
