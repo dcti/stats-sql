@@ -1,5 +1,6 @@
--- $Id: tables.sql,v 1.11 2007/06/04 05:39:42 decibel Exp $
+-- $Id: tables.sql,v 1.12 2007/06/17 03:47:34 decibel Exp $
 
+BEGIN;
 CREATE TABLE log_type (
 	log_type_id	smallint NOT NULL PRIMARY KEY
 	, log_type	text NOT NULL UNIQUE
@@ -15,37 +16,40 @@ COPY log_type (log_type_id, log_type) FROM stdin DELIMITER ',';
 
 -- Note that we should probable just create this as a temp table in the import script
 CREATE TABLE import (
-	return_time	timestamp NOT NULL
-	, ip_address	inet NOT NULL
-	, os_type	integer NOT NULL
-	, cpu_type	integer NOT NULL
-	, version	integer NOT NULL
-	, core		integer
-	, rc5_cmc_count	integer
-	, project_id	smallint NOT NULL
-	, rc5_iter	smallint
-	, ogr_status	smallint
-	, rc5_cmc_ok	smallint
-	, ogr_nodecount	bigint
-	, workunit_tid	text NOT NULL
-	, email		varchar(64) NOT NULL
-	, rc5_cmc_last	text
+	return_time		timestamp NOT NULL
+	, os_type		integer NOT NULL
+	, cpu_type		integer NOT NULL
+	, version		integer NOT NULL
+	, core			integer
+	, rc5_cmc_count		integer
+	, project_id		smallint NOT NULL
+	, rc5_iter		smallint
+	, ogr_status		smallint
+	, rc5_cmc_ok		smallint
+	, ogr_nodecount		bigint
+	, workunit_tid		text NOT NULL
+	, email			varchar(64) NOT NULL
+	, rc5_cmc_last		text
+	, ip_address		text
+	, bad_ip_address	text
 ) WITHOUT OIDs;
 
 CREATE TABLE log_other (
-	return_time	timestamp NOT NULL
-	, ip_address	inet NOT NULL
-	, email_id	int NOT NULL
-	, platform_id	integer NOT NULL
-	, core		integer
-	, rc5_cmc_count	integer
-	, project_id	smallint NOT NULL
-	, rc5_iter	smallint
-	, ogr_status	smallint
-	, rc5_cmc_ok	smallint
-	, ogr_nodecount	bigint
-	, workunit_tid	text NOT NULL
-	, rc5_cmc_last	text
+	return_time		timestamp NOT NULL
+	, email_id		int NOT NULL
+	, platform_id		integer NOT NULL
+	, ip_address		inet
+	, core			integer
+	, rc5_cmc_count		integer
+	, project_id		smallint NOT NULL
+	, log_type_id		smallint NOT NULL
+	, rc5_iter		smallint
+	, ogr_status		smallint
+	, rc5_cmc_ok		smallint
+	, ogr_nodecount		bigint
+	, workunit_tid		text NOT NULL
+	, rc5_cmc_last		text
+	, bad_ip_address	text
 ) WITHOUT OIDs;
 
 CREATE TABLE email (
@@ -127,14 +131,14 @@ CREATE INDEX log_ogr_other__email_id ON log_ogr_other( project_id, email_id );
 */
 
 CREATE TABLE log_history (
-	logday			date NOT NULL
-	, loghour		smallint NOT NULL
-	, log_type_id		smallint NOT NULL
-	, lines			integer
-	, badlines		integer
-	, starttime		timestamp
-	, endtime		timestamp
-	, PRIMARY KEY ( logday, loghour, log_type_id )
+	log_day			date NOT NULL
+	, log_hour		smallint NOT NULL
+	, log_type_id		smallint NOT NULL REFERENCES log_type( log_type_id )
+	, lines			integer NOT NULL
+	, start_time		timestamp NOT NULL
+	, end_time		timestamp NOT NULL
+	, PRIMARY KEY ( log_day, log_hour, log_type_id )
 ) WITHOUT OIDS;
+COMMIT;
 
 -- vi: noexpandtab ts=8 sw=8

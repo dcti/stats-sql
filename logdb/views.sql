@@ -1,5 +1,6 @@
--- $Id: views.sql,v 1.8 2007/06/04 05:39:43 decibel Exp $
+-- $Id: views.sql,v 1.9 2007/06/17 03:47:34 decibel Exp $
 
+BEGIN;
 /*
 	R72
 */
@@ -132,5 +133,7 @@ CREATE OR REPLACE RULE log_insert_ogr AS ON INSERT TO log
             VALUES( NEW.project_id, NEW.return_time, NEW.ip_address, NEW.email_id, NEW.platform_id, NEW.workunit_tid
                     , NEW.ogr_status, NEW.ogr_nodecount, NEW.log_type_id, NEW.bad_ip_address )
 ;
+
+COMMIT;
 
 -- vi: expandtab ts=4 sw=4
