@@ -1,4 +1,4 @@
--- $Id: views.sql,v 1.9 2007/06/17 03:47:34 decibel Exp $
+-- $Id: views.sql,v 1.10 2007/08/29 15:54:50 nerf Exp $
 
 BEGIN;
 /*
@@ -106,7 +106,7 @@ CREATE OR REPLACE RULE log_insert_nothing AS ON INSERT TO log
 ;
 
 CREATE OR REPLACE RULE log_insert_other AS ON INSERT TO log
-    WHERE NEW.project_id NOT IN ( 8, 24, 25 )
+    WHERE NEW.project_id NOT IN ( 5, 8, 24, 25 )
     DO INSTEAD
         INSERT INTO log_other( project_id, return_time, ip_address, email_id, platform_id, workunit_tid
                     , core, rc5_cmc_count, rc5_cmc_ok, rc5_iter, rc5_cmc_last
@@ -117,7 +117,7 @@ CREATE OR REPLACE RULE log_insert_other AS ON INSERT TO log
 ;
 
 CREATE OR REPLACE RULE log_insert_rc5 AS ON INSERT TO log
-    WHERE NEW.project_id NOT IN ( 5, 8 )
+    WHERE NEW.project_id IN ( 5, 8 )
     DO INSTEAD
         INSERT INTO log_rc5( project_id, return_time, ip_address, email_id, platform_id, workunit_tid
                     , core, rc5_cmc_count, rc5_cmc_ok, rc5_iter, rc5_cmc_last, log_type_id, bad_ip_address )
@@ -126,7 +126,7 @@ CREATE OR REPLACE RULE log_insert_rc5 AS ON INSERT TO log
 ;
 
 CREATE OR REPLACE RULE log_insert_ogr AS ON INSERT TO log
-    WHERE NEW.project_id NOT IN ( 24, 25 )
+    WHERE NEW.project_id IN ( 24, 25 )
     DO INSTEAD
         INSERT INTO log_ogr( project_id, return_time, ip_address, email_id, platform_id, workunit_tid
                     , ogr_status, ogr_nodecount, log_type_id, bad_ip_address )
