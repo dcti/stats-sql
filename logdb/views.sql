@@ -1,4 +1,4 @@
--- $Id: views.sql,v 1.10 2007/08/29 15:54:50 nerf Exp $
+-- $Id: views.sql,v 1.11 2007/09/03 08:38:31 decibel Exp $
 
 BEGIN;
 /*
@@ -16,7 +16,7 @@ CREATE OR REPLACE RULE log_rc5_insert_nothing AS ON INSERT TO log_rc5
 ;
 
 CREATE OR REPLACE RULE log_rc5_insert_other AS ON INSERT TO log_rc5
-    WHERE NEW.project_id NOT IN ( 8 )
+    WHERE NEW.project_id NOT IN ( 5, 8 )
     DO INSTEAD
         INSERT INTO log_rc5_other( project_id, return_time, email_id, platform_id, ip_address
                     , rc5_iter, rc5_cmc_count, rc5_cmc_ok, core, log_type_id
@@ -24,6 +24,17 @@ CREATE OR REPLACE RULE log_rc5_insert_other AS ON INSERT TO log_rc5
             VALUES( NEW.project_id, NEW.return_time, NEW.email_id, NEW.platform_id, NEW.ip_address
                     , NEW.rc5_iter, NEW.rc5_cmc_count, NEW.rc5_cmc_ok, NEW.core, NEW.log_type_id
                     , NEW.workunit_tid, NEW.rc5_cmc_last, NEW.bad_ip_address  )
+;
+
+CREATE OR REPLACE RULE log_rc5_insert_8 AS ON INSERT TO log_rc5
+    WHERE NEW.project_id = 5
+    DO INSTEAD
+        INSERT INTO log_5( return_time, email_id, platform_id, ip_address
+                    , rc5_iter, core, log_type_id
+                    , workunit_tid, bad_ip_address )
+            VALUES( NEW.return_time, NEW.email_id, NEW.platform_id, NEW.ip_address
+                    , NEW.rc5_iter,  NEW.core, NEW.log_type_id
+                    , NEW.workunit_tid, NEW.bad_ip_address  )
 ;
 
 CREATE OR REPLACE RULE log_rc5_insert_8 AS ON INSERT TO log_rc5

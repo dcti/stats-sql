@@ -1,4 +1,4 @@
--- $Id: tables.sql,v 1.13 2007/06/17 03:55:33 decibel Exp $
+-- $Id: tables.sql,v 1.14 2007/09/03 08:38:31 decibel Exp $
 
 BEGIN;
 CREATE TABLE log_type (
@@ -68,6 +68,19 @@ CREATE TABLE log_other (
 /*
 	R72
 */
+
+CREATE TABLE log_5 (
+	return_time		timestamp NOT NULL
+	, email_id		integer NOT NULL REFERENCES email
+	, platform_id		integer NOT NULL REFERENCES platform
+	, ip_address		inet
+	, rc5_iter		smallint NOT NULL
+	, core			smallint NOT NULL
+	, log_type_id		smallint NOT NULL REFERENCES log_type
+	, workunit_tid		varchar(20) NOT NULL
+	, bad_ip_address	text
+) WITHOUT OIDs;
+CREATE INDEX log_8__email_id ON log_8( email_id );
 
 CREATE TABLE log_8 (
 	return_time		timestamp NOT NULL
