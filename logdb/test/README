@@ -1,0 +1,3 @@
+This directory is meant for *schema level* test files... unit tests that should
+only concern themselves with the code that's defined in this module, such as
+views and rules.
