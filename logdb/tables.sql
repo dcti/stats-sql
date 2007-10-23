@@ -1,4 +1,4 @@
--- $Id: tables.sql,v 1.14 2007/09/03 08:38:31 decibel Exp $
+-- $Id: tables.sql,v 1.15 2007/10/23 16:43:12 nerf Exp $
 
 BEGIN;
 CREATE TABLE log_type (
@@ -80,7 +80,7 @@ CREATE TABLE log_5 (
 	, workunit_tid		varchar(20) NOT NULL
 	, bad_ip_address	text
 ) WITHOUT OIDs;
-CREATE INDEX log_8__email_id ON log_8( email_id );
+CREATE INDEX log_5__email_id ON log_5( email_id );
 
 CREATE TABLE log_8 (
 	return_time		timestamp NOT NULL
