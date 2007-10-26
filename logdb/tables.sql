@@ -1,4 +1,4 @@
--- $Id: tables.sql,v 1.15 2007/10/23 16:43:12 nerf Exp $
+-- $Id: tables.sql,v 1.16 2007/10/26 23:30:23 decibel Exp $
 
 BEGIN;
 CREATE TABLE log_type (
@@ -6,11 +6,11 @@ CREATE TABLE log_type (
 	, log_type	text NOT NULL UNIQUE
 ) WITHOUT OIDs;
 COPY log_type (log_type_id, log_type) FROM stdin DELIMITER ',';
-3,RC5
-6,CSC
-8,R72
-24,OGR
-25,OGRP2
+1,RC5
+2,CSC
+3,R72
+4,OGR
+5,OGRP2
 \.
 
 
