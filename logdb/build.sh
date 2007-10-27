@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Id: build.sh,v 1.1 2005/05/09 20:59:50 decibel Exp $
+# $Id: build.sh,v 1.2 2007/10/27 06:53:21 nerf Exp $
 
 load () {
     psql -f $1 logs
@@ -8,5 +8,6 @@ load () {
 
 load tables.sql
 load views.sql
+load functions.sql
 
 # vi: expandtab sw=4 ts=4
