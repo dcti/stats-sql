@@ -1,4 +1,4 @@
--- $Id: views.sql,v 1.11 2007/09/03 08:38:31 decibel Exp $
+-- $Id: views.sql,v 1.12 2007/10/27 06:51:28 nerf Exp $
 
 BEGIN;
 /*
@@ -68,27 +68,27 @@ CREATE OR REPLACE RULE log_ogr_insert_other AS ON INSERT TO log_ogr
     WHERE NEW.project_id NOT IN ( 24, 25 )
     DO INSTEAD
         INSERT INTO log_ogr_other( project_id, return_time, email_id, platform_id, ip_address
-                    , workunit_tid, ogr_nodecount, ogr_status, log_type_id, bad_ip_address )
+                    , workunit_tid, ogr_nodecount, ogr_status, log_type_id, real_project_id, bad_ip_address )
             VALUES( NEW.project_id, NEW.return_time, NEW.email_id, NEW.platform_id, NEW.ip_address
-                    , NEW.workunit_tid, NEW.ogr_nodecount, NEW.ogr_status, NEW.log_type_id, NEW.bad_ip_address )
+                    , NEW.workunit_tid, NEW.ogr_nodecount, NEW.ogr_status, NEW.log_type_id, NEW.real_project_id, NEW.bad_ip_address )
 ;
 
 CREATE OR REPLACE RULE log_ogr_insert_24 AS ON INSERT TO log_ogr
     WHERE NEW.project_id = 24
     DO INSTEAD
         INSERT INTO log_24( return_time, email_id, platform_id, ip_address
-                    , workunit_tid, ogr_nodecount, ogr_status, log_type_id, bad_ip_address )
+                    , workunit_tid, ogr_nodecount, ogr_status, log_type_id, real_project_id, bad_ip_address )
             VALUES( NEW.return_time, NEW.email_id, NEW.platform_id, NEW.ip_address
-                    , NEW.workunit_tid, NEW.ogr_nodecount, NEW.ogr_status, NEW.log_type_id, NEW.bad_ip_address )
+                    , NEW.workunit_tid, NEW.ogr_nodecount, NEW.ogr_status, NEW.log_type_id, NEW.real_project_id, NEW.bad_ip_address )
 ;
 
 CREATE OR REPLACE RULE log_ogr_insert_25 AS ON INSERT TO log_ogr
     WHERE NEW.project_id = 25
     DO INSTEAD
         INSERT INTO log_25( return_time, email_id, platform_id, ip_address
-                    , workunit_tid, ogr_nodecount, ogr_status, log_type_id, bad_ip_address )
+                    , workunit_tid, ogr_nodecount, ogr_status, log_type_id, real_project_id, bad_ip_address )
             VALUES( NEW.return_time, NEW.email_id, NEW.platform_id, NEW.ip_address
-                    , NEW.workunit_tid, NEW.ogr_nodecount, NEW.ogr_status, NEW.log_type_id, NEW.bad_ip_address )
+                    , NEW.workunit_tid, NEW.ogr_nodecount, NEW.ogr_status, NEW.log_type_id, NEW.real_project_id, NEW.bad_ip_address )
 ;
 
 /*
@@ -98,17 +98,17 @@ CREATE OR REPLACE RULE log_ogr_insert_25 AS ON INSERT TO log_ogr
 CREATE OR REPLACE VIEW log AS
     SELECT project_id, return_time, ip_address, email_id, platform_id, workunit_tid
             , core, rc5_cmc_count, rc5_cmc_ok, rc5_iter, rc5_cmc_last
-            , ogr_status, ogr_nodecount, log_type_id, bad_ip_address
+            , ogr_status, ogr_nodecount, log_type_id, real_project_id, bad_ip_address
         FROM log_other
     UNION ALL
     SELECT project_id, return_time, ip_address, email_id, platform_id, workunit_tid
             , core, rc5_cmc_count, rc5_cmc_ok, rc5_iter, rc5_cmc_last
-            , NULL AS ogr_status, NULL AS ogr_nodecount, log_type_id, bad_ip_address
+            , NULL AS ogr_status, NULL AS ogr_nodecount, log_type_id, NULL as real_project_id, bad_ip_address
         FROM log_rc5
     UNION ALL
     SELECT project_id, return_time, ip_address, email_id, platform_id, workunit_tid
             , NULL AS core, NULL AS rc5_cmc_count, NULL AS rc5_cmc_ok, NULL AS rc5_iter, NULL AS rc5_cmc_last
-            , ogr_status, ogr_nodecount, log_type_id, bad_ip_address
+            , ogr_status, ogr_nodecount, log_type_id, real_project_id, bad_ip_address
         FROM log_ogr
 ;
 
@@ -121,10 +121,10 @@ CREATE OR REPLACE RULE log_insert_other AS ON INSERT TO log
     DO INSTEAD
         INSERT INTO log_other( project_id, return_time, ip_address, email_id, platform_id, workunit_tid
                     , core, rc5_cmc_count, rc5_cmc_ok, rc5_iter, rc5_cmc_last
-                    , ogr_status, ogr_nodecount, log_type_id, bad_ip_address )
+                    , ogr_status, ogr_nodecount, log_type_id, real_project_id, bad_ip_address )
             VALUES( NEW.project_id, NEW.return_time, NEW.ip_address, NEW.email_id, NEW.platform_id, NEW.workunit_tid
                     , NEW.core, NEW.rc5_cmc_count, NEW.rc5_cmc_ok, NEW.rc5_iter, NEW.rc5_cmc_last
-                    , NEW.ogr_status, NEW.ogr_nodecount, NEW.log_type_id, NEW.bad_ip_address )
+                    , NEW.ogr_status, NEW.ogr_nodecount, NEW.log_type_id, NEW.real_project_id, NEW.bad_ip_address )
 ;
 
 CREATE OR REPLACE RULE log_insert_rc5 AS ON INSERT TO log
@@ -140,9 +140,9 @@ CREATE OR REPLACE RULE log_insert_ogr AS ON INSERT TO log
     WHERE NEW.project_id IN ( 24, 25 )
     DO INSTEAD
         INSERT INTO log_ogr( project_id, return_time, ip_address, email_id, platform_id, workunit_tid
-                    , ogr_status, ogr_nodecount, log_type_id, bad_ip_address )
+                    , ogr_status, ogr_nodecount, log_type_id, real_project_id, bad_ip_address )
             VALUES( NEW.project_id, NEW.return_time, NEW.ip_address, NEW.email_id, NEW.platform_id, NEW.workunit_tid
-                    , NEW.ogr_status, NEW.ogr_nodecount, NEW.log_type_id, NEW.bad_ip_address )
+                    , NEW.ogr_status, NEW.ogr_nodecount, NEW.log_type_id, NEW.real_project_id, NEW.bad_ip_address )
 ;
 
 COMMIT;

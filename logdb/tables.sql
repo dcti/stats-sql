@@ -1,4 +1,4 @@
--- $Id: tables.sql,v 1.16 2007/10/26 23:30:23 decibel Exp $
+-- $Id: tables.sql,v 1.17 2007/10/27 06:51:28 nerf Exp $
 
 BEGIN;
 CREATE TABLE log_type (
@@ -23,6 +23,7 @@ CREATE TABLE import (
 	, core			integer
 	, rc5_cmc_count		integer
 	, project_id		smallint NOT NULL
+	, real_project_id	smallint
 	, rc5_iter		smallint
 	, ogr_status		smallint
 	, rc5_cmc_ok		smallint
@@ -55,6 +56,7 @@ CREATE TABLE log_other (
 	, core			integer
 	, rc5_cmc_count		integer
 	, project_id		smallint NOT NULL
+	, real_project_id	smallint
 	, log_type_id		smallint NOT NULL REFERENCES log_type
 	, rc5_iter		smallint
 	, ogr_status		smallint
@@ -119,6 +121,7 @@ CREATE TABLE log_24 (
 	, log_type_id		smallint NOT NULL REFERENCES log_type
 	, ogr_nodecount		bigint NOT NULL
 	, workunit_tid		text NOT NULL
+	, real_project_id	smallint
 	, bad_ip_address	text
 ) WITHOUT OIDs;
 CREATE INDEX log_24__email_id ON log_24( email_id );
