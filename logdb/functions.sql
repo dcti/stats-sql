@@ -1,4 +1,4 @@
--- $Id: functions.sql,v 1.2 2007/10/26 23:41:26 decibel Exp $
+-- $Id: functions.sql,v 1.3 2007/10/27 16:32:35 decibel Exp $
 
 CREATE OR REPLACE FUNCTION process_parent_tables () RETURNS void LANGUAGE plpgsql AS $process_parent_tables$
 BEGIN
@@ -51,8 +51,7 @@ BEGIN
     SELECT project_id,return_time, ip_address::inet, e.email_id, p.platform_id,
         workunit_tid, core, rc5_cmc_count, rc5_cmc_ok, rc5_iter, rc5_cmc_last,
         ogr_status, ogr_nodecount, log_type_id, bad_ip_address, real_project_id
-      FROM import i
-        JOIN log_type l
+      FROM log_type l, import i
         JOIN email e ON ( i.email = e.email )
         JOIN platform p ON ( i.os_type = p.os AND i.cpu_type = p.cpu AND i.version = p.version )
       WHERE l.log_type = p_log_type
