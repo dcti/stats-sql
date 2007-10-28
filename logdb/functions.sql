@@ -1,4 +1,4 @@
--- $Id: functions.sql,v 1.4 2007/10/28 22:11:57 nerf Exp $
+-- $Id: functions.sql,v 1.5 2007/10/28 22:38:38 decibel Exp $
 
 CREATE OR REPLACE FUNCTION process_parent_tables () RETURNS void LANGUAGE plpgsql AS $process_parent_tables$
 BEGIN
@@ -32,13 +32,25 @@ CREATE OR REPLACE FUNCTION process_log (
   p_log_day log_history.log_day%TYPE
   , p_log_hour log_history.log_hour%TYPE
   , p_log_type log_type.log_type%TYPE
+  , p_lines_raw log_history.lines_raw%TYPE
+  , p_lines_logmod log_history.lines_logmod%TYPE
 ) RETURNS void LANGUAGE plpgsql AS $process_log$
+DECLARE
+  v_count bigint;
 BEGIN
-  INSERT INTO log_history(log_day,log_hour,log_type_id,start_time)
-    SELECT p_log_day, p_log_hour, log_type_id, now()
+  INSERT INTO log_history( log_day, log_hour, log_type_id, start_time, lines_raw, lines_logmod )
+    SELECT p_log_day, p_log_hour, log_type_id, now(), p_lines_raw, p_lines_logmod
       FROM log_type
       WHERE log_type = p_log_type
   ;
+
+  SELECT INTO v_count
+      count(*)
+    FROM import
+  ;
+  IF v_count != p_lines_logmod THEN
+    RAISE EXCEPTION $$Number of lines in import table (%) does not match number of lines from logmod (%)$$, v_count, p_lines_logmod;
+  END IF;
 
   ANALYZE import;
 
