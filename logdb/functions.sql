@@ -1,4 +1,4 @@
--- $Id: functions.sql,v 1.3 2007/10/27 16:32:35 decibel Exp $
+-- $Id: functions.sql,v 1.4 2007/10/28 22:11:57 nerf Exp $
 
 CREATE OR REPLACE FUNCTION process_parent_tables () RETURNS void LANGUAGE plpgsql AS $process_parent_tables$
 BEGIN
@@ -40,6 +40,8 @@ BEGIN
       WHERE log_type = p_log_type
   ;
 
+  ANALYZE import;
+
   PERFORM process_parent_tables();
 
   INSERT INTO log (
@@ -62,6 +64,8 @@ BEGIN
       AND log_history.log_hour = log_hour
       AND log_history.log_type_id = log_type
   ;
+
+  TRUNCATE import;
 END;
 $process_log$;
 
