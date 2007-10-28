@@ -1,4 +1,4 @@
--- $Id: tables.sql,v 1.18 2007/10/28 22:31:03 decibel Exp $
+-- $Id: tables.sql,v 1.19 2007/10/28 22:33:56 decibel Exp $
 
 BEGIN;
 CREATE TABLE log_type (
@@ -155,7 +155,6 @@ CREATE TABLE log_history (
 	, log_type_id		smallint NOT NULL REFERENCES log_type
 	, lines_raw		int NOT NULL
 	, lines_logmod		int NOT NULL
-	, lines_imported	int NOT NULL
 	, start_time		timestamp NOT NULL
 	, end_time		timestamp NOT NULL
 	, PRIMARY KEY ( log_day, log_hour, log_type_id )
@@ -163,6 +162,5 @@ CREATE TABLE log_history (
 COMMIT;
 COMMENT ON COLUMN log_history.lines_raw IS $$Number of lines in the raw logfile$$;
 COMMENT ON COLUMN log_history.lines_logmod IS $$Number of lines output by logmod$$;
-COMMENT ON COLUMN log_history.lines_imported IS $$Number of lines in import table$$;
 
 -- vi: noexpandtab ts=8 sw=8
