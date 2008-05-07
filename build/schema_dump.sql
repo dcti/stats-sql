@@ -1769,7 +1769,7 @@ ALTER TABLE ONLY stats_os
 --
 
 ALTER TABLE ONLY team_joins
-    ADD CONSTRAINT team_joins_pkey PRIMARY KEY (id, join_date, team_id);
+    ADD CONSTRAINT team_joins_pkey PRIMARY KEY (id, join_date);
 
 
 --
