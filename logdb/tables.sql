@@ -1,4 +1,4 @@
--- $Id: tables.sql,v 1.20 2007/10/29 00:38:48 decibel Exp $
+-- $Id: tables.sql,v 1.21 2009/03/06 16:53:04 nerf Exp $
 
 BEGIN;
 CREATE TABLE log_type (
@@ -11,6 +11,7 @@ COPY log_type (log_type_id, log_type) FROM stdin DELIMITER ',';
 3,R72
 4,OGR
 5,OGRP2
+6,OGRNG
 \.
 
 
@@ -141,6 +142,24 @@ ALTER TABLE log_25 ADD FOREIGN KEY ( platform_id ) REFERENCES platform;
 ALTER TABLE log_25 ADD FOREIGN KEY ( log_type_id ) REFERENCES log_type;
 CREATE INDEX log_25__email_id ON log_25( email_id );
 CREATE TRIGGER not_allowed BEFORE UPDATE OR DELETE ON log_25 FOR STATEMENT EXECUTE PROCEDURE tg_not_allowed();
+
+CREATE TABLE log_26 WITHOUT OIDs AS
+	SELECT * FROM log_24
+;
+ALTER TABLE log_26 ADD FOREIGN KEY ( email_id ) REFERENCES email;
+ALTER TABLE log_26 ADD FOREIGN KEY ( platform_id ) REFERENCES platform;
+ALTER TABLE log_26 ADD FOREIGN KEY ( log_type_id ) REFERENCES log_type;
+CREATE INDEX log_26__email_id ON log_26( email_id );
+CREATE TRIGGER not_allowed BEFORE UPDATE OR DELETE ON log_26 FOR STATEMENT EXECUTE PROCEDURE tg_not_allowed();
+
+CREATE TABLE log_27 WITHOUT OIDs AS
+	SELECT * FROM log_24
+;
+ALTER TABLE log_27 ADD FOREIGN KEY ( email_id ) REFERENCES email;
+ALTER TABLE log_27 ADD FOREIGN KEY ( platform_id ) REFERENCES platform;
+ALTER TABLE log_27 ADD FOREIGN KEY ( log_type_id ) REFERENCES log_type;
+CREATE INDEX log_27__email_id ON log_27( email_id );
+CREATE TRIGGER not_allowed BEFORE UPDATE OR DELETE ON log_27 FOR STATEMENT EXECUTE PROCEDURE tg_not_allowed();
 
 CREATE TABLE log_ogr_other WITHOUT OIDs AS
 	SELECT 0::smallint AS project_id, * FROM log_25
