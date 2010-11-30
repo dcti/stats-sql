@@ -1,4 +1,4 @@
--- $Id: p_teamjoin.sql,v 1.3 2003/10/22 20:23:24 thejet Exp $
+-- $Id: p_teamjoin.sql,v 1.4 2010/11/30 19:58:57 jlawson Exp $
 
 \set ON_ERROR_STOP 1
 
@@ -34,7 +34,7 @@ CREATE OR REPLACE FUNCTION p_teamjoin(integer, integer) RETURNS void
 
 	/* If the person was on the same team yesterday, update that record
 		instead of adding a new one */
-        IF EXISTS(SELECT team_id INTO tempvar FROM team_joins WHERE id = participant_id
+        IF EXISTS(SELECT team_id FROM team_joins WHERE id = participant_id
                 AND (last_date IS NULL OR last_date = yesterday) AND team_id = new_team_id) THEN
             UPDATE team_joins
                 SET last_date = NULL,
