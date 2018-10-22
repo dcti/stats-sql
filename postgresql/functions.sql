@@ -50,7 +50,7 @@ CREATE OR REPLACE FUNCTION stats_get_last_update(projects.project_id%TYPE, char)
         statement varchar(500);
     BEGIN
         IF project_id IS NULL THEN
-            RAISE EXCEPTION ''NULL project_id passed to %%'', function_name, function_args;
+            RAISE EXCEPTION ''NULL project_id passed to % (%)'', function_name, function_args;
         END IF;
 
         table_name :=
@@ -66,7 +66,7 @@ CREATE OR REPLACE FUNCTION stats_get_last_update(projects.project_id%TYPE, char)
         ;
         
         IF table_name IS NULL THEN
-            RAISE EXCEPTION ''Invalid table code (%) passed to %%'', table_code, function_name, function_args;
+            RAISE EXCEPTION ''Invalid table code (%) passed to % (%)'', table_code, function_name, function_args;
         END IF;
 
         statement := ''SELECT last_date FROM '' || table_name ||
@@ -97,7 +97,7 @@ CREATE OR REPLACE FUNCTION stats_set_last_update(projects.project_id%TYPE, char,
         statement varchar(500);
     BEGIN
         IF project_id IS NULL THEN
-            RAISE EXCEPTION ''NULL project_id passed to %%'', function_name, function_args;
+            RAISE EXCEPTION ''NULL project_id passed to % (%)'', function_name, function_args;
         END IF;
 
         table_name :=
@@ -111,7 +111,7 @@ CREATE OR REPLACE FUNCTION stats_set_last_update(projects.project_id%TYPE, char,
             END;
         
         IF table_name IS NULL THEN
-            RAISE EXCEPTION ''Invalid table code (%) passed to %%'', table_code, function_name, function_args;
+            RAISE EXCEPTION ''Invalid table code (%) passed to % (%)'', table_code, function_name, function_args;
         END IF;
 
         IF update_date IS NULL THEN
