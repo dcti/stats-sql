@@ -64,7 +64,7 @@ CREATE TABLE email_contrib (
     id integer NOT NULL,
     date date NOT NULL,
     team_id integer NOT NULL,
-    work_units bigint NOT NULL
+    work_units numeric(24,0) NOT NULL
 ) WITHOUT OIDS;
 
 
@@ -96,7 +96,7 @@ CREATE TABLE email_rank (
     overall_rank integer NOT NULL,
     overall_rank_previous integer NOT NULL,
     work_today bigint NOT NULL,
-    work_total bigint NOT NULL
+    work_total numeric(24,0) NOT NULL
 ) WITHOUT OIDS;
 
 
@@ -124,7 +124,7 @@ CREATE TABLE platform_contrib (
     ver smallint NOT NULL,
     project_id int NOT NULL,
     date date NOT NULL,
-    work_units bigint NOT NULL
+    work_units numeric(24,0) NOT NULL
 ) WITHOUT OIDS;
 
 
