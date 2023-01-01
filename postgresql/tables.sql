@@ -349,7 +349,7 @@ CREATE TABLE team_members (
     overall_rank integer NOT NULL,
     overall_rank_previous integer NOT NULL,
     work_today bigint NOT NULL,
-    work_total bigint NOT NULL
+    work_total numeric(24,0) NOT NULL
 ) WITHOUT OIDS;
 
 
@@ -374,7 +374,7 @@ CREATE TABLE team_rank (
     members_overall integer NOT NULL,
     members_current integer NOT NULL,
     work_today bigint NOT NULL,
-    work_total bigint NOT NULL
+    work_total numeric(24,0) NOT NULL
 ) WITHOUT OIDS;
 
 
@@ -409,7 +409,7 @@ CREATE TABLE email_rank_backup (
     overall_rank integer NOT NULL,
     overall_rank_previous integer NOT NULL,
     work_today bigint NOT NULL,
-    work_total bigint NOT NULL
+    work_total numeric(24,0) NOT NULL
 ) WITHOUT OIDS;
 
 
@@ -426,7 +426,7 @@ CREATE TABLE team_members_backup (
     overall_rank integer NOT NULL,
     overall_rank_previous integer NOT NULL,
     work_today bigint NOT NULL,
-    work_total bigint NOT NULL
+    work_total numeric(24,0) NOT NULL
 ) WITHOUT OIDS;
 
 
@@ -445,7 +445,7 @@ CREATE TABLE team_rank_backup (
     members_overall integer NOT NULL,
     members_current integer NOT NULL,
     work_today bigint NOT NULL,
-    work_total bigint NOT NULL
+    work_total numeric(24,0) NOT NULL
 ) WITHOUT OIDS;
 
 
