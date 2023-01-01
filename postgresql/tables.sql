@@ -51,10 +51,10 @@ CREATE TABLE daily_summary (
     top_oteam integer NOT NULL,
     top_yteam integer NOT NULL,
     work_units bigint NOT NULL,
-    top_opwork bigint NOT NULL,
-    top_otwork bigint NOT NULL,
-    top_ypwork bigint NOT NULL,
-    top_ytwork bigint NOT NULL
+    top_opwork numeric(24,0) NOT NULL,
+    top_otwork numeric(24,0) NOT NULL,
+    top_ypwork numeric(24,0) NOT NULL,
+    top_ytwork numeric(24,0) NOT NULL
 ) WITHOUT OIDS;
 
 
@@ -64,7 +64,7 @@ CREATE TABLE email_contrib (
     id integer NOT NULL,
     date date NOT NULL,
     team_id integer NOT NULL,
-    work_units bigint NOT NULL
+    work_units numeric(24,0) NOT NULL
 ) WITHOUT OIDS;
 
 
@@ -96,7 +96,7 @@ CREATE TABLE email_rank (
     overall_rank integer NOT NULL,
     overall_rank_previous integer NOT NULL,
     work_today bigint NOT NULL,
-    work_total bigint NOT NULL
+    work_total numeric(24,0) NOT NULL
 ) WITHOUT OIDS;
 
 
@@ -124,7 +124,7 @@ CREATE TABLE platform_contrib (
     ver smallint NOT NULL,
     project_id int NOT NULL,
     date date NOT NULL,
-    work_units bigint NOT NULL
+    work_units numeric(24,0) NOT NULL
 ) WITHOUT OIDS;
 
 
@@ -349,7 +349,7 @@ CREATE TABLE team_members (
     overall_rank integer NOT NULL,
     overall_rank_previous integer NOT NULL,
     work_today bigint NOT NULL,
-    work_total bigint NOT NULL
+    work_total numeric(24,0) NOT NULL
 ) WITHOUT OIDS;
 
 
@@ -374,7 +374,7 @@ CREATE TABLE team_rank (
     members_overall integer NOT NULL,
     members_current integer NOT NULL,
     work_today bigint NOT NULL,
-    work_total bigint NOT NULL
+    work_total numeric(24,0) NOT NULL
 ) WITHOUT OIDS;
 
 
@@ -409,7 +409,7 @@ CREATE TABLE email_rank_backup (
     overall_rank integer NOT NULL,
     overall_rank_previous integer NOT NULL,
     work_today bigint NOT NULL,
-    work_total bigint NOT NULL
+    work_total numeric(24,0) NOT NULL
 ) WITHOUT OIDS;
 
 
@@ -426,7 +426,7 @@ CREATE TABLE team_members_backup (
     overall_rank integer NOT NULL,
     overall_rank_previous integer NOT NULL,
     work_today bigint NOT NULL,
-    work_total bigint NOT NULL
+    work_total numeric(24,0) NOT NULL
 ) WITHOUT OIDS;
 
 
@@ -445,7 +445,7 @@ CREATE TABLE team_rank_backup (
     members_overall integer NOT NULL,
     members_current integer NOT NULL,
     work_today bigint NOT NULL,
-    work_total bigint NOT NULL
+    work_total numeric(24,0) NOT NULL
 ) WITHOUT OIDS;
 
 
