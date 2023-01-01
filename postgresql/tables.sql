@@ -51,10 +51,10 @@ CREATE TABLE daily_summary (
     top_oteam integer NOT NULL,
     top_yteam integer NOT NULL,
     work_units bigint NOT NULL,
-    top_opwork bigint NOT NULL,
-    top_otwork bigint NOT NULL,
-    top_ypwork bigint NOT NULL,
-    top_ytwork bigint NOT NULL
+    top_opwork numeric(24,0) NOT NULL,
+    top_otwork numeric(24,0) NOT NULL,
+    top_ypwork numeric(24,0) NOT NULL,
+    top_ytwork numeric(24,0) NOT NULL
 ) WITHOUT OIDS;
 
 
